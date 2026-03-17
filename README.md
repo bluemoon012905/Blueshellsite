@@ -38,6 +38,8 @@ Then open:
 - `http://localhost:4321/` for the public site
 - `http://localhost:4321/editor/` for the local editor
 
+The local editor and its homepage shortcuts are intentionally only shown when the site is running on `localhost` or `127.0.0.1`.
+
 ## Editing workflow
 
 1. Open the editor locally

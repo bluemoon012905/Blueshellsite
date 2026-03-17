@@ -3,6 +3,7 @@ const editorState = {
   selectedPostId: null,
   search: "",
 };
+const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
 
 const fields = {
   status: document.getElementById("status-message"),
@@ -32,6 +33,25 @@ const fields = {
 };
 
 async function initEditor() {
+  if (!isLocalEnvironment) {
+    document.body.innerHTML = `
+      <main class="editor-main">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Local editor</p>
+              <h2>Unavailable here</h2>
+            </div>
+          </div>
+          <p>This editor is intentionally only enabled on a local run of the site.</p>
+          <p>Start the local server with <code>npm run dev</code>, then open <code>http://localhost:4321/editor/</code>.</p>
+          <a href="/" class="text-link" style="color: var(--ink); border-color: var(--line);">Back to public site</a>
+        </section>
+      </main>
+    `;
+    return;
+  }
+
   const response = await fetch("/api/content", { cache: "no-store" });
   if (!response.ok) {
     throw new Error("Could not load editable content. Start the local server with `npm run dev`.");

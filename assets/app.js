@@ -3,6 +3,7 @@ const state = {
   search: "",
   category: "all",
 };
+const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
 
 const elements = {
   hero: document.getElementById("hero"),
@@ -47,15 +48,20 @@ function renderHero() {
   const { site } = state.content;
   const archiveCount = state.content.posts.length;
   document.title = site.title;
+  const localOnlyActions = isLocalEnvironment
+    ? `
+      <div class="hero-actions">
+        <a class="ghost-link" href="#archive-heading">Browse archive</a>
+        <a class="pill-link" href="/editor/">Open local editor</a>
+      </div>
+    `
+    : "";
 
   const hero = document.querySelector(".hero");
   hero.innerHTML = `
     <div class="hero-nav">
       <div class="brand-mark">Blue Shell Almanac</div>
-      <div class="hero-actions">
-        <a class="ghost-link" href="#archive-heading">Browse archive</a>
-        <a class="pill-link" href="/editor/">Open local editor</a>
-      </div>
+      ${localOnlyActions}
     </div>
     <div class="hero-copy">
       <p class="eyebrow">Project journal</p>
@@ -63,7 +69,11 @@ function renderHero() {
       <p>${escapeHtml(site.tagline)}</p>
       <p>${escapeHtml(site.intro)}</p>
       <div class="hero-actions">
-        <a class="pill-link" href="#archive-heading">${archiveCount} posts in the archive</a>
+        ${
+          isLocalEnvironment
+            ? `<a class="pill-link" href="#archive-heading">${archiveCount} posts in the archive</a>`
+            : ""
+        }
         <a class="ghost-link" href="${escapeAttribute(site.contactHref)}">${escapeHtml(site.contactLabel)}</a>
       </div>
     </div>
