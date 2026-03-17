@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blue Shell Almanac</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero" id="top"></header>
+      <main class="main-layout">
+        <section class="section" aria-labelledby="category-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Outline</p>
+            <h2 id="category-heading">Four rooms, one archive.</h2>
+          </div>
+          <div class="category-grid" id="category-grid"></div>
+        </section>
+
+        <section class="section" aria-labelledby="featured-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Featured</p>
+            <h2 id="featured-heading">Current highlights</h2>
+          </div>
+          <div class="featured-grid" id="featured-grid"></div>
+        </section>
+
+        <section class="section archive-section" aria-labelledby="archive-heading">
+          <div class="section-heading archive-heading">
+            <div>
+              <p class="eyebrow">Archive</p>
+              <h2 id="archive-heading">Browse everything</h2>
+            </div>
+            <div class="archive-controls">
+              <label class="search-field">
+                <span class="visually-hidden">Search posts</span>
+                <input id="search-input" type="search" placeholder="Search title, summary, tags" />
+              </label>
+              <label class="filter-field">
+                <span class="visually-hidden">Filter by category</span>
+                <select id="category-filter"></select>
+              </label>
+            </div>
+          </div>
+          <div class="post-grid" id="post-grid"></div>
+        </section>
+
+        <section class="section post-view hidden" id="post-view" aria-live="polite"></section>
+
+        <section class="section about-strip" id="about-strip"></section>
+      </main>
+    </div>
+    <script src="assets/app.js" defer></script>
+  </body>
+</html>
