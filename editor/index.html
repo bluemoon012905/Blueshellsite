@@ -16,9 +16,9 @@
     <div class="editor-shell">
       <aside class="sidebar">
         <div class="sidebar-head">
-          <p class="eyebrow">Local editor</p>
-          <h1>Blue Shell Almanac</h1>
-          <p>Manage site copy and posts here. Saving writes directly to <code>data/content.json</code>.</p>
+          <p id="editor-eyebrow-display" class="eyebrow">Local editor</p>
+          <h1 id="editor-title-display">Blue Shell Almanac</h1>
+          <p id="editor-description-display">Manage site copy and posts here. Saving writes directly to <code>data/content.json</code>.</p>
         </div>
         <div class="sidebar-actions">
           <button id="new-post-button" type="button">New post</button>
@@ -60,12 +60,36 @@
               <textarea id="site-about" rows="4"></textarea>
             </label>
             <label>
+              <span>Brand mark</span>
+              <input id="brand-mark" type="text" />
+            </label>
+            <label>
+              <span>Hero eyebrow</span>
+              <input id="hero-eyebrow" type="text" />
+            </label>
+            <label>
+              <span>About eyebrow</span>
+              <input id="about-eyebrow" type="text" />
+            </label>
+            <label>
               <span>Contact label</span>
               <input id="contact-label" type="text" />
             </label>
             <label>
               <span>Contact href</span>
               <input id="contact-href" type="text" />
+            </label>
+            <label>
+              <span>Editor eyebrow</span>
+              <input id="editor-eyebrow" type="text" />
+            </label>
+            <label>
+              <span>Editor title</span>
+              <input id="editor-title" type="text" />
+            </label>
+            <label class="full-width">
+              <span>Editor description</span>
+              <textarea id="editor-description" rows="3"></textarea>
             </label>
           </div>
         </section>
@@ -122,6 +146,17 @@
               <textarea id="post-body" rows="14"></textarea>
             </label>
           </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Post preview</p>
+              <h2>Readable post view</h2>
+            </div>
+            <a id="open-public-post-link" href="/" class="text-link preview-link">Open public version</a>
+          </div>
+          <article id="post-preview" class="post-preview hidden"></article>
         </section>
       </main>
     </div>

@@ -17,11 +17,22 @@ const fields = {
   siteTagline: document.getElementById("site-tagline"),
   siteIntro: document.getElementById("site-intro"),
   siteAbout: document.getElementById("site-about"),
+  brandMark: document.getElementById("brand-mark"),
+  heroEyebrow: document.getElementById("hero-eyebrow"),
+  aboutEyebrow: document.getElementById("about-eyebrow"),
   contactLabel: document.getElementById("contact-label"),
   contactHref: document.getElementById("contact-href"),
+  editorEyebrow: document.getElementById("editor-eyebrow"),
+  editorTitle: document.getElementById("editor-title"),
+  editorDescription: document.getElementById("editor-description"),
+  editorEyebrowDisplay: document.getElementById("editor-eyebrow-display"),
+  editorTitleDisplay: document.getElementById("editor-title-display"),
+  editorDescriptionDisplay: document.getElementById("editor-description-display"),
   categoryFields: document.getElementById("category-fields"),
   postEditor: document.getElementById("post-editor"),
   postEditorHeading: document.getElementById("post-editor-heading"),
+  postPreview: document.getElementById("post-preview"),
+  openPublicPostLink: document.getElementById("open-public-post-link"),
   postId: document.getElementById("post-id"),
   postTitle: document.getElementById("post-title"),
   postCategory: document.getElementById("post-category"),
@@ -77,8 +88,15 @@ function populateSiteFields() {
   fields.siteTagline.value = site.tagline;
   fields.siteIntro.value = site.intro;
   fields.siteAbout.value = site.about;
+  fields.brandMark.value = site.brandMark || "";
+  fields.heroEyebrow.value = site.heroEyebrow || "";
+  fields.aboutEyebrow.value = site.aboutEyebrow || "";
   fields.contactLabel.value = site.contactLabel;
   fields.contactHref.value = site.contactHref;
+  fields.editorEyebrow.value = site.editorEyebrow || "";
+  fields.editorTitle.value = site.editorTitle || "";
+  fields.editorDescription.value = site.editorDescription || "";
+  renderEditorSidebarCopy();
 }
 
 function populateCategoryFields() {
@@ -140,6 +158,8 @@ function selectPost(postId) {
   if (!post) {
     editorState.selectedPostId = null;
     fields.postEditor.classList.add("hidden");
+    fields.postPreview.classList.add("hidden");
+    fields.openPublicPostLink.href = "/";
     fields.postEditorHeading.textContent = "Select or create a post";
     renderPostList();
     return;
@@ -158,6 +178,7 @@ function selectPost(postId) {
   fields.postSummary.value = post.summary;
   fields.postBody.value = post.body;
 
+  renderPostPreview(post);
   renderPostList();
 }
 
@@ -167,8 +188,15 @@ function syncSiteFields() {
   site.tagline = fields.siteTagline.value.trim();
   site.intro = fields.siteIntro.value.trim();
   site.about = fields.siteAbout.value.trim();
+  site.brandMark = fields.brandMark.value.trim();
+  site.heroEyebrow = fields.heroEyebrow.value.trim();
+  site.aboutEyebrow = fields.aboutEyebrow.value.trim();
   site.contactLabel = fields.contactLabel.value.trim();
   site.contactHref = fields.contactHref.value.trim();
+  site.editorEyebrow = fields.editorEyebrow.value.trim();
+  site.editorTitle = fields.editorTitle.value.trim();
+  site.editorDescription = fields.editorDescription.value.trim();
+  renderEditorSidebarCopy();
 }
 
 function syncCategoryFields() {
@@ -218,6 +246,7 @@ function syncCurrentPost() {
 
   editorState.selectedPostId = post.id;
   fields.postEditorHeading.textContent = post.title || "Untitled post";
+  renderPostPreview(post);
 }
 
 function createPost() {
@@ -302,12 +331,50 @@ function setStatus(message) {
   fields.status.textContent = message;
 }
 
+function renderPostPreview(post) {
+  fields.postPreview.classList.remove("hidden");
+  fields.openPublicPostLink.href = `/?post=${encodeURIComponent(post.id)}`;
+  fields.postPreview.innerHTML = `
+    <p class="eyebrow">${escapeHtml(getCategoryName(post.category))}</p>
+    <h3 class="preview-title">${escapeHtml(post.title || "Untitled post")}</h3>
+    <div class="preview-meta">
+      <span class="preview-chip">${escapeHtml(formatDate(post.date || new Date().toISOString().slice(0, 10)))}</span>
+      ${post.featured ? `<span class="preview-chip">Featured</span>` : ""}
+    </div>
+    <p class="preview-summary">${escapeHtml(post.summary || "Add a summary to preview the lead text here.")}</p>
+    <div class="preview-tags">
+      ${
+        (post.tags || []).length
+          ? post.tags.map((tag) => `<span class="preview-tag">${escapeHtml(tag)}</span>`).join("")
+          : `<span class="preview-tag">No tags yet</span>`
+      }
+    </div>
+    <div class="preview-body">${renderMarkdown(post.body || "## Start here")}</div>
+  `;
+}
+
+function renderEditorSidebarCopy() {
+  const { site } = editorState.content;
+  fields.editorEyebrowDisplay.textContent = site.editorEyebrow || "Local editor";
+  fields.editorTitleDisplay.textContent = site.editorTitle || site.title || "Blue Shell Almanac";
+  fields.editorDescriptionDisplay.textContent =
+    site.editorDescription || "Manage site copy and posts here. Saving writes directly to data/content.json.";
+}
+
 function getCategoryName(categoryId) {
   return editorState.content.categories.find((category) => category.id === categoryId)?.name ?? categoryId;
 }
 
 function byNewestDate(left, right) {
   return new Date(right.date) - new Date(left.date);
+}
+
+function formatDate(value) {
+  return new Date(`${value}T12:00:00`).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 function slugify(value) {
@@ -327,8 +394,97 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function renderMarkdown(markdown) {
+  const lines = markdown.split("\n");
+  const fragments = [];
+  let listItems = [];
+
+  const flushList = () => {
+    if (!listItems.length) {
+      return;
+    }
+    fragments.push(`<ul>${listItems.map((item) => `<li>${item}</li>`).join("")}</ul>`);
+    listItems = [];
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushList();
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      flushList();
+      fragments.push(`<h3>${escapeHtml(line.slice(4))}</h3>`);
+      continue;
+    }
+
+    if (line.startsWith("## ")) {
+      flushList();
+      fragments.push(`<h2>${escapeHtml(line.slice(3))}</h2>`);
+      continue;
+    }
+
+    if (line.startsWith("- ")) {
+      listItems.push(escapeHtml(line.slice(2)));
+      continue;
+    }
+
+    flushList();
+    fragments.push(`<p>${escapeHtml(line)}</p>`);
+  }
+
+  flushList();
+  return fragments.join("");
+}
+
 fields.postSearch.addEventListener("input", (event) => {
   editorState.search = event.target.value;
+  renderPostList();
+});
+
+[
+  fields.siteTitle,
+  fields.siteTagline,
+  fields.siteIntro,
+  fields.siteAbout,
+  fields.brandMark,
+  fields.heroEyebrow,
+  fields.aboutEyebrow,
+  fields.contactLabel,
+  fields.contactHref,
+  fields.editorEyebrow,
+  fields.editorTitle,
+  fields.editorDescription,
+].forEach((field) => {
+  field.addEventListener("input", () => {
+    syncSiteFields();
+  });
+});
+
+[
+  fields.postId,
+  fields.postTitle,
+  fields.postCategory,
+  fields.postDate,
+  fields.postTags,
+  fields.postSummary,
+  fields.postBody,
+].forEach((field) => {
+  field.addEventListener("input", () => {
+    syncCurrentPost();
+    renderPostList();
+  });
+});
+
+fields.postFeatured.addEventListener("change", () => {
+  syncCurrentPost();
+  renderPostList();
+});
+
+fields.postCategory.addEventListener("change", () => {
+  syncCurrentPost();
   renderPostList();
 });
 

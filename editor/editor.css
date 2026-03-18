@@ -243,6 +243,78 @@ button.danger {
   display: none;
 }
 
+.preview-link {
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.post-preview.hidden {
+  display: none;
+}
+
+.post-preview {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+}
+
+.preview-meta,
+.preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.preview-chip,
+.preview-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(184, 86, 42, 0.1);
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.preview-tag {
+  background: rgba(31, 36, 48, 0.08);
+  color: var(--muted);
+}
+
+.preview-title,
+.preview-body h2,
+.preview-body h3 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+}
+
+.preview-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 0.95;
+}
+
+.preview-summary,
+.preview-body p,
+.preview-body li {
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.preview-body {
+  display: grid;
+  gap: 6px;
+}
+
+.preview-body ul {
+  margin: 0;
+  padding-left: 22px;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

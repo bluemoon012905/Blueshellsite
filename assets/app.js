@@ -60,11 +60,11 @@ function renderHero() {
   const hero = document.querySelector(".hero");
   hero.innerHTML = `
     <div class="hero-nav">
-      <div class="brand-mark">Blue Shell Almanac</div>
+      <div class="brand-mark">${escapeHtml(site.brandMark || site.title)}</div>
       ${localOnlyActions}
     </div>
     <div class="hero-copy">
-      <p class="eyebrow">Project journal</p>
+      <p class="eyebrow">${escapeHtml(site.heroEyebrow || "Project journal")}</p>
       <h1>${escapeHtml(site.title)}</h1>
       <p>${escapeHtml(site.tagline)}</p>
       <p>${escapeHtml(site.intro)}</p>
@@ -167,7 +167,7 @@ function renderAbout() {
   const { site } = state.content;
   elements.aboutStrip.innerHTML = `
     <div class="about-copy">
-      <p class="eyebrow">About this archive</p>
+      <p class="eyebrow">${escapeHtml(site.aboutEyebrow || "About this archive")}</p>
       <p>${escapeHtml(site.about)}</p>
     </div>
     <a class="pill-link" href="${escapeAttribute(site.contactHref)}">${escapeHtml(site.contactLabel)}</a>

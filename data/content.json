@@ -1,11 +1,17 @@
 {
   "site": {
-    "title": "Blue",
-    "tagline": "A living archive for art, school, personal experiments, and writing.",
-    "intro": "This site collects process notes, finished work, rough drafts, and the strange little side quests that happen between them. Each category is a different room, but they all belong to the same practice.",
-    "about": "Blue Shell Almanac is structured like a studio journal instead of a corporate portfolio. It gives projects room to show their ideas, references, setbacks, and outcomes without flattening everything into a resume.",
+    "title": "Blue's collection of stuff",
+    "tagline": "Blue's little hoard of tools, like a shed",
+    "intro": "This is a place where a lot of my projects lives! Anything from art to writing, programming to research, photography to blogs.",
+    "about": "Hello! You might know me as Yuda, or even the full name Yuda Wang. But my preferred name is Blue, so you will see Blue every time I am being referred to.",
+    "brandMark": "Blue's collection",
+    "heroEyebrow": "Project journal",
+    "aboutEyebrow": "About this archive",
     "contactLabel": "Email me",
-    "contactHref": "mailto:hello@example.com"
+    "contactHref": "blue.yuda.wang@gmail.com",
+    "editorEyebrow": "Local editor",
+    "editorTitle": "Blue Shell Almanac",
+    "editorDescription": "Manage site copy and posts here. Saving writes directly to data/content.json."
   },
   "categories": [
     {
