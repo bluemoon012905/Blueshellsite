@@ -2,7 +2,10 @@ const editorState = {
   content: null,
   selectedPostId: null,
   search: "",
+  composerOpen: false,
+  savedSelection: null,
 };
+
 const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
 
 const fields = {
@@ -10,6 +13,8 @@ const fields = {
   postList: document.getElementById("post-list"),
   postSearch: document.getElementById("post-search"),
   newPostButton: document.getElementById("new-post-button"),
+  newPostInlineButton: document.getElementById("new-post-inline-button"),
+  openPostEditorButton: document.getElementById("open-post-editor-button"),
   saveButton: document.getElementById("save-button"),
   exportButton: document.getElementById("export-button"),
   deletePostButton: document.getElementById("delete-post-button"),
@@ -29,18 +34,33 @@ const fields = {
   editorTitleDisplay: document.getElementById("editor-title-display"),
   editorDescriptionDisplay: document.getElementById("editor-description-display"),
   categoryFields: document.getElementById("category-fields"),
-  postEditor: document.getElementById("post-editor"),
   postEditorHeading: document.getElementById("post-editor-heading"),
+  postEditorCaption: document.getElementById("post-editor-caption"),
   postPreview: document.getElementById("post-preview"),
-  openPublicPostLink: document.getElementById("open-public-post-link"),
+  postPreviewModal: document.getElementById("post-preview-modal"),
+  openPublicPostLinkSummary: document.getElementById("open-public-post-link-summary"),
+  openPublicPostLinkModal: document.getElementById("open-public-post-link"),
+  postEditorModal: document.getElementById("post-editor-modal"),
+  postEditorBackdrop: document.getElementById("post-editor-backdrop"),
+  closePostEditorButton: document.getElementById("close-post-editor-button"),
+  composerTitle: document.getElementById("composer-title"),
+  composerSubtitle: document.getElementById("composer-subtitle"),
+  insertImageButton: document.getElementById("insert-image-button"),
+  imageUploadInput: document.getElementById("image-upload-input"),
   postId: document.getElementById("post-id"),
   postTitle: document.getElementById("post-title"),
   postCategory: document.getElementById("post-category"),
   postDate: document.getElementById("post-date"),
   postTags: document.getElementById("post-tags"),
+  postPublishState: document.getElementById("post-publish-state"),
   postFeatured: document.getElementById("post-featured"),
   postSummary: document.getElementById("post-summary"),
-  postBody: document.getElementById("post-body"),
+  postBodyEditor: document.getElementById("post-body-editor"),
+  toolbar: document.querySelector(".toolbar"),
+  fontFamilySelect: document.getElementById("font-family-select"),
+  fontSizeSelect: document.getElementById("font-size-select"),
+  textColorInput: document.getElementById("text-color-input"),
+  highlightColorInput: document.getElementById("highlight-color-input"),
 };
 
 async function initEditor() {
@@ -69,6 +89,7 @@ async function initEditor() {
   }
 
   editorState.content = await response.json();
+  document.execCommand("styleWithCSS", false, true);
   populateSiteFields();
   populateCategoryFields();
   populateCategorySelect();
@@ -76,6 +97,8 @@ async function initEditor() {
   const firstPost = [...editorState.content.posts].sort(byNewestDate)[0];
   if (firstPost) {
     selectPost(firstPost.id);
+  } else {
+    renderWorkspaceState();
   }
 
   renderPostList();
@@ -84,15 +107,15 @@ async function initEditor() {
 
 function populateSiteFields() {
   const { site } = editorState.content;
-  fields.siteTitle.value = site.title;
-  fields.siteTagline.value = site.tagline;
-  fields.siteIntro.value = site.intro;
-  fields.siteAbout.value = site.about;
+  fields.siteTitle.value = site.title || "";
+  fields.siteTagline.value = site.tagline || "";
+  fields.siteIntro.value = site.intro || "";
+  fields.siteAbout.value = site.about || "";
   fields.brandMark.value = site.brandMark || "";
   fields.heroEyebrow.value = site.heroEyebrow || "";
   fields.aboutEyebrow.value = site.aboutEyebrow || "";
-  fields.contactLabel.value = site.contactLabel;
-  fields.contactHref.value = site.contactHref;
+  fields.contactLabel.value = site.contactLabel || "";
+  fields.contactHref.value = site.contactHref || "";
   fields.editorEyebrow.value = site.editorEyebrow || "";
   fields.editorTitle.value = site.editorTitle || "";
   fields.editorDescription.value = site.editorDescription || "";
@@ -126,14 +149,14 @@ function populateCategoryFields() {
 
 function populateCategorySelect() {
   fields.postCategory.innerHTML = editorState.content.categories
-    .map((category) => `<option value="${category.id}">${escapeHtml(category.name)}</option>`)
+    .map((category) => `<option value="${escapeAttribute(category.id)}">${escapeHtml(category.name)}</option>`)
     .join("");
 }
 
 function renderPostList() {
+  const query = editorState.search.trim().toLowerCase();
   const posts = [...editorState.content.posts]
     .filter((post) => {
-      const query = editorState.search.trim().toLowerCase();
       if (!query) {
         return true;
       }
@@ -142,44 +165,116 @@ function renderPostList() {
     .sort(byNewestDate);
 
   fields.postList.innerHTML = posts
-    .map(
-      (post) => `
-        <button type="button" class="post-item ${post.id === editorState.selectedPostId ? "active" : ""}" data-post-id="${post.id}">
-          <strong>${escapeHtml(post.title)}</strong>
-          <span>${escapeHtml(getCategoryName(post.category))} • ${escapeHtml(post.date)}</span>
+    .map((post) => {
+      const classes = ["post-item"];
+      if (post.id === editorState.selectedPostId) {
+        classes.push("active");
+      }
+      if (!(post.title || "").trim()) {
+        classes.push("is-draft");
+      }
+      classes.push(isPublished(post) ? "is-published" : "is-unpublished");
+
+      const formatLabel = post.bodyFormat === "html" ? "Rich" : "Markdown";
+      const publishLabel = isPublished(post) ? "Published" : "Unpublished";
+      return `
+        <button type="button" class="${classes.join(" ")}" data-post-id="${escapeAttribute(post.id)}">
+          <strong>${escapeHtml(post.title || "Untitled")}</strong>
+          <span>${escapeHtml(getCategoryName(post.category))} • ${escapeHtml(post.date || "No date")} • ${publishLabel} • ${formatLabel}</span>
         </button>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
-function selectPost(postId) {
+function selectPost(postId, options = {}) {
   const post = editorState.content.posts.find((entry) => entry.id === postId);
+  editorState.selectedPostId = post?.id ?? null;
+  hydratePostUI(post ?? null);
+  renderPostList();
+  renderWorkspaceState();
+
+  if (post && options.openComposer) {
+    openComposer();
+  }
+}
+
+function hydratePostUI(post) {
   if (!post) {
-    editorState.selectedPostId = null;
-    fields.postEditor.classList.add("hidden");
-    fields.postPreview.classList.add("hidden");
-    fields.openPublicPostLink.href = "/";
-    fields.postEditorHeading.textContent = "Select or create a post";
-    renderPostList();
+    fields.postId.value = "";
+    fields.postTitle.value = "";
+    fields.postCategory.value = editorState.content.categories[0]?.id || "";
+    fields.postDate.value = "";
+    fields.postTags.value = "";
+    fields.postPublishState.value = "published";
+    fields.postFeatured.checked = false;
+    fields.postSummary.value = "";
+    fields.postBodyEditor.innerHTML = "";
+    renderPostPreview(null);
+    updatePublicLinks(null);
     return;
   }
 
-  editorState.selectedPostId = post.id;
-  fields.postEditor.classList.remove("hidden");
-  fields.postEditorHeading.textContent = post.title || "Untitled post";
-
-  fields.postId.value = post.id;
-  fields.postTitle.value = post.title;
-  fields.postCategory.value = post.category;
-  fields.postDate.value = post.date;
+  fields.postId.value = post.id || "";
+  fields.postTitle.value = post.title || "";
+  fields.postCategory.value = post.category || editorState.content.categories[0]?.id || "";
+  fields.postDate.value = post.date || "";
   fields.postTags.value = (post.tags || []).join(", ");
+  fields.postPublishState.value = isPublished(post) ? "published" : "unpublished";
   fields.postFeatured.checked = Boolean(post.featured);
-  fields.postSummary.value = post.summary;
-  fields.postBody.value = post.body;
-
+  fields.postSummary.value = post.summary || "";
+  fields.postBodyEditor.innerHTML = getEditableBodyHtml(post);
   renderPostPreview(post);
-  renderPostList();
+  updatePublicLinks(post);
+}
+
+function renderWorkspaceState() {
+  const post = getCurrentPost();
+  if (!post) {
+    fields.postEditorHeading.textContent = "Select a post from the sidebar or create a new one.";
+    fields.postEditorCaption.textContent =
+      "The composer opens in a focused overlay with formatting controls, image paste support, and a live preview.";
+    fields.openPostEditorButton.disabled = true;
+    fields.deletePostButton.disabled = true;
+    fields.postPreview.classList.add("hidden");
+    return;
+  }
+
+  fields.postEditorHeading.textContent = post.title || "Untitled";
+  fields.postEditorCaption.textContent =
+    `${isPublished(post) ? "Published" : "Unpublished"} post. ${
+      post.bodyFormat === "html"
+        ? "This post already uses the rich composer format."
+        : "This post is currently Markdown-backed and will convert to rich HTML the next time you save it from the composer."
+    }`;
+  fields.openPostEditorButton.disabled = false;
+  fields.deletePostButton.disabled = false;
+  fields.postPreview.classList.remove("hidden");
+}
+
+function openComposer() {
+  const post = getCurrentPost();
+  if (!post) {
+    return;
+  }
+
+  editorState.composerOpen = true;
+  fields.postEditorModal.classList.remove("hidden");
+  fields.postEditorModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  fields.composerTitle.textContent = post.title || "Untitled";
+  fields.composerSubtitle.textContent =
+    "Write, format, paste images, then save everything back into the site JSON.";
+  window.setTimeout(() => {
+    fields.postTitle.focus();
+  }, 0);
+}
+
+function closeComposer() {
+  editorState.composerOpen = false;
+  fields.postEditorModal.classList.add("hidden");
+  fields.postEditorModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
 }
 
 function syncSiteFields() {
@@ -223,11 +318,7 @@ function syncCategoryFields() {
 }
 
 function syncCurrentPost() {
-  if (!editorState.selectedPostId) {
-    return;
-  }
-
-  const post = editorState.content.posts.find((entry) => entry.id === editorState.selectedPostId);
+  const post = getCurrentPost();
   if (!post) {
     return;
   }
@@ -240,64 +331,82 @@ function syncCurrentPost() {
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
+  post.published = fields.postPublishState.value === "published";
   post.featured = fields.postFeatured.checked;
   post.summary = fields.postSummary.value.trim();
-  post.body = fields.postBody.value.trim();
+  post.body = normalizeComposerHtml(fields.postBodyEditor.innerHTML);
+  post.bodyFormat = "html";
 
   editorState.selectedPostId = post.id;
-  fields.postEditorHeading.textContent = post.title || "Untitled post";
+  fields.postId.value = post.id;
+  fields.composerTitle.textContent = post.title || "Untitled";
   renderPostPreview(post);
-}
-
-function createPost() {
-  syncAllFields();
-  const baseTitle = "new-post";
-  let nextId = baseTitle;
-  let suffix = 1;
-  while (editorState.content.posts.some((post) => post.id === nextId)) {
-    suffix += 1;
-    nextId = `${baseTitle}-${suffix}`;
-  }
-
-  editorState.content.posts.unshift({
-    id: nextId,
-    title: "Untitled post",
-    category: editorState.content.categories[0]?.id || "personal",
-    date: new Date().toISOString().slice(0, 10),
-    summary: "",
-    featured: false,
-    tags: [],
-    body: "## Start here\n\nWrite the first draft of this post.",
-  });
-
-  populateCategorySelect();
-  selectPost(nextId);
-  setStatus("Created a new post draft");
-}
-
-function deleteCurrentPost() {
-  if (!editorState.selectedPostId) {
-    return;
-  }
-
-  const remainingPosts = editorState.content.posts.filter((post) => post.id !== editorState.selectedPostId);
-  editorState.content.posts = remainingPosts;
-  const nextPost = [...remainingPosts].sort(byNewestDate)[0];
-  selectPost(nextPost?.id ?? null);
-  setStatus("Deleted the selected post");
+  updatePublicLinks(post);
+  renderPostList();
+  renderWorkspaceState();
 }
 
 function syncAllFields() {
   syncSiteFields();
   syncCategoryFields();
-  syncCurrentPost();
   populateCategorySelect();
-  renderPostList();
+  syncCurrentPost();
+}
+
+function createPost() {
+  syncAllFields();
+  const baseId = "new-post";
+  let suffix = 1;
+  let nextId = baseId;
+  while (editorState.content.posts.some((post) => post.id === nextId)) {
+    suffix += 1;
+    nextId = `${baseId}-${suffix}`;
+  }
+
+  editorState.content.posts.unshift({
+    id: nextId,
+    title: "",
+    category: editorState.content.categories[0]?.id || "personal",
+    date: new Date().toISOString().slice(0, 10),
+    summary: "",
+    published: false,
+    featured: false,
+    tags: [],
+    bodyFormat: "html",
+    body: "<h2>Start here</h2><p>Write the first draft of this post.</p>",
+  });
+
+  populateCategorySelect();
+  selectPost(nextId, { openComposer: true });
+  setStatus("Created a new post draft");
+}
+
+function deleteCurrentPost() {
+  const post = getCurrentPost();
+  if (!post) {
+    return;
+  }
+
+  const remainingPosts = editorState.content.posts.filter((entry) => entry.id !== post.id);
+  editorState.content.posts = remainingPosts;
+  const nextPost = [...remainingPosts].sort(byNewestDate)[0] || null;
+  if (nextPost) {
+    selectPost(nextPost.id);
+  } else {
+    editorState.selectedPostId = null;
+    hydratePostUI(null);
+    renderPostList();
+    renderWorkspaceState();
+  }
+  closeComposer();
+  setStatus("Deleted the selected post");
 }
 
 async function saveAllChanges() {
   syncAllFields();
+  validateBeforeSave();
   setStatus("Saving...");
+
   const response = await fetch("/api/content", {
     method: "POST",
     headers: {
@@ -327,19 +436,37 @@ function exportBackup() {
   setStatus("Exported JSON backup");
 }
 
-function setStatus(message) {
-  fields.status.textContent = message;
+function validateBeforeSave() {
+  const postIds = editorState.content.posts.map((post) => post.id);
+  const duplicates = postIds.filter((postId, index) => postIds.indexOf(postId) !== index);
+  if (duplicates.length) {
+    throw new Error(`Duplicate post slug: ${duplicates[0]}`);
+  }
+
+  if (editorState.content.posts.some((post) => !post.title.trim())) {
+    throw new Error("Every post needs a title before saving.");
+  }
 }
 
 function renderPostPreview(post) {
-  fields.postPreview.classList.remove("hidden");
-  fields.openPublicPostLink.href = `/?post=${encodeURIComponent(post.id)}`;
-  fields.postPreview.innerHTML = `
+  const targets = [fields.postPreview, fields.postPreviewModal];
+
+  if (!post) {
+    targets.forEach((target) => {
+      target.innerHTML = `<p class="empty-state">Select or create a post to preview it here.</p>`;
+    });
+    return;
+  }
+
+  const bodyHtml = renderPostBody(post);
+  const markup = `
     <p class="eyebrow">${escapeHtml(getCategoryName(post.category))}</p>
-    <h3 class="preview-title">${escapeHtml(post.title || "Untitled post")}</h3>
+    <h3 class="preview-title">${escapeHtml(post.title || "Untitled")}</h3>
     <div class="preview-meta">
       <span class="preview-chip">${escapeHtml(formatDate(post.date || new Date().toISOString().slice(0, 10)))}</span>
+      <span class="preview-chip">${isPublished(post) ? "Published" : "Unpublished"}</span>
       ${post.featured ? `<span class="preview-chip">Featured</span>` : ""}
+      <span class="preview-chip">${post.bodyFormat === "html" ? "Rich HTML" : "Markdown"}</span>
     </div>
     <p class="preview-summary">${escapeHtml(post.summary || "Add a summary to preview the lead text here.")}</p>
     <div class="preview-tags">
@@ -349,8 +476,12 @@ function renderPostPreview(post) {
           : `<span class="preview-tag">No tags yet</span>`
       }
     </div>
-    <div class="preview-body">${renderMarkdown(post.body || "## Start here")}</div>
+    <div class="preview-body">${bodyHtml}</div>
   `;
+
+  targets.forEach((target) => {
+    target.innerHTML = markup;
+  });
 }
 
 function renderEditorSidebarCopy() {
@@ -359,6 +490,20 @@ function renderEditorSidebarCopy() {
   fields.editorTitleDisplay.textContent = site.editorTitle || site.title || "Blue Shell Almanac";
   fields.editorDescriptionDisplay.textContent =
     site.editorDescription || "Manage site copy and posts here. Saving writes directly to data/content.json.";
+}
+
+function updatePublicLinks(post) {
+  const href = post ? `/?post=${encodeURIComponent(post.id)}` : "/";
+  fields.openPublicPostLinkSummary.href = href;
+  fields.openPublicPostLinkModal.href = href;
+}
+
+function getCurrentPost() {
+  return editorState.content.posts.find((entry) => entry.id === editorState.selectedPostId) || null;
+}
+
+function isPublished(post) {
+  return post.published !== false;
 }
 
 function getCategoryName(categoryId) {
@@ -377,21 +522,98 @@ function formatDate(value) {
   });
 }
 
-function slugify(value) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "") || "untitled-post";
+function getEditableBodyHtml(post) {
+  if (post.bodyFormat === "html") {
+    return sanitizeRichHtml(post.body || "");
+  }
+  return renderMarkdown(post.body || "");
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+function renderPostBody(post) {
+  if (post.bodyFormat === "html") {
+    return sanitizeRichHtml(post.body || "");
+  }
+  return renderMarkdown(post.body || "");
+}
+
+function normalizeComposerHtml(html) {
+  const cleaned = sanitizeRichHtml(html || "").trim();
+  return cleaned || "<p></p>";
+}
+
+function sanitizeRichHtml(html) {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const disallowedTags = new Set(["script", "style", "iframe", "object", "embed", "meta", "link"]);
+  const allowedStyleProps = new Set(["text-align", "color", "background-color", "font-family"]);
+
+  const walk = (node) => {
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return;
+    }
+
+    const tagName = node.tagName.toLowerCase();
+    if (disallowedTags.has(tagName)) {
+      node.remove();
+      return;
+    }
+
+    [...node.attributes].forEach((attribute) => {
+      const name = attribute.name.toLowerCase();
+      const value = attribute.value;
+
+      if (name.startsWith("on")) {
+        node.removeAttribute(attribute.name);
+        return;
+      }
+
+      if (name === "style") {
+        const safeStyles = value
+          .split(";")
+          .map((rule) => rule.trim())
+          .filter(Boolean)
+          .filter((rule) => {
+            const [property, rawValue] = rule.split(":");
+            if (!property || !rawValue) {
+              return false;
+            }
+
+            const normalizedProperty = property.trim().toLowerCase();
+            const normalizedValue = rawValue.trim().toLowerCase();
+            return (
+              allowedStyleProps.has(normalizedProperty) &&
+              !normalizedValue.includes("url(") &&
+              !normalizedValue.includes("expression")
+            );
+          });
+
+        if (safeStyles.length) {
+          node.setAttribute("style", safeStyles.join("; "));
+        } else {
+          node.removeAttribute("style");
+        }
+        return;
+      }
+
+      if (tagName === "img" && name === "src") {
+        const safeSource =
+          value.startsWith("data:image/") || value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/");
+        if (!safeSource) {
+          node.removeAttribute(attribute.name);
+        }
+        return;
+      }
+
+      if ((name === "src" || name === "href") && value.trim().toLowerCase().startsWith("javascript:")) {
+        node.removeAttribute(attribute.name);
+      }
+    });
+
+    [...node.childNodes].forEach(walk);
+  };
+
+  [...template.content.childNodes].forEach(walk);
+  return template.innerHTML;
 }
 
 function renderMarkdown(markdown) {
@@ -439,6 +661,78 @@ function renderMarkdown(markdown) {
   return fragments.join("");
 }
 
+function saveComposerSelection() {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) {
+    return;
+  }
+
+  const range = selection.getRangeAt(0);
+  if (fields.postBodyEditor.contains(range.commonAncestorContainer)) {
+    editorState.savedSelection = range.cloneRange();
+  }
+}
+
+function restoreComposerSelection() {
+  if (!editorState.savedSelection) {
+    return;
+  }
+
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(editorState.savedSelection);
+}
+
+function applyFormatting(command, value) {
+  fields.postBodyEditor.focus();
+  restoreComposerSelection();
+  document.execCommand(command, false, value);
+  saveComposerSelection();
+  syncCurrentPost();
+}
+
+async function handleImageFile(file) {
+  if (!file) {
+    return;
+  }
+
+  const dataUrl = await readFileAsDataUrl(file);
+  const safeAlt = file.name ? escapeAttribute(file.name.replace(/\.[^.]+$/, "")) : "Pasted image";
+  applyFormatting("insertHTML", `<figure><img src="${dataUrl}" alt="${safeAlt}" /></figure><p></p>`);
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function slugify(value) {
+  return (
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || "untitled-post"
+  );
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value);
+}
+
 fields.postSearch.addEventListener("input", (event) => {
   editorState.search = event.target.value;
   renderPostList();
@@ -463,29 +757,102 @@ fields.postSearch.addEventListener("input", (event) => {
   });
 });
 
+fields.categoryFields.addEventListener("input", () => {
+  syncCategoryFields();
+  populateCategorySelect();
+  syncCurrentPost();
+  renderPostList();
+  renderWorkspaceState();
+});
+
 [
   fields.postId,
   fields.postTitle,
-  fields.postCategory,
   fields.postDate,
   fields.postTags,
   fields.postSummary,
-  fields.postBody,
 ].forEach((field) => {
   field.addEventListener("input", () => {
     syncCurrentPost();
-    renderPostList();
   });
-});
-
-fields.postFeatured.addEventListener("change", () => {
-  syncCurrentPost();
-  renderPostList();
 });
 
 fields.postCategory.addEventListener("change", () => {
   syncCurrentPost();
-  renderPostList();
+});
+
+fields.postPublishState.addEventListener("change", () => {
+  syncCurrentPost();
+});
+
+fields.postFeatured.addEventListener("change", () => {
+  syncCurrentPost();
+});
+
+fields.postBodyEditor.addEventListener("input", () => {
+  syncCurrentPost();
+});
+
+["keyup", "mouseup", "blur"].forEach((eventName) => {
+  fields.postBodyEditor.addEventListener(eventName, () => {
+    saveComposerSelection();
+  });
+});
+
+fields.postBodyEditor.addEventListener("paste", async (event) => {
+  const items = [...(event.clipboardData?.items || [])];
+  const imageItem = items.find((item) => item.type.startsWith("image/"));
+  if (!imageItem) {
+    return;
+  }
+
+  event.preventDefault();
+  const file = imageItem.getAsFile();
+  await handleImageFile(file);
+});
+
+fields.toolbar.addEventListener("mousedown", (event) => {
+  if (event.target.closest("button")) {
+    event.preventDefault();
+  }
+});
+
+fields.toolbar.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-command]");
+  if (!button) {
+    return;
+  }
+
+  const command = button.dataset.command;
+  const value = button.dataset.value;
+  applyFormatting(command, value);
+});
+
+fields.fontFamilySelect.addEventListener("change", (event) => {
+  const value = event.target.value === "inherit" ? "Manrope" : event.target.value;
+  applyFormatting("fontName", value);
+});
+
+fields.fontSizeSelect.addEventListener("change", (event) => {
+  applyFormatting("fontSize", event.target.value);
+});
+
+fields.textColorInput.addEventListener("input", (event) => {
+  applyFormatting("foreColor", event.target.value);
+});
+
+fields.highlightColorInput.addEventListener("input", (event) => {
+  applyFormatting("hiliteColor", event.target.value);
+});
+
+fields.insertImageButton.addEventListener("click", () => {
+  fields.imageUploadInput.click();
+});
+
+fields.imageUploadInput.addEventListener("change", async (event) => {
+  const [file] = event.target.files || [];
+  await handleImageFile(file);
+  event.target.value = "";
 });
 
 fields.postList.addEventListener("click", (event) => {
@@ -493,16 +860,34 @@ fields.postList.addEventListener("click", (event) => {
   if (!button) {
     return;
   }
+
   syncAllFields();
-  selectPost(button.dataset.postId);
+  selectPost(button.dataset.postId, { openComposer: true });
 });
 
-fields.newPostButton.addEventListener("click", () => {
-  createPost();
+[fields.newPostButton, fields.newPostInlineButton].forEach((button) => {
+  button.addEventListener("click", () => {
+    createPost();
+  });
+});
+
+fields.openPostEditorButton.addEventListener("click", () => {
+  syncAllFields();
+  openComposer();
 });
 
 fields.deletePostButton.addEventListener("click", () => {
   deleteCurrentPost();
+});
+
+fields.closePostEditorButton.addEventListener("click", () => {
+  syncAllFields();
+  closeComposer();
+});
+
+fields.postEditorBackdrop.addEventListener("click", () => {
+  syncAllFields();
+  closeComposer();
 });
 
 fields.exportButton.addEventListener("click", () => {
@@ -516,6 +901,17 @@ fields.saveButton.addEventListener("click", async () => {
     setStatus(error.message);
   }
 });
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && editorState.composerOpen) {
+    syncAllFields();
+    closeComposer();
+  }
+});
+
+function setStatus(message) {
+  fields.status.textContent = message;
+}
 
 initEditor().catch((error) => {
   fields.status.textContent = error.message;

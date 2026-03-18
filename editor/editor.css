@@ -34,6 +34,14 @@ textarea {
   font: inherit;
 }
 
+button,
+input,
+select,
+textarea,
+[contenteditable="true"] {
+  outline: none;
+}
+
 .editor-shell {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -97,6 +105,12 @@ button.secondary {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+button.secondary-ink {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
 button.danger {
   background: rgba(181, 61, 47, 0.12);
   color: var(--danger);
@@ -150,6 +164,20 @@ button.danger {
   color: white;
 }
 
+.post-item.is-published {
+  background:
+    linear-gradient(135deg, rgba(103, 174, 110, 0.18), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.05);
+  border-color: rgba(123, 206, 131, 0.22);
+}
+
+.post-item.is-unpublished {
+  background:
+    linear-gradient(135deg, rgba(184, 86, 42, 0.22), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 172, 132, 0.22);
+}
+
 .post-item.active {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.32);
@@ -164,6 +192,18 @@ button.danger {
   margin-top: 6px;
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.92rem;
+}
+
+.post-item.is-published span {
+  color: rgba(218, 255, 221, 0.8);
+}
+
+.post-item.is-unpublished span {
+  color: rgba(255, 218, 198, 0.8);
+}
+
+.post-item.is-draft {
+  border-style: dashed;
 }
 
 .editor-main {
@@ -239,10 +279,6 @@ button.danger {
   border: 1px solid var(--line);
 }
 
-.post-grid.hidden {
-  display: none;
-}
-
 .preview-link {
   color: var(--ink);
   border-color: var(--line);
@@ -315,6 +351,222 @@ button.danger {
   padding-left: 22px;
 }
 
+.workspace-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 22px;
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at top right, rgba(184, 86, 42, 0.12), transparent 28%),
+    rgba(255, 255, 255, 0.68);
+  border: 1px solid var(--line);
+}
+
+.workspace-kicker {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.workspace-card h3,
+.rich-editor-head h3 {
+  margin: 0 0 8px;
+  font-family: "Fraunces", serif;
+  font-size: 1.5rem;
+}
+
+.workspace-copy,
+.composer-copy {
+  margin: 0;
+  max-width: 58ch;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.workspace-actions,
+.composer-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.composer-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.composer-modal.hidden {
+  display: none;
+}
+
+.composer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 23, 34, 0.58);
+  backdrop-filter: blur(8px);
+}
+
+.composer-panel {
+  position: relative;
+  width: min(1380px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  background:
+    radial-gradient(circle at top left, rgba(184, 86, 42, 0.12), transparent 22%),
+    #fbf6ee;
+  box-shadow: 0 26px 72px rgba(16, 17, 20, 0.28);
+  padding: 24px;
+}
+
+.composer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.composer-head h2 {
+  margin: 6px 0 10px;
+  font-family: "Fraunces", serif;
+}
+
+.composer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.composer-form,
+.composer-preview-panel {
+  min-width: 0;
+}
+
+.rich-editor-shell,
+.composer-preview-panel {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 18px;
+}
+
+.rich-editor-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: rgba(31, 36, 48, 0.06);
+  margin-bottom: 12px;
+}
+
+.toolbar button,
+.toolbar select,
+.toolbar-swatch {
+  min-height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 36, 48, 0.1);
+  background: white;
+  color: var(--ink);
+}
+
+.toolbar button,
+.toolbar select {
+  padding: 0 14px;
+}
+
+.toolbar-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+}
+
+.toolbar-swatch span {
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.toolbar-swatch input {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.rich-editor {
+  min-height: 360px;
+  padding: 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  background: white;
+  line-height: 1.7;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.rich-editor:focus {
+  border-color: rgba(184, 86, 42, 0.4);
+  box-shadow: 0 0 0 4px rgba(184, 86, 42, 0.08);
+}
+
+.rich-editor:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(99, 105, 119, 0.72);
+}
+
+.rich-editor h2,
+.rich-editor h3 {
+  font-family: "Fraunces", serif;
+}
+
+.rich-editor img,
+.preview-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 16px 0;
+  border-radius: 18px;
+}
+
+.rich-editor blockquote,
+.preview-body blockquote {
+  margin: 18px 0;
+  padding-left: 16px;
+  border-left: 3px solid rgba(184, 86, 42, 0.4);
+  color: var(--muted);
+}
+
+.composer-preview-panel .panel-head {
+  margin-bottom: 12px;
+}
+
+.composer-preview-panel .post-preview {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -342,8 +594,35 @@ button.danger {
     grid-template-columns: 1fr;
   }
 
+  .workspace-card,
   .panel-head {
     align-items: start;
     flex-direction: column;
+  }
+
+  .composer-panel {
+    padding: 18px;
+    max-height: calc(100vh - 24px);
+  }
+
+  .composer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    gap: 8px;
+  }
+
+  .toolbar button,
+  .toolbar select,
+  .toolbar-swatch {
+    min-height: 38px;
+  }
+
+  .rich-editor {
+    min-height: 280px;
+    padding: 16px;
   }
 }

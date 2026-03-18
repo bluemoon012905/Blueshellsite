@@ -46,7 +46,7 @@ function renderPage() {
 
 function renderHero() {
   const { site } = state.content;
-  const archiveCount = state.content.posts.length;
+  const archiveCount = getPublishedPosts().length;
   document.title = site.title;
   const localOnlyActions = isLocalEnvironment
     ? `
@@ -95,7 +95,7 @@ function renderCategories() {
 }
 
 function renderFeaturedPosts() {
-  const featuredPosts = [...state.content.posts]
+  const featuredPosts = getPublishedPosts()
     .filter((post) => post.featured)
     .sort(byNewestDate)
     .slice(0, 4);
@@ -135,7 +135,7 @@ function renderPostView() {
     return;
   }
 
-  const post = state.content.posts.find((entry) => entry.id === postId);
+  const post = getPublishedPosts().find((entry) => entry.id === postId);
   if (!post) {
     elements.postView.classList.remove("hidden");
     elements.postView.innerHTML = `
@@ -159,7 +159,7 @@ function renderPostView() {
       ${post.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
     </div>
     <p class="post-lead">${escapeHtml(post.summary)}</p>
-    <div class="post-body">${renderMarkdown(post.body)}</div>
+    <div class="post-body">${renderPostBody(post)}</div>
   `;
 }
 
@@ -176,7 +176,7 @@ function renderAbout() {
 
 function getFilteredPosts() {
   const query = state.search.trim().toLowerCase();
-  return [...state.content.posts]
+  return getPublishedPosts()
     .filter((post) => state.category === "all" || post.category === state.category)
     .filter((post) => {
       if (!query) {
@@ -187,6 +187,10 @@ function getFilteredPosts() {
       return haystack.includes(query);
     })
     .sort(byNewestDate);
+}
+
+function getPublishedPosts() {
+  return [...state.content.posts].filter((post) => post.published !== false);
 }
 
 function getCategoryName(categoryId) {
@@ -248,6 +252,88 @@ function renderMarkdown(markdown) {
 
   flushList();
   return fragments.join("");
+}
+
+function renderPostBody(post) {
+  if (post.bodyFormat === "html") {
+    return sanitizeRichHtml(post.body || "");
+  }
+  return renderMarkdown(post.body || "");
+}
+
+function sanitizeRichHtml(html) {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const disallowedTags = new Set(["script", "style", "iframe", "object", "embed", "meta", "link"]);
+  const allowedStyleProps = new Set(["text-align", "color", "background-color", "font-family"]);
+
+  const walk = (node) => {
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return;
+    }
+
+    const tagName = node.tagName.toLowerCase();
+    if (disallowedTags.has(tagName)) {
+      node.remove();
+      return;
+    }
+
+    [...node.attributes].forEach((attribute) => {
+      const name = attribute.name.toLowerCase();
+      const value = attribute.value;
+
+      if (name.startsWith("on")) {
+        node.removeAttribute(attribute.name);
+        return;
+      }
+
+      if (name === "style") {
+        const safeStyles = value
+          .split(";")
+          .map((rule) => rule.trim())
+          .filter(Boolean)
+          .filter((rule) => {
+            const [property, rawValue] = rule.split(":");
+            if (!property || !rawValue) {
+              return false;
+            }
+
+            const normalizedProperty = property.trim().toLowerCase();
+            const normalizedValue = rawValue.trim().toLowerCase();
+            return (
+              allowedStyleProps.has(normalizedProperty) &&
+              !normalizedValue.includes("url(") &&
+              !normalizedValue.includes("expression")
+            );
+          });
+
+        if (safeStyles.length) {
+          node.setAttribute("style", safeStyles.join("; "));
+        } else {
+          node.removeAttribute("style");
+        }
+        return;
+      }
+
+      if (tagName === "img" && name === "src") {
+        const safeSource =
+          value.startsWith("data:image/") || value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/");
+        if (!safeSource) {
+          node.removeAttribute(attribute.name);
+        }
+        return;
+      }
+
+      if ((name === "src" || name === "href") && value.trim().toLowerCase().startsWith("javascript:")) {
+        node.removeAttribute(attribute.name);
+      }
+    });
+
+    [...node.childNodes].forEach(walk);
+  };
+
+  [...template.content.childNodes].forEach(walk);
+  return template.innerHTML;
 }
 
 function escapeHtml(value) {

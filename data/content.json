@@ -48,12 +48,14 @@
         "process",
         "color"
       ],
-      "body": "## Why this piece exists\n\nI wanted to paint something delicate without making it passive. The bird shape gave me a familiar anchor, but the real point was testing how far I could push transparency before the form disappeared.\n\n## What worked\n\n- Layering cool shadows under warm highlights kept the surface from turning muddy.\n- Photographing each stage made it easier to see when I had already solved the image.\n\n## What changed\n\nThe first version was too literal. I scraped half of it back, kept only the wing edge, and rebuilt the composition around reflection instead of anatomy."
+      "body": "<h2>Why this piece exists</h2><p>I wanted to paint something delicate without making it passive. The bird shape gave me a familiar anchor, but the real point was testing how far I could push transparency before the form disappeared.</p><h2>What worked</h2><ul><li>Layering cool shadows under warm highlights kept the surface from turning muddy.</li><li>Photographing each stage made it easier to see when I had already solved the image.</li></ul><h2>What changed</h2><p>The first version was too literal. I scraped half of it back, kept only the wing edge, and rebuilt the composition around reflection instead of anatomy.</p>",
+      "published": false,
+      "bodyFormat": "html"
     },
     {
       "id": "systems-class-zine",
       "title": "Systems Class Zine",
-      "category": "school",
+      "category": "art",
       "date": "2026-03-04",
       "summary": "Turning a research-heavy assignment into a printed zine that was actually readable.",
       "featured": true,
@@ -62,12 +64,14 @@
         "editorial",
         "research"
       ],
-      "body": "## Prompt\n\nThe assignment asked for a systems map. I translated mine into a short zine so the relationships between sources, people, and constraints were easier to follow.\n\n## Structure\n\nEach spread handled one layer of the system: actors, incentives, friction points, and possible interventions.\n\n## Takeaway\n\nThe project taught me that formatting is not decoration. The container changes how people understand the argument."
+      "body": "<h2>Prompt</h2><p>The assignment asked for a systems map. I translated mine into a short zine so the relationships between sources, people, and constraints were easier to follow.</p><h2>Structure</h2><p>Each spread handled one layer of the system: actors, incentives, friction points, and possible interventions.</p><h2>Takeaway</h2><p>The project taught me that formatting is not decoration. The container changes how people understand the argument.</p>",
+      "published": false,
+      "bodyFormat": "html"
     },
     {
       "id": "desert-notes",
       "title": "Desert Notes",
-      "category": "personal",
+      "category": "art",
       "date": "2026-02-26",
       "summary": "Short field notes from walking at dusk and paying attention on purpose.",
       "featured": false,
@@ -76,12 +80,14 @@
         "phoenix",
         "observation"
       ],
-      "body": "## Entry\n\nThe light was flat until the last ten minutes, then every pale rock started reflecting peach and silver at once.\n\nI am trying to get better at recording details before they become opinions.\n\n## Reminder\n\nNot every useful note needs to become content. Some of them only need to sharpen the next one."
+      "body": "<h2>Entry</h2><p>The light was flat until the last ten minutes, then every pale rock started reflecting peach and silver at once.</p><p>I am trying to get better at recording details before they become opinions.</p><h2>Reminder</h2><p>Not every useful note needs to become content. Some of them only need to sharpen the next one.</p>",
+      "published": false,
+      "bodyFormat": "html"
     },
     {
       "id": "notes-on-voice",
       "title": "Notes on Voice",
-      "category": "writing",
+      "category": "art",
       "date": "2026-02-18",
       "summary": "A draft about building a writing voice by collecting pressures instead of chasing style.",
       "featured": false,
@@ -90,7 +96,9 @@
         "draft",
         "writing"
       ],
-      "body": "## Starting point\n\nI used to think voice was a finish you applied at the end. It feels closer to pressure now: what you notice, what you omit, what rhythm you trust, and how much risk you allow into the sentence.\n\n## Working rule\n\nWrite closer to the real temperature of the thought. Clean it up later, but do not cool it down too early."
+      "body": "<h2>Starting point</h2><p>I used to think voice was a finish you applied at the end. It feels closer to pressure now: what you notice, what you omit, what rhythm you trust, and how much risk you allow into the sentence.</p><h2>Working rule</h2><p>Write closer to the real temperature of the thought. Clean it up later, but do not cool it down too early.</p>",
+      "published": false,
+      "bodyFormat": "html"
     }
   ]
 }
