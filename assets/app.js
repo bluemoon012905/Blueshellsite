@@ -2,6 +2,7 @@ const state = {
   content: null,
   search: "",
   category: "all",
+  deviceMode: "desktop",
 };
 const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
 
@@ -18,6 +19,7 @@ const elements = {
 };
 
 async function loadContent() {
+  applyDeviceMode();
   const response = await fetch("data/content.json", { cache: "no-store" });
   if (!response.ok) {
     throw new Error("Could not load content.");
@@ -46,10 +48,26 @@ function renderPage() {
   renderAbout();
 }
 
+function applyDeviceMode() {
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  state.deviceMode = isMobile ? "mobile" : "desktop";
+  document.body.dataset.device = state.deviceMode;
+}
+
 function renderHero() {
   const { site } = state.content;
   const archiveCount = getPublishedPosts().length;
   document.title = site.title;
+  const mobileTurtle =
+    state.deviceMode === "mobile" ? `<img class="brand-turtle brand-turtle-mobile" src="turtle.png" alt="" aria-hidden="true" />` : "";
+  const desktopTurtle =
+    state.deviceMode === "desktop"
+      ? `
+        <div class="hero-turtle-wrap" aria-hidden="true">
+          <img class="brand-turtle brand-turtle-desktop" src="turtle.png" alt="" />
+        </div>
+      `
+      : "";
   const localOnlyActions = isLocalEnvironment
     ? `
       <div class="hero-actions">
@@ -61,10 +79,11 @@ function renderHero() {
 
   const hero = document.querySelector(".hero");
   hero.innerHTML = `
+    ${desktopTurtle}
     <div class="hero-nav">
       <div class="brand-mark">
         <span>${escapeHtml(site.brandMark || site.title)}</span>
-        <img class="brand-turtle" src="turtle.png" alt="" aria-hidden="true" />
+        ${mobileTurtle}
       </div>
       ${localOnlyActions}
     </div>
@@ -471,4 +490,8 @@ loadContent().catch((error) => {
   document.body.innerHTML = `<main class="page-shell"><section class="section"><p class="empty-state">${escapeHtml(
     error.message
   )}</p></section></main>`;
+});
+
+window.addEventListener("resize", () => {
+  applyDeviceMode();
 });

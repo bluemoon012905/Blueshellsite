@@ -33,6 +33,14 @@ body {
     linear-gradient(180deg, #f8f3ea 0%, var(--bg) 100%);
 }
 
+body[data-device="mobile"] {
+  --device-mode: mobile;
+}
+
+body[data-device="desktop"] {
+  --device-mode: desktop;
+}
+
 a {
   color: inherit;
 }
@@ -114,11 +122,30 @@ a {
 }
 
 .brand-turtle {
-  width: 42px;
-  height: 42px;
   object-fit: contain;
   animation: spin-right 10s linear infinite;
   transform-origin: center;
+}
+
+.brand-turtle-mobile {
+  width: 42px;
+  height: 42px;
+}
+
+.hero-turtle-wrap {
+  position: absolute;
+  right: 96px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.brand-turtle-desktop {
+  width: min(30vw, 360px);
+  height: min(30vw, 360px);
+  opacity: 0.92;
+  filter: drop-shadow(0 18px 30px rgba(31, 36, 48, 0.12));
 }
 
 .hero h1,
@@ -452,6 +479,10 @@ textarea {
 
   .hero-nav {
     margin-bottom: 36px;
+  }
+
+  .hero-turtle-wrap {
+    display: none;
   }
 
   .category-grid,
