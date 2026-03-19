@@ -295,6 +295,29 @@ button.danger {
   padding: 0 12px;
 }
 
+.home-panel-fields {
+  display: grid;
+  gap: 14px;
+}
+
+.home-panel-card h3 {
+  margin: 2px 0 0;
+  font-family: "Fraunces", serif;
+}
+
+.panel-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(31, 36, 48, 0.08);
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .preview-link {
   color: var(--ink);
   border-color: var(--line);

@@ -6,6 +6,33 @@ const editorState = {
   savedSelection: null,
 };
 
+const BUILT_IN_HOME_PANELS = [
+  {
+    id: "outline",
+    type: "category-overview",
+    eyebrow: "Outline",
+    title: "Four rooms, one archive.",
+    description: "",
+    enabled: true,
+  },
+  {
+    id: "featured",
+    type: "featured-posts",
+    eyebrow: "Featured",
+    title: "Current highlights",
+    description: "",
+    enabled: true,
+  },
+  {
+    id: "archive",
+    type: "archive-posts",
+    eyebrow: "Archive",
+    title: "Browse everything",
+    description: "",
+    enabled: true,
+  },
+];
+
 const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
 
 const fields = {
@@ -33,6 +60,8 @@ const fields = {
   editorEyebrowDisplay: document.getElementById("editor-eyebrow-display"),
   editorTitleDisplay: document.getElementById("editor-title-display"),
   editorDescriptionDisplay: document.getElementById("editor-description-display"),
+  homePanelFields: document.getElementById("home-panel-fields"),
+  newHomePanelButton: document.getElementById("new-home-panel-button"),
   categoryFields: document.getElementById("category-fields"),
   postEditorHeading: document.getElementById("post-editor-heading"),
   postEditorCaption: document.getElementById("post-editor-caption"),
@@ -89,8 +118,10 @@ async function initEditor() {
   }
 
   editorState.content = await response.json();
+  ensureHomePanels();
   document.execCommand("styleWithCSS", false, true);
   populateSiteFields();
+  populateHomePanelFields();
   populateCategoryFields();
   populateCategorySelect();
 
@@ -120,6 +151,75 @@ function populateSiteFields() {
   fields.editorTitle.value = site.editorTitle || "";
   fields.editorDescription.value = site.editorDescription || "";
   renderEditorSidebarCopy();
+}
+
+function ensureHomePanels() {
+  const currentPanels = Array.isArray(editorState.content.site.homepagePanels)
+    ? editorState.content.site.homepagePanels
+    : [];
+  const customPanels = currentPanels.filter((panel) => !BUILT_IN_HOME_PANELS.some((preset) => preset.id === panel.id));
+
+  editorState.content.site.homepagePanels = [
+    ...BUILT_IN_HOME_PANELS.map((preset) => {
+      const existing = currentPanels.find((panel) => panel.id === preset.id);
+      return {
+        ...preset,
+        ...existing,
+      };
+    }),
+    ...customPanels.map((panel) => ({
+      enabled: true,
+      eyebrow: "",
+      title: "",
+      description: "",
+      body: "",
+      type: "custom-content",
+      ...panel,
+    })),
+  ];
+}
+
+function populateHomePanelFields() {
+  const panels = editorState.content.site.homepagePanels || [];
+  fields.homePanelFields.innerHTML = panels
+    .map((panel, index) => {
+      const isBuiltIn = BUILT_IN_HOME_PANELS.some((preset) => preset.id === panel.id);
+      const bodyLabel = panel.type === "custom-content" ? "Body" : "Description";
+      return `
+        <div class="category-card home-panel-card">
+          <div class="category-card-head">
+            <div>
+              <p class="workspace-kicker">${escapeHtml(getHomePanelTypeLabel(panel.type))}</p>
+              <h3>${escapeHtml(panel.title || "Untitled section")}</h3>
+            </div>
+            ${
+              isBuiltIn
+                ? `<span class="panel-badge">Built in</span>`
+                : `<button type="button" class="danger category-delete-button" data-home-panel-index="${index}">Delete</button>`
+            }
+          </div>
+          <label class="checkbox-row">
+            <input data-home-panel-index="${index}" data-key="enabled" type="checkbox" ${panel.enabled !== false ? "checked" : ""} />
+            <span>Show this panel on the homepage</span>
+          </label>
+          <label>
+            <span>Eyebrow</span>
+            <input data-home-panel-index="${index}" data-key="eyebrow" type="text" value="${escapeHtml(panel.eyebrow || "")}" />
+          </label>
+          <label>
+            <span>Title</span>
+            <input data-home-panel-index="${index}" data-key="title" type="text" value="${escapeHtml(panel.title || "")}" />
+          </label>
+          <label class="full-width">
+            <span>${bodyLabel}</span>
+            <textarea data-home-panel-index="${index}" data-key="${panel.type === "custom-content" ? "body" : "description"}" rows="4">${escapeHtml(
+              panel.type === "custom-content" ? panel.body || "" : panel.description || ""
+            )}</textarea>
+          </label>
+        </div>
+      `;
+    })
+    .join("");
 }
 
 function populateCategoryFields() {
@@ -298,6 +398,20 @@ function syncSiteFields() {
   renderEditorSidebarCopy();
 }
 
+function syncHomePanelFields() {
+  const panels = editorState.content.site.homepagePanels || [];
+  const inputs = fields.homePanelFields.querySelectorAll("[data-home-panel-index]");
+  inputs.forEach((input) => {
+    const panelIndex = Number(input.dataset.homePanelIndex);
+    const key = input.dataset.key;
+    if (!panels[panelIndex]) {
+      return;
+    }
+
+    panels[panelIndex][key] = input.type === "checkbox" ? input.checked : input.value.trim();
+  });
+}
+
 function syncCategoryFields() {
   const previousIds = editorState.content.categories.map((category) => category.id);
   const inputs = fields.categoryFields.querySelectorAll("[data-category-index]");
@@ -343,6 +457,32 @@ function createCategory() {
     renderWorkspaceState();
   }
   setStatus("Added a new panel");
+}
+
+function createHomePanel() {
+  syncHomePanelFields();
+  const nextId = `custom-panel-${Date.now()}`;
+  editorState.content.site.homepagePanels.push({
+    id: nextId,
+    type: "custom-content",
+    eyebrow: "Extra",
+    title: "New homepage panel",
+    body: "Add copy for this custom homepage section.",
+    enabled: true,
+  });
+  populateHomePanelFields();
+  setStatus("Added a new homepage panel");
+}
+
+function deleteHomePanel(panelIndex) {
+  const panel = editorState.content.site.homepagePanels?.[panelIndex];
+  if (!panel) {
+    return;
+  }
+
+  editorState.content.site.homepagePanels.splice(panelIndex, 1);
+  populateHomePanelFields();
+  setStatus(`Deleted homepage panel "${panel.title || panel.id}"`);
 }
 
 function deleteCategory(categoryIndex) {
@@ -404,6 +544,7 @@ function syncCurrentPost() {
 
 function syncAllFields() {
   syncSiteFields();
+  syncHomePanelFields();
   syncCategoryFields();
   populateCategorySelect();
   syncCurrentPost();
@@ -560,6 +701,19 @@ function getCurrentPost() {
 
 function isPublished(post) {
   return post.published !== false;
+}
+
+function getHomePanelTypeLabel(type) {
+  if (type === "category-overview") {
+    return "Outline panel";
+  }
+  if (type === "featured-posts") {
+    return "Featured panel";
+  }
+  if (type === "archive-posts") {
+    return "Archive panel";
+  }
+  return "Custom panel";
 }
 
 function getCategoryName(categoryId) {
@@ -813,6 +967,14 @@ fields.postSearch.addEventListener("input", (event) => {
   });
 });
 
+fields.homePanelFields.addEventListener("input", () => {
+  syncHomePanelFields();
+});
+
+fields.homePanelFields.addEventListener("change", () => {
+  syncHomePanelFields();
+});
+
 fields.categoryFields.addEventListener("input", () => {
   syncCategoryFields();
   populateCategorySelect();
@@ -929,6 +1091,10 @@ fields.newCategoryButton.addEventListener("click", () => {
   createCategory();
 });
 
+fields.newHomePanelButton.addEventListener("click", () => {
+  createHomePanel();
+});
+
 fields.openPostEditorButton.addEventListener("click", () => {
   syncAllFields();
   openComposer();
@@ -945,6 +1111,15 @@ fields.categoryFields.addEventListener("click", (event) => {
   }
 
   deleteCategory(Number(button.dataset.categoryIndex));
+});
+
+fields.homePanelFields.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-home-panel-index].category-delete-button");
+  if (!button) {
+    return;
+  }
+
+  deleteHomePanel(Number(button.dataset.homePanelIndex));
 });
 
 fields.closePostEditorButton.addEventListener("click", () => {

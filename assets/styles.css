@@ -177,6 +177,11 @@ textarea {
   gap: 24px;
 }
 
+.section-stack {
+  display: grid;
+  gap: 24px;
+}
+
 .section,
 .post-view {
   padding: 28px;
@@ -195,6 +200,14 @@ textarea {
 .post-title {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3.1rem);
+}
+
+.section-copy,
+.custom-panel-body p,
+.custom-panel-body li {
+  max-width: 62ch;
+  line-height: 1.7;
+  color: var(--muted);
 }
 
 .category-grid,
@@ -333,6 +346,21 @@ textarea {
   padding-left: 18px;
   border-left: 3px solid rgba(184, 86, 42, 0.35);
   color: var(--muted);
+}
+
+.custom-panel-body {
+  display: grid;
+  gap: 6px;
+}
+
+.custom-panel-body h2,
+.custom-panel-body h3 {
+  margin: 24px 0 8px;
+  font-family: "Fraunces", serif;
+}
+
+.custom-panel-body ul {
+  padding-left: 22px;
 }
 
 .empty-state {

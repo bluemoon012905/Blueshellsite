@@ -7,6 +7,7 @@ const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.locati
 
 const elements = {
   hero: document.getElementById("hero"),
+  homepageSections: document.getElementById("homepage-sections"),
   categoryGrid: document.getElementById("category-grid"),
   featuredGrid: document.getElementById("featured-grid"),
   postGrid: document.getElementById("post-grid"),
@@ -23,23 +24,24 @@ async function loadContent() {
   }
 
   state.content = await response.json();
+  ensureHomePanels();
   hydrateFilters();
   renderPage();
 }
 
 function hydrateFilters() {
+  if (!elements.categoryFilter) {
+    return;
+  }
+
   const { categories } = state.content;
-  elements.categoryFilter.innerHTML = [
-    `<option value="all">All categories</option>`,
-    ...categories.map((category) => `<option value="${category.id}">${category.name}</option>`),
-  ].join("");
+  elements.categoryFilter.innerHTML = renderCategoryOptions();
+  elements.categoryFilter.value = state.category;
 }
 
 function renderPage() {
   renderHero();
-  renderCategories();
-  renderFeaturedPosts();
-  renderArchive();
+  renderHomepageSections();
   renderPostView();
   renderAbout();
 }
@@ -81,7 +83,7 @@ function renderHero() {
 }
 
 function renderCategories() {
-  elements.categoryGrid.innerHTML = state.content.categories
+  return state.content.categories
     .map(
       (category) => `
         <article class="category-card">
@@ -100,16 +102,90 @@ function renderFeaturedPosts() {
     .sort(byNewestDate)
     .slice(0, 4);
 
-  elements.featuredGrid.innerHTML = featuredPosts.length
+  return featuredPosts.length
     ? featuredPosts.map(renderPostCard).join("")
     : `<p class="empty-state">Mark a post as featured in the editor to pin it here.</p>`;
 }
 
 function renderArchive() {
   const posts = getFilteredPosts();
-  elements.postGrid.innerHTML = posts.length
+  return posts.length
     ? posts.map(renderPostCard).join("")
     : `<p class="empty-state">No posts match the current search and filter.</p>`;
+}
+
+function renderHomepageSections() {
+  const panels = (state.content.site.homepagePanels || []).filter((panel) => panel.enabled !== false);
+  elements.homepageSections.innerHTML = panels
+    .map((panel) => {
+      if (panel.type === "category-overview") {
+        return `
+          <section class="section" aria-labelledby="category-heading">
+            ${renderSectionHeading(panel, "category-heading")}
+            <div class="category-grid">${renderCategories()}</div>
+          </section>
+        `;
+      }
+
+      if (panel.type === "featured-posts") {
+        return `
+          <section class="section" aria-labelledby="featured-heading">
+            ${renderSectionHeading(panel, "featured-heading")}
+            <div class="featured-grid">${renderFeaturedPosts()}</div>
+          </section>
+        `;
+      }
+
+      if (panel.type === "archive-posts") {
+        return `
+          <section class="section archive-section" aria-labelledby="archive-heading">
+            <div class="section-heading archive-heading">
+              <div>
+                <p class="eyebrow">${escapeHtml(panel.eyebrow || "Archive")}</p>
+                <h2 id="archive-heading">${escapeHtml(panel.title || "Browse everything")}</h2>
+                ${panel.description ? `<p class="section-copy">${escapeHtml(panel.description)}</p>` : ""}
+              </div>
+              <div class="archive-controls">
+                <label class="search-field">
+                  <span class="visually-hidden">Search posts</span>
+                  <input id="search-input" type="search" placeholder="Search title, summary, tags" value="${escapeAttribute(state.search)}" />
+                </label>
+                <label class="filter-field">
+                  <span class="visually-hidden">Filter by category</span>
+                  <select id="category-filter">${renderCategoryOptions()}</select>
+                </label>
+              </div>
+            </div>
+            <div class="post-grid">${renderArchive()}</div>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="section custom-panel" aria-labelledby="${escapeAttribute(panel.id)}-heading">
+          ${renderSectionHeading(panel, `${escapeAttribute(panel.id)}-heading`)}
+          <div class="custom-panel-body">${renderMarkdown(panel.body || "")}</div>
+        </section>
+      `;
+    })
+    .join("");
+
+  elements.searchInput = document.getElementById("search-input");
+  elements.categoryFilter = document.getElementById("category-filter");
+  hydrateFilters();
+  bindArchiveControls();
+}
+
+function renderSectionHeading(panel, headingId) {
+  return `
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">${escapeHtml(panel.eyebrow || "")}</p>
+        <h2 id="${escapeAttribute(headingId)}">${escapeHtml(panel.title || "")}</h2>
+        ${panel.description ? `<p class="section-copy">${escapeHtml(panel.description)}</p>` : ""}
+      </div>
+    </div>
+  `;
 }
 
 function renderPostCard(post) {
@@ -191,6 +267,45 @@ function getFilteredPosts() {
 
 function getPublishedPosts() {
   return [...state.content.posts].filter((post) => post.published !== false);
+}
+
+function renderCategoryOptions() {
+  return [
+    `<option value="all">All categories</option>`,
+    ...state.content.categories.map(
+      (category) => `<option value="${escapeAttribute(category.id)}">${escapeHtml(category.name)}</option>`
+    ),
+  ].join("");
+}
+
+function ensureHomePanels() {
+  const defaults = [
+    { id: "outline", type: "category-overview", eyebrow: "Outline", title: "Four rooms, one archive.", description: "", enabled: true },
+    { id: "featured", type: "featured-posts", eyebrow: "Featured", title: "Current highlights", description: "", enabled: true },
+    { id: "archive", type: "archive-posts", eyebrow: "Archive", title: "Browse everything", description: "", enabled: true },
+  ];
+  const currentPanels = Array.isArray(state.content.site.homepagePanels) ? state.content.site.homepagePanels : [];
+  const customPanels = currentPanels.filter((panel) => !defaults.some((preset) => preset.id === panel.id));
+  state.content.site.homepagePanels = [
+    ...defaults.map((preset) => ({ ...preset, ...currentPanels.find((panel) => panel.id === preset.id) })),
+    ...customPanels,
+  ];
+}
+
+function bindArchiveControls() {
+  if (elements.searchInput) {
+    elements.searchInput.addEventListener("input", (event) => {
+      state.search = event.target.value;
+      renderHomepageSections();
+    });
+  }
+
+  if (elements.categoryFilter) {
+    elements.categoryFilter.addEventListener("change", (event) => {
+      state.category = event.target.value;
+      renderHomepageSections();
+    });
+  }
 }
 
 function getCategoryName(categoryId) {
@@ -348,16 +463,6 @@ function escapeHtml(value) {
 function escapeAttribute(value) {
   return escapeHtml(value);
 }
-
-elements.searchInput.addEventListener("input", (event) => {
-  state.search = event.target.value;
-  renderArchive();
-});
-
-elements.categoryFilter.addEventListener("change", (event) => {
-  state.category = event.target.value;
-  renderArchive();
-});
 
 loadContent().catch((error) => {
   document.body.innerHTML = `<main class="page-shell"><section class="section"><p class="empty-state">${escapeHtml(

@@ -10,29 +10,59 @@
     "contactLabel": "Email me",
     "contactHref": "blue.yuda.wang@gmail.com",
     "editorEyebrow": "Local editor",
-    "editorTitle": "Blue Shell Almanac",
-    "editorDescription": "Manage site copy and posts here. Saving writes directly to data/content.json."
+    "editorTitle": "Blue's collection",
+    "editorDescription": "Manage site copy and posts here. Saving writes directly to data/content.json.",
+    "homepagePanels": [
+      {
+        "id": "outline",
+        "type": "category-overview",
+        "eyebrow": "Outline",
+        "title": "A shed so big we have rooms",
+        "description": "",
+        "enabled": true
+      },
+      {
+        "id": "featured",
+        "type": "featured-posts",
+        "eyebrow": "Featured",
+        "title": "Current highlights",
+        "description": "",
+        "enabled": true
+      },
+      {
+        "id": "archive",
+        "type": "archive-posts",
+        "eyebrow": "Archive",
+        "title": "Browse everything",
+        "description": "",
+        "enabled": true
+      }
+    ]
   },
   "categories": [
     {
       "id": "art",
       "name": "Art",
-      "description": "Sketches, finished pieces, process notes, and visual experiments."
+      "description": "Sketches, finished pieces, process notes, and visual experiments.",
+      "undefined": ""
     },
     {
       "id": "school",
       "name": "School",
-      "description": "Course projects, research notes, and academic milestones."
+      "description": "Course projects, research notes, and academic milestones.",
+      "undefined": ""
     },
     {
       "id": "personal",
       "name": "Personal",
-      "description": "Life updates, side quests, and things worth remembering."
+      "description": "Life updates, side quests, and things worth remembering.",
+      "undefined": ""
     },
     {
       "id": "writing",
       "name": "Writing",
-      "description": "Essays, reflections, fragments, and longer-form drafts."
+      "description": "Essays, reflections, fragments, and longer-form drafts.",
+      "undefined": ""
     }
   ],
   "posts": [
