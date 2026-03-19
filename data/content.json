@@ -43,25 +43,25 @@
     {
       "id": "art",
       "name": "Art",
-      "description": "Sketches, finished pieces, process notes, and visual experiments.",
+      "description": "Sketches, and that's about all I do. Some opinionated ramble too!",
       "undefined": ""
     },
     {
-      "id": "school",
-      "name": "School",
-      "description": "Course projects, research notes, and academic milestones.",
+      "id": "Research",
+      "name": "Research",
+      "description": "NERDY stuff!!! All the cool bits of information that I come across. High level math, development and SCIENCE.",
       "undefined": ""
     },
     {
       "id": "personal",
       "name": "Personal",
-      "description": "Life updates, side quests, and things worth remembering.",
+      "description": "Milestones! Also where you would learn more about me. All the little adventures in life.",
       "undefined": ""
     },
     {
       "id": "writing",
       "name": "Writing",
-      "description": "Essays, reflections, fragments, and longer-form drafts.",
+      "description": "Writing is structured chatting, so sit down for a chat where we go over philosophy, art, and life stuff.",
       "undefined": ""
     }
   ],

@@ -62,7 +62,10 @@ function renderHero() {
   const hero = document.querySelector(".hero");
   hero.innerHTML = `
     <div class="hero-nav">
-      <div class="brand-mark">${escapeHtml(site.brandMark || site.title)}</div>
+      <div class="brand-mark">
+        <span>${escapeHtml(site.brandMark || site.title)}</span>
+        <img class="brand-turtle" src="turtle.png" alt="" aria-hidden="true" />
+      </div>
       ${localOnlyActions}
     </div>
     <div class="hero-copy">

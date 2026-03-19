@@ -4,7 +4,11 @@ const editorState = {
   search: "",
   composerOpen: false,
   savedSelection: null,
+  hasUnsavedChanges: false,
+  saveInFlight: false,
 };
+
+const AUTO_SAVE_INTERVAL_MS = 60_000;
 
 const BUILT_IN_HOME_PANELS = [
   {
@@ -134,6 +138,9 @@ async function initEditor() {
 
   renderPostList();
   setStatus("Loaded local content");
+  window.setInterval(() => {
+    void autoSaveChanges();
+  }, AUTO_SAVE_INTERVAL_MS);
 }
 
 function populateSiteFields() {
@@ -396,6 +403,7 @@ function syncSiteFields() {
   site.editorTitle = fields.editorTitle.value.trim();
   site.editorDescription = fields.editorDescription.value.trim();
   renderEditorSidebarCopy();
+  markDirty();
 }
 
 function syncHomePanelFields() {
@@ -410,6 +418,7 @@ function syncHomePanelFields() {
 
     panels[panelIndex][key] = input.type === "checkbox" ? input.checked : input.value.trim();
   });
+  markDirty();
 }
 
 function syncCategoryFields() {
@@ -433,6 +442,7 @@ function syncCategoryFields() {
       }
     });
   });
+  markDirty();
 }
 
 function createCategory() {
@@ -456,6 +466,7 @@ function createCategory() {
   if (!getCurrentPost()) {
     renderWorkspaceState();
   }
+  markDirty();
   setStatus("Added a new panel");
 }
 
@@ -471,6 +482,7 @@ function createHomePanel() {
     enabled: true,
   });
   populateHomePanelFields();
+  markDirty();
   setStatus("Added a new homepage panel");
 }
 
@@ -482,6 +494,7 @@ function deleteHomePanel(panelIndex) {
 
   editorState.content.site.homepagePanels.splice(panelIndex, 1);
   populateHomePanelFields();
+  markDirty();
   setStatus(`Deleted homepage panel "${panel.title || panel.id}"`);
 }
 
@@ -510,6 +523,7 @@ function deleteCategory(categoryIndex) {
   syncCurrentPost();
   renderPostList();
   renderWorkspaceState();
+  markDirty();
   setStatus(`Deleted panel "${removedCategory.name || removedCategory.id}"`);
 }
 
@@ -540,6 +554,7 @@ function syncCurrentPost() {
   updatePublicLinks(post);
   renderPostList();
   renderWorkspaceState();
+  markDirty();
 }
 
 function syncAllFields() {
@@ -575,6 +590,7 @@ function createPost() {
 
   populateCategorySelect();
   selectPost(nextId, { openComposer: true });
+  markDirty();
   setStatus("Created a new post draft");
 }
 
@@ -596,27 +612,34 @@ function deleteCurrentPost() {
     renderWorkspaceState();
   }
   closeComposer();
+  markDirty();
   setStatus("Deleted the selected post");
 }
 
 async function saveAllChanges() {
   syncAllFields();
   validateBeforeSave();
+  editorState.saveInFlight = true;
   setStatus("Saving...");
 
-  const response = await fetch("/api/content", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(editorState.content, null, 2),
-  });
+  try {
+    const response = await fetch("/api/content", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editorState.content, null, 2),
+    });
 
-  if (!response.ok) {
-    throw new Error("Save failed.");
+    if (!response.ok) {
+      throw new Error("Save failed.");
+    }
+
+    editorState.hasUnsavedChanges = false;
+    setStatus("Saved to data/content.json");
+  } finally {
+    editorState.saveInFlight = false;
   }
-
-  setStatus("Saved to data/content.json");
 }
 
 function exportBackup() {
@@ -1153,6 +1176,23 @@ document.addEventListener("keydown", (event) => {
 
 function setStatus(message) {
   fields.status.textContent = message;
+}
+
+function markDirty() {
+  editorState.hasUnsavedChanges = true;
+}
+
+async function autoSaveChanges() {
+  if (!editorState.content || !editorState.hasUnsavedChanges || editorState.saveInFlight) {
+    return;
+  }
+
+  try {
+    await saveAllChanges();
+    setStatus("Autosaved to data/content.json");
+  } catch (error) {
+    setStatus(`Autosave failed: ${error.message}`);
+  }
 }
 
 initEditor().catch((error) => {
