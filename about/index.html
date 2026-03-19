@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About me</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="hero">
+        <div class="hero-nav">
+          <div class="brand-mark">
+            <span>About me</span>
+          </div>
+          <a class="ghost-link" href="/">Back home</a>
+        </div>
+        <div class="hero-copy">
+          <p class="eyebrow">Contact</p>
+          <h1 id="about-title">Loading...</h1>
+          <p id="about-intro">Pulling in your site info.</p>
+        </div>
+      </header>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">About</p>
+            <h2>Who I am</h2>
+          </div>
+        </div>
+        <div class="custom-panel-body">
+          <p id="about-body">Loading...</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Email</p>
+            <h2>Reach out</h2>
+          </div>
+        </div>
+        <div class="custom-panel-body">
+          <p id="about-email-text">Loading...</p>
+          <a id="about-email-link" class="pill-link" href="#">Send email</a>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      loadAbout().catch((error) => {
+        document.getElementById("about-title").textContent = "About me";
+        document.getElementById("about-intro").textContent = error.message;
+        document.getElementById("about-body").textContent = "Could not load site content.";
+        document.getElementById("about-email-text").textContent = "Email unavailable.";
+      });
+
+      async function loadAbout() {
+        const response = await fetch("../data/content.json", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Could not load page content.");
+        }
+
+        const content = await response.json();
+        const site = content.site || {};
+        const rawEmail = String(site.contactHref || "").trim();
+        const email = rawEmail.replace(/^mailto:/i, "");
+
+        document.title = `${site.contactLabel || "About me"} | ${site.title || "Blue's collection"}`;
+        document.getElementById("about-title").textContent = site.title || "About me";
+        document.getElementById("about-intro").textContent = site.tagline || "";
+        document.getElementById("about-body").textContent = site.about || "";
+        document.getElementById("about-email-text").textContent = email || "No email set yet.";
+
+        const emailLink = document.getElementById("about-email-link");
+        emailLink.href = email ? `mailto:${email}` : "#";
+        emailLink.textContent = email ? `Email ${email}` : "Email not set";
+      }
+    </script>
+  </body>
+</html>

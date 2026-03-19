@@ -58,6 +58,7 @@ function renderHero() {
   const { site } = state.content;
   const archiveCount = getPublishedPosts().length;
   document.title = site.title;
+  const aboutPageHref = "/about/";
   const mobileTurtle =
     state.deviceMode === "mobile"
       ? `<img class="brand-turtle brand-turtle-mobile" src="assets/images/turtle.png" alt="" aria-hidden="true" />`
@@ -100,7 +101,7 @@ function renderHero() {
             ? `<a class="pill-link" href="#archive-heading">${archiveCount} posts in the archive</a>`
             : ""
         }
-        <a class="ghost-link" href="${escapeAttribute(site.contactHref)}">${escapeHtml(site.contactLabel)}</a>
+        <a class="ghost-link" href="${aboutPageHref}">${escapeHtml(site.contactLabel)}</a>
       </div>
     </div>
   `;
@@ -270,7 +271,7 @@ function renderAbout() {
       <p class="eyebrow">${escapeHtml(site.aboutEyebrow || "About this archive")}</p>
       <p>${escapeHtml(site.about)}</p>
     </div>
-    <a class="pill-link" href="${escapeAttribute(site.contactHref)}">${escapeHtml(site.contactLabel)}</a>
+    <a class="pill-link" href="/about/">${escapeHtml(site.contactLabel)}</a>
   `;
 }
 
