@@ -83,19 +83,19 @@
       "bodyFormat": "html"
     },
     {
-      "id": "systems-class-zine",
-      "title": "Systems Class Zine",
-      "category": "art",
-      "date": "2026-03-04",
-      "summary": "Turning a research-heavy assignment into a printed zine that was actually readable.",
-      "featured": true,
+      "id": "weiqiendgamebym2u2",
+      "title": "100 endgames",
+      "category": "projects",
+      "date": "2026-03-19",
+      "summary": "it is so nice to have the data already made for you.",
+      "featured": false,
       "tags": [
-        "school",
-        "editorial",
-        "research"
+        "hobby",
+        "weiqi",
+        "simple"
       ],
-      "body": "<h2>Prompt</h2><p>The assignment asked for a systems map. I translated mine into a short zine so the relationships between sources, people, and constraints were easier to follow.</p><h2>Structure</h2><p>Each spread handled one layer of the system: actors, incentives, friction points, and possible interventions.</p><h2>Takeaway</h2><p>The project taught me that formatting is not decoration. The container changes how people understand the argument.</p>",
-      "published": false,
+      "body": "<h2>Why?</h2><div>There are different stages to a game, which once you really start to think about it, its a construct (arbitrarily invented stage) of a construct (a game that we invent for entertainment). Nevertheless, constructs, especially ones that divides things, helps with understanding. Endgame is such a construct for weiqi.&nbsp;</div><div><br></div><div>A reddit user by the name of u/M2U2 uploaded 1 9x9 endgame puzzle to reddit every week, for 100 weeks. These are then turned into SGF (a weiqi game file), that are commented and annotated. Essentially, majority of the work. All I wanted to solve is the friction of having to drop the files into a file viewer.&nbsp;</div><div><br></div><div>&nbsp;The GitHub Repo:&nbsp;</div><div><p><a class=\"post-link-button\" href=\"https://github.com/bluemoon012905/100endgamebyM2U2\" target=\"_blank\" rel=\"noreferrer\"><img class=\"post-link-button-logo\" src=\"/assets/images/post-buttons/githublogo.png\" alt=\"\" aria-hidden=\"true\">Repo</a></p><p>Try it yourself:</p><p><a class=\"post-link-button\" href=\"https://bluemoon012905.github.io/100endgamebyM2U2/\" target=\"_blank\" rel=\"noreferrer\"><img class=\"post-link-button-logo\" src=\"/assets/images/turtle.png\" alt=\"\" aria-hidden=\"true\">View page</a></p><h2>Some Unique bits</h2></div><div>Decided to have 3 modes of operation: Exploration, Responsive, and answer key.&nbsp;</div><div><br></div><div>With exploration, you just browse through the SGFs. This is so we don't randomly lose features by wrapping it in a tool. This is still better than drag and dropping them individually, and behaves close to how a book would as you go through the pages.&nbsp;<br><br>Responsive is the typical puzzle. Where the starting is the \"ask\", and the user answers. The user plays only one side and receives feedback with whether they match the solution variation or not.&nbsp;</div><div><br></div><div>Answer key I tried to explore a little more, where you play for <span>both sides. </span>However, endgame often have many \"0 point moves\", and they aren't necessarily mistakes but it does break the variation checks. Also the same result can arrive with different sequence/shape, so this could be very good for simpler shapes, but with full board questions its not as good as it can be.&nbsp;<br><br>There are some standard puzzle behavior too, like shuffle of puzzle order and random orientations.&nbsp;</div><div><h2>Next steps</h2></div><div>If, SGF is all I need, could I make my own puzzle site?&nbsp;</div><div>Could I overthrow weiqi 101 as the best puzzle site??</div><div>I guess we will find out.&nbsp;</div>",
+      "published": true,
       "bodyFormat": "html"
     },
     {
