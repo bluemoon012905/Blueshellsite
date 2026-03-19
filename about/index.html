@@ -35,8 +35,22 @@
           </div>
         </div>
         <div class="custom-panel-body">
-          <p id="about-email-text">Loading...</p>
-          <div class="contact-links">
+          <div id="contact-links" class="contact-links">
+            <div class="contact-link contact-link-row">
+              <a id="about-email-link" class="contact-link-main" href="#">
+                <span class="contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M4 7.5h16v9H4z"></path>
+                    <path d="m4 8 8 6 8-6"></path>
+                  </svg>
+                </span>
+                <span>
+                  <strong>Email</strong>
+                  <small id="about-email-text">Loading...</small>
+                </span>
+              </a>
+              <button id="copy-email-button" class="copy-email-button" type="button">Copy</button>
+            </div>
             <a class="contact-link" href="https://www.instagram.com/theturlytt/" target="_blank" rel="noreferrer">
               <span class="contact-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" role="img">
@@ -89,9 +103,6 @@
       }
 
       .contact-link {
-        display: flex;
-        align-items: center;
-        gap: 14px;
         padding: 16px 18px;
         border-radius: 18px;
         background: rgba(255, 255, 255, 0.72);
@@ -109,9 +120,27 @@
         box-shadow: 0 14px 32px rgba(53, 37, 17, 0.08);
       }
 
-      .contact-link span:last-child {
+      .contact-link,
+      .contact-link-main {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .contact-link-row {
+        justify-content: space-between;
+      }
+
+      .contact-link span:last-child,
+      .contact-link-main span:last-child {
         display: grid;
         gap: 2px;
+      }
+
+      .contact-link-main {
+        min-width: 0;
+        text-decoration: none;
+        flex: 1;
       }
 
       .contact-link strong {
@@ -121,6 +150,17 @@
 
       .contact-link small {
         color: #5a5d66;
+      }
+
+      .copy-email-button {
+        min-height: 38px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(31, 36, 48, 0.12);
+        background: rgba(31, 36, 48, 0.06);
+        color: #1f2430;
+        cursor: pointer;
+        flex-shrink: 0;
       }
 
       .contact-icon {
@@ -171,6 +211,31 @@
         document.getElementById("about-title").textContent = site.title || "About me";
         document.getElementById("about-body").textContent = site.about || "";
         document.getElementById("about-email-text").textContent = email || "No email set yet.";
+        const emailLink = document.getElementById("about-email-link");
+        emailLink.href = email ? `mailto:${email}` : "#";
+        const copyButton = document.getElementById("copy-email-button");
+        copyButton.disabled = !email;
+        copyButton.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (!email) {
+            return;
+          }
+
+          try {
+            await navigator.clipboard.writeText(email);
+            copyButton.textContent = "Copied";
+            window.setTimeout(() => {
+              copyButton.textContent = "Copy";
+            }, 1600);
+          } catch (error) {
+            copyButton.textContent = "Failed";
+            window.setTimeout(() => {
+              copyButton.textContent = "Copy";
+            }, 1600);
+          }
+        });
       }
     </script>
   </body>
