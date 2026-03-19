@@ -122,6 +122,14 @@ fields.insertImageButton.addEventListener("click", () => {
   fields.imageUploadInput.click();
 });
 
+fields.insertButtonLinkButton.addEventListener("click", async () => {
+  try {
+    await openButtonBuilder();
+  } catch (error) {
+    setStatus(error.message);
+  }
+});
+
 fields.imageUploadInput.addEventListener("change", async (event) => {
   const [file] = event.target.files || [];
   await handleImageFile(file);
@@ -186,6 +194,22 @@ fields.togglePreviewButton.addEventListener("click", () => {
   toggleComposerPreview();
 });
 
+fields.closeButtonBuilderButton.addEventListener("click", () => {
+  closeButtonBuilder();
+});
+
+fields.buttonBuilderBackdrop.addEventListener("click", () => {
+  closeButtonBuilder();
+});
+
+fields.saveButtonLinkButton.addEventListener("click", async () => {
+  try {
+    await insertCustomButton();
+  } catch (error) {
+    fields.buttonBuilderStatus.textContent = error.message;
+  }
+});
+
 fields.postEditorBackdrop.addEventListener("click", () => {
   syncAllFields();
   closeComposer();
@@ -204,6 +228,11 @@ fields.saveButton.addEventListener("click", async () => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && editorState.buttonBuilderOpen) {
+    closeButtonBuilder();
+    return;
+  }
+
   if (event.key === "Escape" && editorState.composerOpen) {
     syncAllFields();
     closeComposer();

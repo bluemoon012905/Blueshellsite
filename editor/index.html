@@ -234,6 +234,7 @@
                 <button type="button" data-command="insertUnorderedList">Bullets</button>
                 <button type="button" data-command="justifyLeft">Left</button>
                 <button type="button" data-command="justifyCenter">Center</button>
+                <button id="insert-button-link-button" type="button">Button</button>
                 <label class="toolbar-swatch">
                   <span>Text</span>
                   <input id="text-color-input" type="color" value="#1f2430" />
@@ -263,6 +264,45 @@
             </div>
             <article id="post-preview-modal" class="post-preview"></article>
           </aside>
+        </div>
+      </section>
+    </div>
+    <div id="button-builder-modal" class="composer-modal hidden" aria-hidden="true">
+      <div id="button-builder-backdrop" class="composer-backdrop"></div>
+      <section class="composer-panel button-builder-panel" role="dialog" aria-modal="true" aria-labelledby="button-builder-title">
+        <div class="composer-head">
+          <div>
+            <p class="eyebrow">Post button</p>
+            <h2 id="button-builder-title">Insert button</h2>
+            <p class="composer-copy">Create a linked button with an optional logo from your saved assets or a new upload.</p>
+          </div>
+          <div class="composer-head-actions">
+            <button id="close-button-builder-button" type="button" class="secondary-ink">Close</button>
+          </div>
+        </div>
+        <div class="form-grid post-grid">
+          <label>
+            <span>Button label</span>
+            <input id="button-label-input" type="text" placeholder="View repo" />
+          </label>
+          <label>
+            <span>Link URL</span>
+            <input id="button-url-input" type="url" placeholder="https://example.com" />
+          </label>
+          <label class="full-width">
+            <span>Saved logo</span>
+            <select id="button-logo-select">
+              <option value="">No logo</option>
+            </select>
+          </label>
+          <label class="full-width">
+            <span>Upload new logo</span>
+            <input id="button-logo-upload-input" type="file" accept="image/*" />
+          </label>
+        </div>
+        <p id="button-builder-status" class="workspace-copy">Choose an existing image from `assets/images` or upload a new one into `assets/images/post-buttons/`.</p>
+        <div class="workspace-actions">
+          <button id="save-button-link-button" type="button">Insert button</button>
         </div>
       </section>
     </div>

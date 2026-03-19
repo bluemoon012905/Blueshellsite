@@ -5,16 +5,23 @@ const { URL } = require("url");
 
 const rootDir = __dirname;
 const contentPath = path.join(rootDir, "data", "content.json");
+const assetsImagesDir = path.join(rootDir, "assets", "images");
+const postButtonsDir = path.join(assetsImagesDir, "post-buttons");
 const port = process.env.PORT || 4321;
 const host = process.env.HOST || "127.0.0.1";
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
+  ".gif": "image/gif",
   ".html": "text/html; charset=utf-8",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
   ".js": "application/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
   ".svg": "image/svg+xml; charset=utf-8",
   ".txt": "text/plain; charset=utf-8",
+  ".webp": "image/webp",
 };
 
 const server = http.createServer(async (request, response) => {
@@ -26,6 +33,14 @@ const server = http.createServer(async (request, response) => {
 
   if (requestUrl.pathname === "/api/content" && request.method === "POST") {
     return saveContent(request, response);
+  }
+
+  if (requestUrl.pathname === "/api/image-assets" && request.method === "GET") {
+    return listImageAssets(response);
+  }
+
+  if (requestUrl.pathname === "/api/image-assets" && request.method === "POST") {
+    return saveImageAsset(request, response);
   }
 
   const staticPath = resolvePath(requestUrl.pathname);
@@ -108,4 +123,116 @@ function validateContent(content) {
   if (!content.site || !Array.isArray(content.categories) || !Array.isArray(content.posts)) {
     throw new Error("Content must include site, categories, and posts.");
   }
+}
+
+function listImageAssets(response) {
+  const assets = walkImageAssets(assetsImagesDir).map((filePath) => ({
+    name: path.basename(filePath),
+    path: `/${path.relative(rootDir, filePath).replaceAll(path.sep, "/")}`,
+  }));
+
+  response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+  response.end(JSON.stringify({ ok: true, assets }));
+}
+
+async function saveImageAsset(request, response) {
+  try {
+    const rawBody = await readBody(request);
+    const { filename, dataUrl } = JSON.parse(rawBody);
+    const parsedUpload = parseImageUpload(filename, dataUrl);
+    fs.mkdirSync(postButtonsDir, { recursive: true });
+
+    const finalName = getUniqueUploadName(parsedUpload.filename);
+    const filePath = path.join(postButtonsDir, finalName);
+    fs.writeFileSync(filePath, parsedUpload.buffer);
+
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(
+      JSON.stringify({
+        ok: true,
+        path: `/${path.relative(rootDir, filePath).replaceAll(path.sep, "/")}`,
+      })
+    );
+  } catch (error) {
+    response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ ok: false, error: error.message }));
+  }
+}
+
+function walkImageAssets(startDir) {
+  if (!fs.existsSync(startDir)) {
+    return [];
+  }
+
+  const entries = fs.readdirSync(startDir, { withFileTypes: true });
+  const files = [];
+  entries.forEach((entry) => {
+    const entryPath = path.join(startDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...walkImageAssets(entryPath));
+      return;
+    }
+
+    if (isImageFilename(entry.name)) {
+      files.push(entryPath);
+    }
+  });
+  return files;
+}
+
+function isImageFilename(filename) {
+  return [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"].includes(path.extname(filename).toLowerCase());
+}
+
+function parseImageUpload(filename, dataUrl) {
+  if (typeof filename !== "string" || !filename.trim()) {
+    throw new Error("Uploaded image needs a filename.");
+  }
+
+  if (typeof dataUrl !== "string" || !dataUrl.startsWith("data:image/")) {
+    throw new Error("Uploaded image must be a data URL.");
+  }
+
+  const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+  if (!match) {
+    throw new Error("Uploaded image format is invalid.");
+  }
+
+  const extension = normalizeImageExtension(match[1]);
+  const safeBaseName = path.basename(filename, path.extname(filename)).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/(^-|-$)/g, "") || "button-logo";
+  return {
+    filename: `${safeBaseName}.${extension}`,
+    buffer: Buffer.from(match[2], "base64"),
+  };
+}
+
+function normalizeImageExtension(mimeType) {
+  const mapping = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/gif": "gif",
+    "image/webp": "webp",
+    "image/svg+xml": "svg",
+  };
+
+  const extension = mapping[mimeType.toLowerCase()];
+  if (!extension) {
+    throw new Error("That image type is not supported.");
+  }
+  return extension;
+}
+
+function getUniqueUploadName(filename) {
+  const extension = path.extname(filename);
+  const baseName = path.basename(filename, extension);
+  let candidate = filename;
+  let counter = 1;
+
+  while (fs.existsSync(path.join(postButtonsDir, candidate))) {
+    counter += 1;
+    candidate = `${baseName}-${counter}${extension}`;
+  }
+
+  return candidate;
 }

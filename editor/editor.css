@@ -592,6 +592,16 @@ button.danger {
   border-radius: 18px;
 }
 
+.rich-editor .post-link-button-logo,
+.preview-body .post-link-button-logo {
+  display: inline-block;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin: 0;
+  border-radius: 0;
+  vertical-align: middle;
+}
+
 .rich-editor blockquote,
 .preview-body blockquote {
   margin: 18px 0;
@@ -612,6 +622,31 @@ button.danger {
 
 .composer-preview-panel.hidden {
   display: none;
+}
+
+.button-builder-panel {
+  width: min(720px, calc(100vw - 32px));
+}
+
+.post-link-button,
+.preview-body .post-link-button,
+.rich-editor .post-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: white;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  font-weight: 700;
+}
+
+.post-link-button:hover,
+.preview-body .post-link-button:hover,
+.rich-editor .post-link-button:hover {
+  background: rgba(31, 36, 48, 0.06);
 }
 
 .visually-hidden {

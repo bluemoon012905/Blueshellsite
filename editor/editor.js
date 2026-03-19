@@ -16,6 +16,8 @@ const editorState = {
   search: "",
   composerOpen: false,
   composerPreviewVisible: true,
+  buttonBuilderOpen: false,
+  imageAssets: [],
   savedSelection: null,
   hasUnsavedChanges: false,
   saveInFlight: false,
@@ -109,6 +111,16 @@ const fields = {
   fontSizeSelect: document.getElementById("font-size-select"),
   textColorInput: document.getElementById("text-color-input"),
   highlightColorInput: document.getElementById("highlight-color-input"),
+  insertButtonLinkButton: document.getElementById("insert-button-link-button"),
+  buttonBuilderModal: document.getElementById("button-builder-modal"),
+  buttonBuilderBackdrop: document.getElementById("button-builder-backdrop"),
+  closeButtonBuilderButton: document.getElementById("close-button-builder-button"),
+  saveButtonLinkButton: document.getElementById("save-button-link-button"),
+  buttonLabelInput: document.getElementById("button-label-input"),
+  buttonUrlInput: document.getElementById("button-url-input"),
+  buttonLogoSelect: document.getElementById("button-logo-select"),
+  buttonLogoUploadInput: document.getElementById("button-logo-upload-input"),
+  buttonBuilderStatus: document.getElementById("button-builder-status"),
 };
 
 async function initEditor() {
@@ -405,6 +417,7 @@ function openComposer() {
 
 function closeComposer() {
   editorState.composerOpen = false;
+  closeButtonBuilder();
   fields.postEditorModal.classList.add("hidden");
   fields.postEditorModal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
@@ -421,6 +434,91 @@ function applyComposerPreviewVisibility() {
 function toggleComposerPreview() {
   editorState.composerPreviewVisible = !editorState.composerPreviewVisible;
   applyComposerPreviewVisibility();
+}
+
+async function openButtonBuilder() {
+  editorState.buttonBuilderOpen = true;
+  await loadImageAssets();
+  fields.buttonBuilderModal.classList.remove("hidden");
+  fields.buttonBuilderModal.setAttribute("aria-hidden", "false");
+  fields.buttonBuilderStatus.textContent =
+    "Choose an existing image from assets/images or upload a new one into assets/images/post-buttons/.";
+  fields.buttonLabelInput.focus();
+}
+
+function closeButtonBuilder() {
+  editorState.buttonBuilderOpen = false;
+  fields.buttonBuilderModal.classList.add("hidden");
+  fields.buttonBuilderModal.setAttribute("aria-hidden", "true");
+  fields.buttonLabelInput.value = "";
+  fields.buttonUrlInput.value = "";
+  fields.buttonLogoSelect.value = "";
+  fields.buttonLogoUploadInput.value = "";
+}
+
+async function loadImageAssets() {
+  const response = await fetch("/api/image-assets", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("Could not load saved image assets.");
+  }
+
+  const payload = await response.json();
+  editorState.imageAssets = payload.assets || [];
+  fields.buttonLogoSelect.innerHTML = [
+    `<option value="">No logo</option>`,
+    ...editorState.imageAssets.map((asset) => `<option value="${escapeAttribute(asset.path)}">${escapeHtml(asset.path)}</option>`),
+  ].join("");
+}
+
+async function uploadButtonLogo(file) {
+  const dataUrl = await readFileAsDataUrl(file);
+  const response = await fetch("/api/image-assets", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      filename: file.name,
+      dataUrl,
+    }),
+  });
+
+  const payload = await response.json();
+  if (!response.ok || !payload.ok) {
+    throw new Error(payload.error || "Could not save uploaded logo.");
+  }
+
+  return payload.path;
+}
+
+function buildPostButtonMarkup({ label, url, logoPath }) {
+  const safeLabel = escapeHtml(label);
+  const safeUrl = escapeAttribute(url);
+  const isExternal = /^https?:\/\//i.test(url);
+  const logoHtml = logoPath
+    ? `<img class="post-link-button-logo" src="${escapeAttribute(logoPath)}" alt="" aria-hidden="true" />`
+    : "";
+  const extraAttrs = isExternal ? ` target="_blank" rel="noreferrer"` : "";
+  return `<p><a class="post-link-button" href="${safeUrl}"${extraAttrs}>${logoHtml}<span>${safeLabel}</span></a></p>`;
+}
+
+async function insertCustomButton() {
+  const label = fields.buttonLabelInput.value.trim();
+  const url = fields.buttonUrlInput.value.trim();
+  if (!label || !url) {
+    throw new Error("The button needs both a label and a URL.");
+  }
+
+  let logoPath = fields.buttonLogoSelect.value;
+  const [uploadedFile] = fields.buttonLogoUploadInput.files || [];
+  if (uploadedFile) {
+    fields.buttonBuilderStatus.textContent = "Saving uploaded logo...";
+    logoPath = await uploadButtonLogo(uploadedFile);
+    await loadImageAssets();
+  }
+
+  applyFormatting("insertHTML", buildPostButtonMarkup({ label, url, logoPath }));
+  closeButtonBuilder();
 }
 
 function syncSiteFields() {
