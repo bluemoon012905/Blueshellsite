@@ -24,40 +24,134 @@
         <div class="hero-copy">
           <p class="eyebrow">Contact</p>
           <h1 id="about-title">Loading...</h1>
-          <p id="about-intro">Pulling in your site info.</p>
+          <p id="about-body">Loading...</p>
         </div>
       </header>
 
       <section class="section">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">About</p>
-            <h2>Who I am</h2>
-          </div>
-        </div>
-        <div class="custom-panel-body">
-          <p id="about-body">Loading...</p>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Email</p>
             <h2>Reach out</h2>
           </div>
         </div>
         <div class="custom-panel-body">
           <p id="about-email-text">Loading...</p>
-          <a id="about-email-link" class="pill-link" href="#">Send email</a>
+          <div class="contact-links">
+            <a class="contact-link" href="https://www.instagram.com/theturlytt/" target="_blank" rel="noreferrer">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img">
+                  <rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect>
+                  <circle cx="12" cy="12" r="4.25"></circle>
+                  <circle cx="17.4" cy="6.6" r="1.1" class="fill"></circle>
+                </svg>
+              </span>
+              <span>
+                <strong>Instagram</strong>
+                <small>@theturlytt</small>
+              </span>
+            </a>
+            <a class="contact-link" href="https://discord.com/users/bluemoon012905" target="_blank" rel="noreferrer">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img">
+                  <path
+                    d="M18.4 6.2a16 16 0 0 0-3.2-1l-.4.8a11 11 0 0 0-5.6 0l-.4-.8a16 16 0 0 0-3.2 1C3.6 9.2 3.1 12 3.3 14.7a16 16 0 0 0 4 2l1-1.5a10 10 0 0 1-1.6-.8l.4-.3c3.1 1.4 6.7 1.4 9.8 0l.4.3c-.5.3-1 .6-1.6.8l1 1.5a16 16 0 0 0 4-2c.3-3.2-.5-6-2.3-8.5ZM9.7 13.1c-.8 0-1.4-.7-1.4-1.6s.6-1.6 1.4-1.6 1.4.7 1.4 1.6-.6 1.6-1.4 1.6Zm4.6 0c-.8 0-1.4-.7-1.4-1.6s.6-1.6 1.4-1.6 1.4.7 1.4 1.6-.6 1.6-1.4 1.6Z"
+                  ></path>
+                </svg>
+              </span>
+              <span>
+                <strong>Discord</strong>
+                <small>bluemoon012905</small>
+              </span>
+            </a>
+            <a class="contact-link" href="https://www.linkedin.com/in/yuda-wang-825b691b4/" target="_blank" rel="noreferrer">
+              <span class="contact-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img">
+                  <rect x="4" y="8.5" width="3.2" height="11.5" class="fill"></rect>
+                  <circle cx="5.6" cy="5.9" r="1.8" class="fill"></circle>
+                  <path d="M10 8.5h3v1.6h.1c.4-.8 1.5-1.9 3.4-1.9 3.6 0 4.2 2.2 4.2 5.2V20h-3.2v-5.8c0-1.4 0-3.2-2-3.2s-2.2 1.5-2.2 3V20H10Z"></path>
+                </svg>
+              </span>
+              <span>
+                <strong>LinkedIn</strong>
+                <small>Yuda Wang</small>
+              </span>
+            </a>
+          </div>
         </div>
       </section>
     </main>
 
+    <style>
+      .contact-links {
+        display: grid;
+        gap: 14px;
+        margin-top: 12px;
+      }
+
+      .contact-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(31, 36, 48, 0.12);
+        text-decoration: none;
+        transition:
+          transform 160ms ease,
+          border-color 160ms ease,
+          box-shadow 160ms ease;
+      }
+
+      .contact-link:hover {
+        transform: translateY(-2px);
+        border-color: rgba(184, 86, 42, 0.28);
+        box-shadow: 0 14px 32px rgba(53, 37, 17, 0.08);
+      }
+
+      .contact-link span:last-child {
+        display: grid;
+        gap: 2px;
+      }
+
+      .contact-link strong {
+        font-family: "Fraunces", serif;
+        font-size: 1.1rem;
+      }
+
+      .contact-link small {
+        color: #5a5d66;
+      }
+
+      .contact-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: #1f2430;
+        color: #fff8ef;
+        flex-shrink: 0;
+      }
+
+      .contact-icon svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+      }
+
+      .contact-icon .fill {
+        fill: currentColor;
+        stroke: none;
+      }
+    </style>
+
     <script>
       loadAbout().catch((error) => {
         document.getElementById("about-title").textContent = "About me";
-        document.getElementById("about-intro").textContent = error.message;
         document.getElementById("about-body").textContent = "Could not load site content.";
         document.getElementById("about-email-text").textContent = "Email unavailable.";
       });
@@ -75,13 +169,8 @@
 
         document.title = `${site.contactLabel || "About me"} | ${site.title || "Blue's collection"}`;
         document.getElementById("about-title").textContent = site.title || "About me";
-        document.getElementById("about-intro").textContent = site.tagline || "";
         document.getElementById("about-body").textContent = site.about || "";
         document.getElementById("about-email-text").textContent = email || "No email set yet.";
-
-        const emailLink = document.getElementById("about-email-link");
-        emailLink.href = email ? `mailto:${email}` : "#";
-        emailLink.textContent = email ? `Email ${email}` : "Email not set";
       }
     </script>
   </body>
