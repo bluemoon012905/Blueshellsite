@@ -3,6 +3,7 @@ const editorState = {
   selectedPostId: null,
   search: "",
   composerOpen: false,
+  composerPreviewVisible: true,
   savedSelection: null,
   hasUnsavedChanges: false,
   saveInFlight: false,
@@ -76,6 +77,8 @@ const fields = {
   postEditorModal: document.getElementById("post-editor-modal"),
   postEditorBackdrop: document.getElementById("post-editor-backdrop"),
   closePostEditorButton: document.getElementById("close-post-editor-button"),
+  togglePreviewButton: document.getElementById("toggle-preview-button"),
+  composerGrid: document.getElementById("composer-grid"),
   composerTitle: document.getElementById("composer-title"),
   composerSubtitle: document.getElementById("composer-subtitle"),
   insertImageButton: document.getElementById("insert-image-button"),
@@ -382,6 +385,7 @@ function openComposer() {
   fields.composerTitle.textContent = post.title || "Untitled";
   fields.composerSubtitle.textContent =
     "Write, format, paste images, then save everything back into the site JSON.";
+  applyComposerPreviewVisibility();
   window.setTimeout(() => {
     fields.postTitle.focus();
   }, 0);
@@ -392,6 +396,19 @@ function closeComposer() {
   fields.postEditorModal.classList.add("hidden");
   fields.postEditorModal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+}
+
+function applyComposerPreviewVisibility() {
+  const previewIsVisible = editorState.composerPreviewVisible;
+  fields.postPreviewModal.parentElement.classList.toggle("hidden", !previewIsVisible);
+  fields.composerGrid.classList.toggle("preview-hidden", !previewIsVisible);
+  fields.togglePreviewButton.textContent = previewIsVisible ? "Hide preview" : "Show preview";
+  fields.togglePreviewButton.setAttribute("aria-pressed", String(!previewIsVisible));
+}
+
+function toggleComposerPreview() {
+  editorState.composerPreviewVisible = !editorState.composerPreviewVisible;
+  applyComposerPreviewVisibility();
 }
 
 function syncSiteFields() {
@@ -1154,6 +1171,10 @@ fields.homePanelFields.addEventListener("click", (event) => {
 fields.closePostEditorButton.addEventListener("click", () => {
   syncAllFields();
   closeComposer();
+});
+
+fields.togglePreviewButton.addEventListener("click", () => {
+  toggleComposerPreview();
 });
 
 fields.postEditorBackdrop.addEventListener("click", () => {

@@ -487,6 +487,10 @@ button.danger {
   align-items: start;
 }
 
+.composer-grid.preview-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .composer-form,
 .composer-preview-panel {
   min-width: 0;
@@ -604,6 +608,10 @@ button.danger {
   padding: 0;
   border: 0;
   background: transparent;
+}
+
+.composer-preview-panel.hidden {
+  display: none;
 }
 
 .visually-hidden {
