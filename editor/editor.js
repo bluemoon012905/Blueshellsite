@@ -13,7 +13,7 @@ const fields = {
   postList: document.getElementById("post-list"),
   postSearch: document.getElementById("post-search"),
   newPostButton: document.getElementById("new-post-button"),
-  newPostInlineButton: document.getElementById("new-post-inline-button"),
+  newCategoryButton: document.getElementById("new-category-button"),
   openPostEditorButton: document.getElementById("open-post-editor-button"),
   saveButton: document.getElementById("save-button"),
   exportButton: document.getElementById("export-button"),
@@ -127,6 +127,10 @@ function populateCategoryFields() {
     .map(
       (category, index) => `
         <div class="category-card">
+          <div class="category-card-head">
+            <p class="workspace-kicker">Panel ${index + 1}</p>
+            <button type="button" class="danger category-delete-button" data-category-index="${index}">Delete</button>
+          </div>
           <label>
             <span>Category ID</span>
             <input data-category-index="${index}" data-key="id" type="text" value="${escapeHtml(category.id)}" />
@@ -315,6 +319,58 @@ function syncCategoryFields() {
       }
     });
   });
+}
+
+function createCategory() {
+  syncCategoryFields();
+  const baseId = "new-panel";
+  let suffix = 1;
+  let nextId = baseId;
+  while (editorState.content.categories.some((category) => category.id === nextId)) {
+    suffix += 1;
+    nextId = `${baseId}-${suffix}`;
+  }
+
+  editorState.content.categories.push({
+    id: nextId,
+    name: "New panel",
+    description: "Describe what belongs in this section.",
+  });
+
+  populateCategoryFields();
+  populateCategorySelect();
+  if (!getCurrentPost()) {
+    renderWorkspaceState();
+  }
+  setStatus("Added a new panel");
+}
+
+function deleteCategory(categoryIndex) {
+  if (editorState.content.categories.length <= 1) {
+    setStatus("You need at least one panel.");
+    return;
+  }
+
+  const removedCategory = editorState.content.categories[categoryIndex];
+  if (!removedCategory) {
+    return;
+  }
+
+  editorState.content.categories.splice(categoryIndex, 1);
+  const fallbackCategoryId = editorState.content.categories[0]?.id || "personal";
+
+  editorState.content.posts.forEach((post) => {
+    if (post.category === removedCategory.id) {
+      post.category = fallbackCategoryId;
+    }
+  });
+
+  populateCategoryFields();
+  populateCategorySelect();
+  syncCurrentPost();
+  renderPostList();
+  renderWorkspaceState();
+  setStatus(`Deleted panel "${removedCategory.name || removedCategory.id}"`);
 }
 
 function syncCurrentPost() {
@@ -865,10 +921,12 @@ fields.postList.addEventListener("click", (event) => {
   selectPost(button.dataset.postId, { openComposer: true });
 });
 
-[fields.newPostButton, fields.newPostInlineButton].forEach((button) => {
-  button.addEventListener("click", () => {
-    createPost();
-  });
+fields.newPostButton.addEventListener("click", () => {
+  createPost();
+});
+
+fields.newCategoryButton.addEventListener("click", () => {
+  createCategory();
 });
 
 fields.openPostEditorButton.addEventListener("click", () => {
@@ -878,6 +936,15 @@ fields.openPostEditorButton.addEventListener("click", () => {
 
 fields.deletePostButton.addEventListener("click", () => {
   deleteCurrentPost();
+});
+
+fields.categoryFields.addEventListener("click", (event) => {
+  const button = event.target.closest(".category-delete-button");
+  if (!button) {
+    return;
+  }
+
+  deleteCategory(Number(button.dataset.categoryIndex));
 });
 
 fields.closePostEditorButton.addEventListener("click", () => {

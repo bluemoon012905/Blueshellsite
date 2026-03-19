@@ -279,6 +279,22 @@ button.danger {
   border: 1px solid var(--line);
 }
 
+.category-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.category-card-head .workspace-kicker {
+  margin: 0;
+}
+
+.category-delete-button {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
 .preview-link {
   color: var(--ink);
   border-color: var(--line);
