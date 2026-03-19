@@ -1,0 +1,91 @@
+.contact-links {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.contact-link {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(31, 36, 48, 0.12);
+  text-decoration: none;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.contact-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(184, 86, 42, 0.28);
+  box-shadow: 0 14px 32px rgba(53, 37, 17, 0.08);
+}
+
+.contact-link,
+.contact-link-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contact-link-row {
+  justify-content: space-between;
+}
+
+.contact-link span:last-child,
+.contact-link-main span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.contact-link-main {
+  min-width: 0;
+  text-decoration: none;
+  flex: 1;
+}
+
+.contact-link strong {
+  font-family: "Fraunces", serif;
+  font-size: 1.1rem;
+}
+
+.contact-link small {
+  color: #5a5d66;
+}
+
+.copy-email-button {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 36, 48, 0.12);
+  background: rgba(31, 36, 48, 0.06);
+  color: #1f2430;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #1f2430;
+  color: #fff8ef;
+  flex-shrink: 0;
+}
+
+.contact-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.contact-icon .fill {
+  fill: currentColor;
+  stroke: none;
+}

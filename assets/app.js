@@ -1,3 +1,14 @@
+const {
+  DEFAULT_HOME_PANELS,
+  ensureHomePanels: ensureContentHomePanels,
+  byNewestDate,
+  formatDate,
+  renderMarkdown,
+  sanitizeRichHtml,
+  escapeHtml,
+  escapeAttribute,
+} = window.BlueshellContent;
+
 const state = {
   content: null,
   search: "",
@@ -266,17 +277,7 @@ function renderCategoryOptions() {
 }
 
 function ensureHomePanels() {
-  const defaults = [
-    { id: "outline", type: "category-overview", eyebrow: "Outline", title: "Four rooms, one archive.", description: "", enabled: true },
-    { id: "featured", type: "featured-posts", eyebrow: "Featured", title: "Current highlights", description: "", enabled: true },
-    { id: "archive", type: "archive-posts", eyebrow: "Archive", title: "Browse everything", description: "", enabled: true },
-  ];
-  const currentPanels = Array.isArray(state.content.site.homepagePanels) ? state.content.site.homepagePanels : [];
-  const customPanels = currentPanels.filter((panel) => !defaults.some((preset) => preset.id === panel.id));
-  state.content.site.homepagePanels = [
-    ...defaults.map((preset) => ({ ...preset, ...currentPanels.find((panel) => panel.id === preset.id) })),
-    ...customPanels,
-  ];
+  ensureContentHomePanels(state.content, DEFAULT_HOME_PANELS);
 }
 
 function bindArchiveControls() {
@@ -299,156 +300,11 @@ function getCategoryName(categoryId) {
   return state.content.categories.find((category) => category.id === categoryId)?.name ?? categoryId;
 }
 
-function byNewestDate(left, right) {
-  return new Date(right.date) - new Date(left.date);
-}
-
-function formatDate(value) {
-  return new Date(`${value}T12:00:00`).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-function renderMarkdown(markdown) {
-  const lines = markdown.split("\n");
-  const fragments = [];
-  let listItems = [];
-
-  const flushList = () => {
-    if (!listItems.length) {
-      return;
-    }
-    fragments.push(`<ul>${listItems.map((item) => `<li>${item}</li>`).join("")}</ul>`);
-    listItems = [];
-  };
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (!line) {
-      flushList();
-      continue;
-    }
-
-    if (line.startsWith("### ")) {
-      flushList();
-      fragments.push(`<h3>${escapeHtml(line.slice(4))}</h3>`);
-      continue;
-    }
-
-    if (line.startsWith("## ")) {
-      flushList();
-      fragments.push(`<h2>${escapeHtml(line.slice(3))}</h2>`);
-      continue;
-    }
-
-    if (line.startsWith("- ")) {
-      listItems.push(escapeHtml(line.slice(2)));
-      continue;
-    }
-
-    flushList();
-    fragments.push(`<p>${escapeHtml(line)}</p>`);
-  }
-
-  flushList();
-  return fragments.join("");
-}
-
 function renderPostBody(post) {
   if (post.bodyFormat === "html") {
     return sanitizeRichHtml(post.body || "");
   }
   return renderMarkdown(post.body || "");
-}
-
-function sanitizeRichHtml(html) {
-  const template = document.createElement("template");
-  template.innerHTML = html;
-  const disallowedTags = new Set(["script", "style", "iframe", "object", "embed", "meta", "link"]);
-  const allowedStyleProps = new Set(["text-align", "color", "background-color", "font-family"]);
-
-  const walk = (node) => {
-    if (node.nodeType !== Node.ELEMENT_NODE) {
-      return;
-    }
-
-    const tagName = node.tagName.toLowerCase();
-    if (disallowedTags.has(tagName)) {
-      node.remove();
-      return;
-    }
-
-    [...node.attributes].forEach((attribute) => {
-      const name = attribute.name.toLowerCase();
-      const value = attribute.value;
-
-      if (name.startsWith("on")) {
-        node.removeAttribute(attribute.name);
-        return;
-      }
-
-      if (name === "style") {
-        const safeStyles = value
-          .split(";")
-          .map((rule) => rule.trim())
-          .filter(Boolean)
-          .filter((rule) => {
-            const [property, rawValue] = rule.split(":");
-            if (!property || !rawValue) {
-              return false;
-            }
-
-            const normalizedProperty = property.trim().toLowerCase();
-            const normalizedValue = rawValue.trim().toLowerCase();
-            return (
-              allowedStyleProps.has(normalizedProperty) &&
-              !normalizedValue.includes("url(") &&
-              !normalizedValue.includes("expression")
-            );
-          });
-
-        if (safeStyles.length) {
-          node.setAttribute("style", safeStyles.join("; "));
-        } else {
-          node.removeAttribute("style");
-        }
-        return;
-      }
-
-      if (tagName === "img" && name === "src") {
-        const safeSource =
-          value.startsWith("data:image/") || value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/");
-        if (!safeSource) {
-          node.removeAttribute(attribute.name);
-        }
-        return;
-      }
-
-      if ((name === "src" || name === "href") && value.trim().toLowerCase().startsWith("javascript:")) {
-        node.removeAttribute(attribute.name);
-      }
-    });
-
-    [...node.childNodes].forEach(walk);
-  };
-
-  [...template.content.childNodes].forEach(walk);
-  return template.innerHTML;
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function escapeAttribute(value) {
-  return escapeHtml(value);
 }
 
 loadContent().catch((error) => {
