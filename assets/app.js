@@ -59,12 +59,14 @@ function renderHero() {
   const archiveCount = getPublishedPosts().length;
   document.title = site.title;
   const mobileTurtle =
-    state.deviceMode === "mobile" ? `<img class="brand-turtle brand-turtle-mobile" src="turtle.png" alt="" aria-hidden="true" />` : "";
+    state.deviceMode === "mobile"
+      ? `<img class="brand-turtle brand-turtle-mobile" src="assets/images/turtle.png" alt="" aria-hidden="true" />`
+      : "";
   const desktopTurtle =
     state.deviceMode === "desktop"
       ? `
         <div class="hero-turtle-wrap" aria-hidden="true">
-          <img class="brand-turtle brand-turtle-desktop" src="turtle.png" alt="" />
+          <img class="brand-turtle brand-turtle-desktop" src="assets/images/turtle.png" alt="" />
         </div>
       `
       : "";
