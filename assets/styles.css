@@ -157,10 +157,15 @@ a {
   line-height: 0.95;
 }
 
+.post-title {
+  line-height: 1.08;
+}
+
 .hero h1 {
   max-width: 10ch;
   margin: 0 0 20px;
   font-size: clamp(3.2rem, 7vw, 6.8rem);
+  line-height: 1.04;
 }
 
 .hero-copy {
@@ -312,7 +317,7 @@ textarea {
 
 .search-field input,
 .filter-field select {
-  min-width: 220px;
+  min-width: 280px;
   min-height: 46px;
   border-radius: 999px;
   border: 1px solid var(--line);

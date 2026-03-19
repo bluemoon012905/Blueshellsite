@@ -67,19 +67,19 @@
   ],
   "posts": [
     {
-      "id": "glass-bird-study",
-      "title": "Glass Bird Study",
-      "category": "art",
+      "id": "websitelore",
+      "title": "How did we get to Yuda.work?",
+      "category": "projects",
       "date": "2026-03-10",
-      "summary": "A color and texture study built from transparent overlays and failed first passes.",
+      "summary": "A little overview of how this website was made!",
       "featured": true,
       "tags": [
-        "painting",
-        "process",
-        "color"
+        "Website",
+        "Static hosting",
+        "online present"
       ],
-      "body": "<h2>Why this piece exists</h2><p>I wanted to paint something delicate without making it passive. The bird shape gave me a familiar anchor, but the real point was testing how far I could push transparency before the form disappeared.</p><h2>What worked</h2><ul><li>Layering cool shadows under warm highlights kept the surface from turning muddy.</li><li>Photographing each stage made it easier to see when I had already solved the image.</li></ul><h2>What changed</h2><p>The first version was too literal. I scraped half of it back, kept only the wing edge, and rebuilt the composition around reflection instead of anatomy.</p>",
-      "published": false,
+      "body": "<h2>Why this piece exists</h2><div>Everyone needs a website nowadays, at least that's what they tell me.&nbsp;</div><h2>What changed</h2>",
+      "published": true,
       "bodyFormat": "html"
     },
     {

@@ -12,7 +12,6 @@ const elements = {
   categoryGrid: document.getElementById("category-grid"),
   featuredGrid: document.getElementById("featured-grid"),
   postGrid: document.getElementById("post-grid"),
-  postView: document.getElementById("post-view"),
   aboutStrip: document.getElementById("about-strip"),
   searchInput: document.getElementById("search-input"),
   categoryFilter: document.getElementById("category-filter"),
@@ -44,7 +43,6 @@ function hydrateFilters() {
 function renderPage() {
   renderHero();
   renderHomepageSections();
-  renderPostView();
   renderAbout();
 }
 
@@ -111,11 +109,11 @@ function renderCategories() {
   return state.content.categories
     .map(
       (category) => `
-        <article class="category-card">
+        <a class="category-card" href="/category/?category=${encodeURIComponent(category.id)}">
           <p class="eyebrow">${escapeHtml(category.id)}</p>
           <h3>${escapeHtml(category.name)}</h3>
           <p>${escapeHtml(category.description)}</p>
-        </article>
+        </a>
       `
     )
     .join("");
@@ -216,7 +214,7 @@ function renderSectionHeading(panel, headingId) {
 function renderPostCard(post) {
   const categoryName = getCategoryName(post.category);
   return `
-    <a class="post-card" href="?post=${encodeURIComponent(post.id)}">
+    <a class="post-card" href="/post/?post=${encodeURIComponent(post.id)}">
       <span class="post-chip">${escapeHtml(categoryName)}</span>
       <h3>${escapeHtml(post.title)}</h3>
       <p>${escapeHtml(post.summary)}</p>
@@ -225,42 +223,6 @@ function renderPostCard(post) {
         ${post.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
       </div>
     </a>
-  `;
-}
-
-function renderPostView() {
-  const params = new URLSearchParams(window.location.search);
-  const postId = params.get("post");
-  if (!postId) {
-    elements.postView.classList.add("hidden");
-    return;
-  }
-
-  const post = getPublishedPosts().find((entry) => entry.id === postId);
-  if (!post) {
-    elements.postView.classList.remove("hidden");
-    elements.postView.innerHTML = `
-      <div class="post-nav">
-        <a class="ghost-link" href="/">Back to archive</a>
-      </div>
-      <p class="empty-state">That post could not be found.</p>
-    `;
-    return;
-  }
-
-  elements.postView.classList.remove("hidden");
-  elements.postView.innerHTML = `
-    <div class="post-nav">
-      <a class="ghost-link" href="./">Back to archive</a>
-    </div>
-    <p class="eyebrow">${escapeHtml(getCategoryName(post.category))}</p>
-    <h2 class="post-title">${escapeHtml(post.title)}</h2>
-    <div class="post-meta">
-      <span class="tag">${formatDate(post.date)}</span>
-      ${post.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
-    </div>
-    <p class="post-lead">${escapeHtml(post.summary)}</p>
-    <div class="post-body">${renderPostBody(post)}</div>
   `;
 }
 

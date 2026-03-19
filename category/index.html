@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Category</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header id="category-hero" class="hero"></header>
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Posts</p>
+            <h2 id="category-heading">Loading...</h2>
+          </div>
+          <a class="ghost-link" href="/">Back home</a>
+        </div>
+        <div id="category-post-grid" class="post-grid"></div>
+      </section>
+    </main>
+
+    <script>
+      loadCategory().catch((error) => {
+        document.getElementById("category-hero").innerHTML = `
+          <div class="hero-copy">
+            <p class="eyebrow">Category</p>
+            <h1>Not available</h1>
+            <p>${escapeHtml(error.message)}</p>
+            <div class="hero-actions">
+              <a class="ghost-link" href="/">Back home</a>
+            </div>
+          </div>
+        `;
+        document.getElementById("category-heading").textContent = "Unavailable";
+        document.getElementById("category-post-grid").innerHTML =
+          '<p class="empty-state">That category could not be loaded.</p>';
+      });
+
+      async function loadCategory() {
+        const params = new URLSearchParams(window.location.search);
+        const categoryId = params.get("category");
+        if (!categoryId) {
+          throw new Error("No category was provided.");
+        }
+
+        const response = await fetch("../data/content.json", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Could not load content.");
+        }
+
+        const content = await response.json();
+        const category = (content.categories || []).find((entry) => entry.id === categoryId);
+        if (!category) {
+          throw new Error("That category does not exist.");
+        }
+
+        const posts = (content.posts || [])
+          .filter((post) => post.published !== false && post.category === categoryId)
+          .sort((left, right) => new Date(right.date) - new Date(left.date));
+
+        document.title = `${category.name} | ${content.site?.title || "Blue's collection"}`;
+        document.getElementById("category-hero").innerHTML = `
+          <div class="hero-nav">
+            <div class="brand-mark">
+              <span>${escapeHtml(content.site?.brandMark || content.site?.title || "Blue's collection")}</span>
+            </div>
+            <a class="ghost-link" href="/">Back home</a>
+          </div>
+          <div class="hero-copy">
+            <p class="eyebrow">${escapeHtml(category.id)}</p>
+            <h1>${escapeHtml(category.name)}</h1>
+            <p>${escapeHtml(category.description || "")}</p>
+          </div>
+        `;
+
+        document.getElementById("category-heading").textContent = `${posts.length} post${posts.length === 1 ? "" : "s"} in ${
+          category.name
+        }`;
+        document.getElementById("category-post-grid").innerHTML = posts.length
+          ? posts.map((post) => renderPostCard(post, category.name)).join("")
+          : '<p class="empty-state">No published posts are in this section yet.</p>';
+      }
+
+      function renderPostCard(post, categoryName) {
+        return `
+          <a class="post-card" href="/post/?post=${encodeURIComponent(post.id)}">
+            <span class="post-chip">${escapeHtml(categoryName)}</span>
+            <h3>${escapeHtml(post.title)}</h3>
+            <p>${escapeHtml(post.summary)}</p>
+            <div class="post-meta">
+              <span class="tag">${formatDate(post.date)}</span>
+              ${(post.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+            </div>
+          </a>
+        `;
+      }
+
+      function formatDate(value) {
+        return new Date(`${value}T12:00:00`).toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+    </script>
+  </body>
+</html>

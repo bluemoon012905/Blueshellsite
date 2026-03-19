@@ -258,10 +258,16 @@ function populateCategoryFields() {
     .join("");
 }
 
-function populateCategorySelect() {
+function populateCategorySelect(selectedValue = getCurrentPost()?.category || fields.postCategory.value) {
   fields.postCategory.innerHTML = editorState.content.categories
     .map((category) => `<option value="${escapeAttribute(category.id)}">${escapeHtml(category.name)}</option>`)
     .join("");
+
+  const nextValue =
+    selectedValue && editorState.content.categories.some((category) => category.id === selectedValue)
+      ? selectedValue
+      : editorState.content.categories[0]?.id || "";
+  fields.postCategory.value = nextValue;
 }
 
 function renderPostList() {
@@ -462,7 +468,7 @@ function createCategory() {
   });
 
   populateCategoryFields();
-  populateCategorySelect();
+  populateCategorySelect(getCurrentPost()?.category);
   if (!getCurrentPost()) {
     renderWorkspaceState();
   }
@@ -519,7 +525,7 @@ function deleteCategory(categoryIndex) {
   });
 
   populateCategoryFields();
-  populateCategorySelect();
+  populateCategorySelect(fallbackCategoryId);
   syncCurrentPost();
   renderPostList();
   renderWorkspaceState();
@@ -561,8 +567,8 @@ function syncAllFields() {
   syncSiteFields();
   syncHomePanelFields();
   syncCategoryFields();
-  populateCategorySelect();
   syncCurrentPost();
+  populateCategorySelect(getCurrentPost()?.category);
 }
 
 function createPost() {
@@ -588,7 +594,7 @@ function createPost() {
     body: "<h2>Start here</h2><p>Write the first draft of this post.</p>",
   });
 
-  populateCategorySelect();
+  populateCategorySelect(nextId);
   selectPost(nextId, { openComposer: true });
   markDirty();
   setStatus("Created a new post draft");
@@ -713,7 +719,7 @@ function renderEditorSidebarCopy() {
 }
 
 function updatePublicLinks(post) {
-  const href = post ? `/?post=${encodeURIComponent(post.id)}` : "/";
+  const href = post ? `/post/?post=${encodeURIComponent(post.id)}` : "/";
   fields.openPublicPostLinkSummary.href = href;
   fields.openPublicPostLinkModal.href = href;
 }
@@ -1000,7 +1006,7 @@ fields.homePanelFields.addEventListener("change", () => {
 
 fields.categoryFields.addEventListener("input", () => {
   syncCategoryFields();
-  populateCategorySelect();
+  populateCategorySelect(getCurrentPost()?.category);
   syncCurrentPost();
   renderPostList();
   renderWorkspaceState();
