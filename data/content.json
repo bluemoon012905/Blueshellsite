@@ -99,18 +99,18 @@
       "bodyFormat": "html"
     },
     {
-      "id": "desert-notes",
-      "title": "Desert Notes",
-      "category": "art",
-      "date": "2026-02-26",
-      "summary": "Short field notes from walking at dusk and paying attention on purpose.",
+      "id": "wipmultiplayerclock",
+      "title": "Multiplayer clocks (like more than 2!)",
+      "category": "projects",
+      "date": "2026-03-19",
+      "summary": "A project that seems easy but made me question what is real",
       "featured": false,
       "tags": [
-        "journal",
-        "phoenix",
-        "observation"
+        "hobby",
+        "simple",
+        "WIP"
       ],
-      "body": "<h2>Entry</h2><p>The light was flat until the last ten minutes, then every pale rock started reflecting peach and silver at once.</p><p>I am trying to get better at recording details before they become opinions.</p><h2>Reminder</h2><p>Not every useful note needs to become content. Some of them only need to sharpen the next one.</p>",
+      "body": "<h2>How it started</h2><div><br></div><h2>Where we are</h2><div><br></div><p><br></p>",
       "published": false,
       "bodyFormat": "html"
     },
