@@ -71,11 +71,12 @@ function applyDeviceMode() {
 
 async function initializeTurtleAppearance() {
   const useVariant = Math.random() < 0.2;
-  const isFastSpin = Math.random() < 0.2;
+  // const isFastSpin = Math.random() < 0.2;
   const turtleVariants = await discoverTurtleVariants();
   state.turtleImageSrc =
     useVariant && turtleVariants.length ? pickRandom(turtleVariants) : DEFAULT_TURTLE_IMAGE;
-  state.turtleSpinDuration = isFastSpin ? randomBetween(0.9, 2.4) : randomBetween(8.5, 13.5);
+  // state.turtleSpinDuration = isFastSpin ? randomBetween(0.9, 2.4) : randomBetween(8.5, 13.5);
+  state.turtleSpinDuration = 10;
 }
 
 async function discoverTurtleVariants() {
