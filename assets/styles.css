@@ -123,13 +123,37 @@ a {
 
 .brand-turtle {
   object-fit: contain;
-  animation: spin-right 10s linear infinite;
   transform-origin: center;
+  transition: transform 220ms ease;
+}
+
+.brand-turtle.is-flipped {
+  transform: scaleX(-1);
 }
 
 .brand-turtle-mobile {
   width: 42px;
   height: 42px;
+}
+
+.turtle-button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.turtle-spin {
+  display: inline-flex;
+  animation: spin-right var(--spin-duration, 10s) linear infinite;
+  transform-origin: center;
+}
+
+.turtle-button-mobile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-turtle-wrap {
@@ -138,7 +162,6 @@ a {
   top: 50%;
   transform: translateY(-50%);
   z-index: 0;
-  pointer-events: none;
 }
 
 .brand-turtle-desktop {

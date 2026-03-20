@@ -14,8 +14,27 @@ const state = {
   search: "",
   category: "all",
   deviceMode: "desktop",
+  turtleFlipped: false,
+  turtleImageSrc: "assets/images/turtle.png",
+  turtleSpinDuration: 10,
 };
 const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+const TURTLE_VARIANTS = [
+  "assets/images/turtle-variants/turtle_100.png",
+  "assets/images/turtle-variants/turtle_book.png",
+  "assets/images/turtle-variants/turtle_cheese.png",
+  "assets/images/turtle-variants/turtle_cowboy.png",
+  "assets/images/turtle-variants/turtle_fishing.png",
+  "assets/images/turtle-variants/turtle_fortune.png",
+  "assets/images/turtle-variants/turtle_frog.png",
+  "assets/images/turtle-variants/turtle_glasses.png",
+  "assets/images/turtle-variants/turtle_infinity.png",
+  "assets/images/turtle-variants/turtle_melon.png",
+  "assets/images/turtle-variants/turtle_moon.png",
+  "assets/images/turtle-variants/turtle_poop.png",
+  "assets/images/turtle-variants/turtle_scholar.png",
+  "assets/images/turtle-variants/turtle_scropion.png",
+];
 
 const elements = {
   hero: document.getElementById("hero"),
@@ -30,6 +49,7 @@ const elements = {
 
 async function loadContent() {
   applyDeviceMode();
+  initializeTurtleAppearance();
   const response = await fetch("data/content.json", { cache: "no-store" });
   if (!response.ok) {
     throw new Error("Could not load content.");
@@ -63,21 +83,36 @@ function applyDeviceMode() {
   document.body.dataset.device = state.deviceMode;
 }
 
+function initializeTurtleAppearance() {
+  const useVariant = Math.random() < 0.2;
+  const isFastSpin = Math.random() < 0.2;
+  state.turtleImageSrc = useVariant ? pickRandom(TURTLE_VARIANTS) : "assets/images/turtle.png";
+  state.turtleSpinDuration = isFastSpin ? randomBetween(0.9, 2.4) : randomBetween(8.5, 13.5);
+}
+
 function renderHero() {
   const { site } = state.content;
   const archiveCount = getPublishedPosts().length;
   document.title = site.title;
   const aboutPageHref = "/about/";
+  const turtleFlipClass = state.turtleFlipped ? " is-flipped" : "";
+  const turtleSpinStyle = `style="--spin-duration: ${state.turtleSpinDuration.toFixed(2)}s;"`;
   const mobileTurtle =
     state.deviceMode === "mobile"
-      ? `<img class="brand-turtle brand-turtle-mobile" src="assets/images/turtle.png" alt="" aria-hidden="true" />`
+      ? `<button class="turtle-button turtle-button-mobile" type="button" aria-label="Flip turtle">
+          <span class="turtle-spin" ${turtleSpinStyle} aria-hidden="true">
+            <img class="brand-turtle brand-turtle-mobile${turtleFlipClass}" src="${state.turtleImageSrc}" alt="" />
+          </span>
+        </button>`
       : "";
   const desktopTurtle =
     state.deviceMode === "desktop"
       ? `
-        <div class="hero-turtle-wrap" aria-hidden="true">
-          <img class="brand-turtle brand-turtle-desktop" src="assets/images/turtle.png" alt="" />
-        </div>
+        <button class="hero-turtle-wrap turtle-button" type="button" aria-label="Flip turtle">
+          <span class="turtle-spin" ${turtleSpinStyle} aria-hidden="true">
+            <img class="brand-turtle brand-turtle-desktop${turtleFlipClass}" src="${state.turtleImageSrc}" alt="" />
+          </span>
+        </button>
       `
       : "";
   const localOnlyActions = isLocalEnvironment
@@ -114,6 +149,27 @@ function renderHero() {
       </div>
     </div>
   `;
+  bindTurtleFlip();
+}
+
+function bindTurtleFlip() {
+  const turtleButton = document.querySelector(".turtle-button");
+  if (!turtleButton) {
+    return;
+  }
+
+  turtleButton.addEventListener("click", () => {
+    state.turtleFlipped = !state.turtleFlipped;
+    renderHero();
+  });
+}
+
+function pickRandom(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function randomBetween(min, max) {
+  return min + Math.random() * (max - min);
 }
 
 function renderCategories() {
