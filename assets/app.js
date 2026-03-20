@@ -21,6 +21,27 @@ const state = {
 const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
 const DEFAULT_TURTLE_IMAGE = "assets/images/turtle.png";
 const TURTLE_VARIANTS_DIR = "/assets/images/turtle-variants/";
+const STATIC_TURTLE_VARIANTS = [
+  "assets/images/turtle-variants/turtle_100.png",
+  "assets/images/turtle-variants/turtle_book.png",
+  "assets/images/turtle-variants/turtle_cheese.png",
+  "assets/images/turtle-variants/turtle_chicken.png",
+  "assets/images/turtle-variants/turtle_cowboy.png",
+  "assets/images/turtle-variants/turtle_explode.png",
+  "assets/images/turtle-variants/turtle_fishing.png",
+  "assets/images/turtle-variants/turtle_fortune.png",
+  "assets/images/turtle-variants/turtle_frog.png",
+  "assets/images/turtle-variants/turtle_glasses.png",
+  "assets/images/turtle-variants/turtle_headphone.png",
+  "assets/images/turtle-variants/turtle_infinity.png",
+  "assets/images/turtle-variants/turtle_melon.png",
+  "assets/images/turtle-variants/turtle_moon.png",
+  "assets/images/turtle-variants/turtle_poop.png",
+  "assets/images/turtle-variants/turtle_scholar.png",
+  "assets/images/turtle-variants/turtle_scropion.png",
+  "assets/images/turtle-variants/turtle_sprial.png",
+  "assets/images/turtle-variants/turtle_volleyball.png",
+];
 
 const elements = {
   hero: document.getElementById("hero"),
@@ -83,19 +104,22 @@ async function discoverTurtleVariants() {
   try {
     const response = await fetch("/api/image-assets", { cache: "no-store" });
     if (!response.ok) {
-      return [];
+      return STATIC_TURTLE_VARIANTS;
     }
 
     const payload = await response.json();
     if (!payload.ok || !Array.isArray(payload.assets)) {
-      return [];
+      return STATIC_TURTLE_VARIANTS;
     }
 
-    return payload.assets
+    const apiVariants = payload.assets
       .map((asset) => asset.path)
-      .filter((path) => typeof path === "string" && path.startsWith(TURTLE_VARIANTS_DIR));
+      .filter((path) => typeof path === "string" && path.startsWith(TURTLE_VARIANTS_DIR))
+      .map((path) => path.slice(1));
+
+    return apiVariants.length ? apiVariants : STATIC_TURTLE_VARIANTS;
   } catch {
-    return [];
+    return STATIC_TURTLE_VARIANTS;
   }
 }
 
