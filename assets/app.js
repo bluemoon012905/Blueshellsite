@@ -19,22 +19,8 @@ const state = {
   turtleSpinDuration: 10,
 };
 const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
-const TURTLE_VARIANTS = [
-  "assets/images/turtle-variants/turtle_100.png",
-  "assets/images/turtle-variants/turtle_book.png",
-  "assets/images/turtle-variants/turtle_cheese.png",
-  "assets/images/turtle-variants/turtle_cowboy.png",
-  "assets/images/turtle-variants/turtle_fishing.png",
-  "assets/images/turtle-variants/turtle_fortune.png",
-  "assets/images/turtle-variants/turtle_frog.png",
-  "assets/images/turtle-variants/turtle_glasses.png",
-  "assets/images/turtle-variants/turtle_infinity.png",
-  "assets/images/turtle-variants/turtle_melon.png",
-  "assets/images/turtle-variants/turtle_moon.png",
-  "assets/images/turtle-variants/turtle_poop.png",
-  "assets/images/turtle-variants/turtle_scholar.png",
-  "assets/images/turtle-variants/turtle_scropion.png",
-];
+const DEFAULT_TURTLE_IMAGE = "assets/images/turtle.png";
+const TURTLE_VARIANTS_DIR = "/assets/images/turtle-variants/";
 
 const elements = {
   hero: document.getElementById("hero"),
@@ -49,7 +35,7 @@ const elements = {
 
 async function loadContent() {
   applyDeviceMode();
-  initializeTurtleAppearance();
+  await initializeTurtleAppearance();
   const response = await fetch("data/content.json", { cache: "no-store" });
   if (!response.ok) {
     throw new Error("Could not load content.");
@@ -83,11 +69,33 @@ function applyDeviceMode() {
   document.body.dataset.device = state.deviceMode;
 }
 
-function initializeTurtleAppearance() {
+async function initializeTurtleAppearance() {
   const useVariant = Math.random() < 0.2;
   const isFastSpin = Math.random() < 0.2;
-  state.turtleImageSrc = useVariant ? pickRandom(TURTLE_VARIANTS) : "assets/images/turtle.png";
+  const turtleVariants = await discoverTurtleVariants();
+  state.turtleImageSrc =
+    useVariant && turtleVariants.length ? pickRandom(turtleVariants) : DEFAULT_TURTLE_IMAGE;
   state.turtleSpinDuration = isFastSpin ? randomBetween(0.9, 2.4) : randomBetween(8.5, 13.5);
+}
+
+async function discoverTurtleVariants() {
+  try {
+    const response = await fetch("/api/image-assets", { cache: "no-store" });
+    if (!response.ok) {
+      return [];
+    }
+
+    const payload = await response.json();
+    if (!payload.ok || !Array.isArray(payload.assets)) {
+      return [];
+    }
+
+    return payload.assets
+      .map((asset) => asset.path)
+      .filter((path) => typeof path === "string" && path.startsWith(TURTLE_VARIANTS_DIR));
+  } catch {
+    return [];
+  }
 }
 
 function renderHero() {
