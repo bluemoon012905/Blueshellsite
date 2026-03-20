@@ -15,8 +15,8 @@ async function loadAbout() {
   const rawEmail = String(site.contactHref || "").trim();
   const email = rawEmail.replace(/^mailto:/i, "");
 
-  document.title = `${site.contactLabel || "About me"} | ${site.title || "Blue's collection"}`;
-  document.getElementById("about-title").textContent = site.title || "About me";
+  document.title = `${site.contactLabel || "About me"} | Blue`;
+  document.getElementById("about-title").textContent = "Blue";
   document.getElementById("about-body").textContent = site.about || "";
   document.getElementById("about-email-text").textContent = email || "No email set yet.";
 

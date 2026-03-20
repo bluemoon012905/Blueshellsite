@@ -1,3 +1,25 @@
+.about-hero::after {
+  inset: 50% 24px auto auto;
+  width: 340px;
+  height: 340px;
+  transform: translateY(-50%) rotate(-18deg);
+  z-index: 0;
+}
+
+.about-hero .hero-nav {
+  position: relative;
+  z-index: 2;
+}
+
+.about-turtle-wrap {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.about-turtle-mobile {
+  display: none;
+}
+
 .contact-links {
   display: grid;
   gap: 14px;
@@ -88,4 +110,10 @@
 .contact-icon .fill {
   fill: currentColor;
   stroke: none;
+}
+
+@media (max-width: 768px) {
+  .about-turtle-mobile {
+    display: inline-block;
+  }
 }
