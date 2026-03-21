@@ -49,6 +49,7 @@ Homepage sections:
 6. Optional custom homepage panels from the editor
 
 The detailed outline lives in `docs/site-outline.md`.
+That document also includes panel layout guidance for when sections should stay side by side versus stack.
 
 ## Run locally
 

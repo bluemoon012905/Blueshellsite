@@ -29,6 +29,19 @@ Blue Shell Almanac is a static website that works as a project journal and blog 
    - Short paragraph explaining the site approach
    - Contact link
 
+## Panel Layout Rules
+
+Panels should follow a few consistent layout rules across the site:
+
+- Treat each panel as a self-contained content block with comfortable internal padding and a readable max line length.
+- Text should never compete with decorative media for the same horizontal space.
+- If a panel mixes a large image or media stage with text, switch to a stacked layout before the text area becomes cramped.
+- Prefer stacking early rather than waiting for overlap, crowding, or visually hidden text.
+- In stacked layouts, center the media block and keep it slightly smaller than full width when that improves readability.
+- Keep supporting copy constrained to a readable width instead of stretching edge to edge.
+- Mobile should not be the only breakpoint for stacking. Mid-width tablet and small laptop ranges should also stack when the two-column layout is no longer comfortable.
+- Decorative elements should scale down or drop out before they interfere with navigation, headings, or body copy.
+
 ## Post Structure
 
 Each post contains:
