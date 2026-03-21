@@ -1,4 +1,9 @@
 const { escapeHtml, formatDate, renderPostBody } = window.BlueshellContent;
+const speechState = {
+  supported: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
+  active: false,
+  utterance: null,
+};
 
 loadPost().catch((error) => {
   document.getElementById("post-hero").innerHTML = `
@@ -59,6 +64,84 @@ async function loadPost() {
       <span class="tag">${formatDate(post.date)}</span>
       ${(post.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
     </div>
+    <div class="post-audio-controls">
+      <button class="ghost-link post-audio-button" type="button" ${speechState.supported ? "" : "disabled"}>
+        ${speechState.supported ? "Read aloud" : "Read aloud unavailable"}
+      </button>
+    </div>
     <div class="post-body">${renderPostBody(post)}</div>
   `;
+
+  bindReadAloud(post);
+}
+
+function bindReadAloud(post) {
+  const button = document.querySelector(".post-audio-button");
+  const postBody = document.querySelector(".post-body");
+  if (!button || !postBody || !speechState.supported) {
+    return;
+  }
+
+  const speechText = buildSpeechText(post, postBody);
+  if (!speechText.trim()) {
+    button.disabled = true;
+    button.textContent = "Nothing to read";
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  speechState.active = false;
+  speechState.utterance = null;
+  updateReadAloudButton(button);
+
+  button.addEventListener("click", () => {
+    if (speechState.active) {
+      stopReading(button);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.onend = () => {
+      speechState.active = false;
+      speechState.utterance = null;
+      updateReadAloudButton(button);
+    };
+    utterance.onerror = () => {
+      speechState.active = false;
+      speechState.utterance = null;
+      updateReadAloudButton(button);
+    };
+
+    window.speechSynthesis.cancel();
+    speechState.utterance = utterance;
+    speechState.active = true;
+    updateReadAloudButton(button);
+    window.speechSynthesis.speak(utterance);
+  });
+
+  window.addEventListener(
+    "beforeunload",
+    () => {
+      window.speechSynthesis.cancel();
+    },
+    { once: true }
+  );
+}
+
+function buildSpeechText(post, postBody) {
+  const bodyText = postBody.textContent.replace(/\s+/g, " ").trim();
+  return [post.title, post.summary, bodyText].filter(Boolean).join(". ");
+}
+
+function stopReading(button) {
+  window.speechSynthesis.cancel();
+  speechState.active = false;
+  speechState.utterance = null;
+  updateReadAloudButton(button);
+}
+
+function updateReadAloudButton(button) {
+  button.textContent = speechState.active ? "Stop reading" : "Read aloud";
 }

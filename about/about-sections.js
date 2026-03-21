@@ -186,7 +186,9 @@ function renderMakingSection() {
           <h2 id="making-heading">Projects I keep coming back to</h2>
         </div>
       </div>
-      <div class="custom-panel-body"></div>
+      <div class="custom-panel-body">
+        <p>Under construction.</p>
+      </div>
     </section>
   `;
 }
@@ -200,7 +202,9 @@ function renderInterestsSection() {
           <h2 id="interests-heading">Things I like outside the assignment brief</h2>
         </div>
       </div>
-      <div class="custom-panel-body"></div>
+      <div class="custom-panel-body">
+        <p>Under construction.</p>
+      </div>
     </section>
   `;
 }
