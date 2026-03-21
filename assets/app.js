@@ -178,7 +178,7 @@ function renderHero() {
             ? `<a class="pill-link" href="#archive-heading">${archiveCount} posts in the archive</a>`
             : ""
         }
-        <a class="ghost-link" href="${aboutPageHref}">${escapeHtml(site.contactLabel)}</a>
+        <a class="ghost-link hero-contact-link" href="${aboutPageHref}">${escapeHtml(site.contactLabel)}</a>
       </div>
     </div>
   `;
@@ -333,7 +333,14 @@ function renderAbout() {
       <p class="eyebrow">${escapeHtml(site.aboutEyebrow || "About this archive")}</p>
       <p>${escapeHtml(site.about)}</p>
     </div>
-    <a class="pill-link" href="/about/">${escapeHtml(site.contactLabel)}</a>
+    <div class="hero-actions">
+      <a class="pill-link" href="/about/">${escapeHtml(site.contactLabel)}</a>
+      ${
+        site.feedbackHref
+          ? `<a class="ghost-link" href="${escapeAttribute(site.feedbackHref)}" target="_blank" rel="noreferrer">Leave feedback</a>`
+          : ""
+      }
+    </div>
   `;
 }
 

@@ -241,6 +241,19 @@ textarea {
   background: rgba(255, 255, 255, 0.4);
 }
 
+.hero-contact-link {
+  border-color: rgba(184, 86, 42, 0.3);
+  background: rgba(184, 86, 42, 0.14);
+  color: var(--accent);
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(184, 86, 42, 0.12);
+}
+
+.hero-contact-link:hover {
+  background: rgba(184, 86, 42, 0.2);
+  border-color: rgba(184, 86, 42, 0.42);
+}
+
 .main-layout {
   display: grid;
   gap: 24px;

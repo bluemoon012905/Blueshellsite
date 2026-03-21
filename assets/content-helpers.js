@@ -58,6 +58,22 @@ const BlueshellContent = {
     const lines = markdown.split("\n");
     const fragments = [];
     let listItems = [];
+    const renderInlineText = (text) => {
+      const urlPattern = /(https?:\/\/[^\s<]+)/g;
+      let html = "";
+      let lastIndex = 0;
+
+      for (const match of text.matchAll(urlPattern)) {
+        const [url] = match;
+        const index = match.index ?? 0;
+        html += BlueshellContent.escapeHtml(text.slice(lastIndex, index));
+        html += `<a href="${BlueshellContent.escapeAttribute(url)}" target="_blank" rel="noreferrer">${BlueshellContent.escapeHtml(url)}</a>`;
+        lastIndex = index + url.length;
+      }
+
+      html += BlueshellContent.escapeHtml(text.slice(lastIndex));
+      return html;
+    };
 
     const flushList = () => {
       if (!listItems.length) {
@@ -87,12 +103,12 @@ const BlueshellContent = {
       }
 
       if (line.startsWith("- ")) {
-        listItems.push(BlueshellContent.escapeHtml(line.slice(2)));
+        listItems.push(renderInlineText(line.slice(2)));
         continue;
       }
 
       flushList();
-      fragments.push(`<p>${BlueshellContent.escapeHtml(line)}</p>`);
+      fragments.push(`<p>${renderInlineText(line)}</p>`);
     }
 
     flushList();

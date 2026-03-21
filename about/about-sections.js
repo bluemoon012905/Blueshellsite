@@ -177,13 +177,78 @@ function renderAsuSection() {
   `;
 }
 
+function renderMakingSection() {
+  return `
+    <section class="section" aria-labelledby="making-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">What I'm making</p>
+          <h2 id="making-heading">Projects I keep coming back to</h2>
+        </div>
+      </div>
+      <div class="custom-panel-body">
+        <p>
+          Right now I am mostly focused on building small software projects that
+          help me learn by doing. I like making things that feel personal,
+          slightly playful, and actually usable instead of just being practice
+          exercises.
+        </p>
+        <p>
+          A lot of my work sits somewhere between programming, design, and
+          experimentation. Sometimes that means school projects, sometimes it
+          means tools for myself, and sometimes it is just an idea I want to see
+          on screen.
+        </p>
+        <p>
+          I am especially interested in projects where I can improve both the
+          technical side and the presentation at the same time.
+        </p>
+      </div>
+    </section>
+  `;
+}
+
+function renderInterestsSection() {
+  return `
+    <section class="section" aria-labelledby="interests-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Interests</p>
+          <h2 id="interests-heading">Things I like outside the assignment brief</h2>
+        </div>
+      </div>
+      <div class="custom-panel-body">
+        <p>
+          I like spaces where technical work and personal taste overlap. That
+          includes visual design, digital art, writing, internet aesthetics, and
+          projects that have a strong point of view instead of feeling generic.
+        </p>
+        <p>
+          I am also drawn to work that feels curious and a little strange in a
+          good way. If something teaches me a new skill while also letting me
+          make it look and feel memorable, I usually want to try it.
+        </p>
+        <p>
+          This site is meant to hold all of that in one place: school work,
+          experiments, creative projects, and whatever I am learning next.
+        </p>
+      </div>
+    </section>
+  `;
+}
+
 function renderAboutPage(site) {
   const rawEmail = String(site.contactHref || "").trim();
   const email = rawEmail.replace(/^mailto:/i, "");
 
   return {
     hero: renderAboutHero(site),
-    sections: [renderAsuSection(), renderContactSection(email)].join(""),
+    sections: [
+      renderAsuSection(),
+      renderMakingSection(),
+      renderInterestsSection(),
+      renderContactSection(email),
+    ].join(""),
     email,
   };
 }
