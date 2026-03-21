@@ -1,8 +1,10 @@
-const { escapeHtml, formatDate, renderPostBody } = window.BlueshellContent;
+const { escapeHtml, formatDate, renderPostBody, escapeAttribute } = window.BlueshellContent;
 const speechState = {
   supported: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
   active: false,
   utterance: null,
+  selectedVoiceURI: "",
+  voices: [],
 };
 
 loadPost().catch((error) => {
@@ -65,9 +67,17 @@ async function loadPost() {
       ${(post.tags || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
     </div>
     <div class="post-audio-controls">
-      <button class="ghost-link post-audio-button" type="button" ${speechState.supported ? "" : "disabled"}>
-        ${speechState.supported ? "Read aloud" : "Read aloud unavailable"}
-      </button>
+      <div class="post-audio-main">
+        <button class="ghost-link post-audio-button" type="button" ${speechState.supported ? "" : "disabled"}>
+          ${speechState.supported ? "Read aloud" : "Read aloud unavailable"}
+        </button>
+        <label class="post-voice-picker">
+          <span class="visually-hidden">Select voice</span>
+          <select class="post-voice-select" ${speechState.supported ? "" : "disabled"}>
+            <option value="">Default voice</option>
+          </select>
+        </label>
+      </div>
     </div>
     <div class="post-body">${renderPostBody(post)}</div>
   `;
@@ -77,8 +87,9 @@ async function loadPost() {
 
 function bindReadAloud(post) {
   const button = document.querySelector(".post-audio-button");
+  const voiceSelect = document.querySelector(".post-voice-select");
   const postBody = document.querySelector(".post-body");
-  if (!button || !postBody || !speechState.supported) {
+  if (!button || !voiceSelect || !postBody || !speechState.supported) {
     return;
   }
 
@@ -89,37 +100,26 @@ function bindReadAloud(post) {
     return;
   }
 
-  window.speechSynthesis.cancel();
-  speechState.active = false;
-  speechState.utterance = null;
-  updateReadAloudButton(button);
-
+  hydrateVoiceList(voiceSelect);
+  voiceSelect.addEventListener("change", (event) => {
+    speechState.selectedVoiceURI = event.target.value;
+  });
   button.addEventListener("click", () => {
     if (speechState.active) {
       stopReading(button);
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(speechText);
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.onend = () => {
-      speechState.active = false;
-      speechState.utterance = null;
-      updateReadAloudButton(button);
-    };
-    utterance.onerror = () => {
-      speechState.active = false;
-      speechState.utterance = null;
-      updateReadAloudButton(button);
-    };
-
-    window.speechSynthesis.cancel();
-    speechState.utterance = utterance;
-    speechState.active = true;
-    updateReadAloudButton(button);
-    window.speechSynthesis.speak(utterance);
+    speakText({
+      text: speechText,
+      triggerButton: button,
+    });
   });
+
+  window.speechSynthesis.cancel();
+  speechState.active = false;
+  speechState.utterance = null;
+  updateAudioButton(button);
 
   window.addEventListener(
     "beforeunload",
@@ -130,18 +130,85 @@ function bindReadAloud(post) {
   );
 }
 
+function hydrateVoiceList(select) {
+  const populateVoices = () => {
+    const voices = window.speechSynthesis.getVoices();
+    speechState.voices = voices;
+    const selectedValue = speechState.selectedVoiceURI;
+    const voiceOptions = voices
+      .map((voice) => {
+        const label = `${voice.name} (${voice.lang})${voice.default ? " - default" : ""}`;
+        return `<option value="${escapeAttribute(voice.voiceURI)}">${escapeHtml(label)}</option>`;
+      })
+      .join("");
+
+    select.innerHTML = `<option value="">Default voice</option>${voiceOptions}`;
+    if (selectedValue && voices.some((voice) => voice.voiceURI === selectedValue)) {
+      select.value = selectedValue;
+      speechState.selectedVoiceURI = selectedValue;
+      return;
+    }
+
+    const defaultVoice = voices.find((voice) => voice.default) || voices[0];
+    if (defaultVoice) {
+      select.value = defaultVoice.voiceURI;
+      speechState.selectedVoiceURI = defaultVoice.voiceURI;
+    }
+  };
+
+  populateVoices();
+  window.speechSynthesis.addEventListener("voiceschanged", populateVoices, { once: true });
+}
+
 function buildSpeechText(post, postBody) {
   const bodyText = postBody.textContent.replace(/\s+/g, " ").trim();
   return [post.title, post.summary, bodyText].filter(Boolean).join(". ");
+}
+
+function speakText({ text, triggerButton }) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1;
+  utterance.pitch = 1;
+
+  const selectedVoice = getSelectedVoice();
+  if (selectedVoice) {
+    utterance.voice = selectedVoice;
+    utterance.lang = selectedVoice.lang;
+  }
+
+  utterance.onend = () => {
+    speechState.active = false;
+    speechState.utterance = null;
+    updateAudioButton(document.querySelector(".post-audio-button"));
+  };
+  utterance.onerror = () => {
+    speechState.active = false;
+    speechState.utterance = null;
+    updateAudioButton(document.querySelector(".post-audio-button"));
+  };
+
+  window.speechSynthesis.cancel();
+  speechState.utterance = utterance;
+  speechState.active = true;
+  updateAudioButton(triggerButton);
+  window.speechSynthesis.speak(utterance);
 }
 
 function stopReading(button) {
   window.speechSynthesis.cancel();
   speechState.active = false;
   speechState.utterance = null;
-  updateReadAloudButton(button);
+  updateAudioButton(button);
 }
 
-function updateReadAloudButton(button) {
-  button.textContent = speechState.active ? "Stop reading" : "Read aloud";
+function updateAudioButton(primaryButton) {
+  const readButton = document.querySelector(".post-audio-button");
+  if (readButton) {
+    readButton.textContent = speechState.active && primaryButton === readButton ? "Stop reading" : "Read aloud";
+    readButton.disabled = !speechState.supported;
+  }
+}
+
+function getSelectedVoice() {
+  return speechState.voices.find((voice) => voice.voiceURI === speechState.selectedVoiceURI) || null;
 }

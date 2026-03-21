@@ -379,7 +379,18 @@ textarea {
 }
 
 .post-audio-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   margin-top: 16px;
+}
+
+.post-audio-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
 }
 
 .post-audio-button {
@@ -388,6 +399,31 @@ textarea {
   background: rgba(184, 86, 42, 0.1);
   color: var(--accent);
   font-weight: 700;
+}
+
+.post-voice-picker {
+  display: inline-flex;
+}
+
+.post-voice-select {
+  min-height: 46px;
+  min-width: 210px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 42px 0 16px;
+  color: var(--ink);
+  font: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%235a5d66' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 8px;
+}
+
+.post-voice-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 }
 
 .post-audio-button:disabled {
@@ -585,7 +621,8 @@ textarea {
   }
 
   .search-field input,
-  .filter-field select {
+  .filter-field select,
+  .post-voice-select {
     min-width: min(100%, 280px);
     width: 100%;
   }
