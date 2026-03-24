@@ -39,7 +39,15 @@ async function loadCategory() {
     .sort(categoryHelpers.byNewestDate);
 
   document.title = `${category.name} | ${content.site?.title || "Blue's collection"}`;
-  document.getElementById("category-hero").innerHTML = `
+  const heroClassNames = ["hero"];
+  const heroDecoration = renderCategoryHeroDecoration(categoryId);
+  if (heroDecoration) {
+    heroClassNames.push("hero-with-decoration");
+  }
+
+  const heroElement = document.getElementById("category-hero");
+  heroElement.className = heroClassNames.join(" ");
+  heroElement.innerHTML = `
     <div class="hero-nav">
       <div class="brand-mark">
         <span>${categoryHelpers.escapeHtml(content.site?.brandMark || content.site?.title || "Blue's collection")}</span>
@@ -51,6 +59,7 @@ async function loadCategory() {
       <h1>${categoryHelpers.escapeHtml(category.name)}</h1>
       <p>${categoryHelpers.escapeHtml(category.description || "")}</p>
     </div>
+    ${heroDecoration}
   `;
 
   document.getElementById("category-heading").textContent = `${posts.length} post${posts.length === 1 ? "" : "s"} in ${category.name}`;
@@ -70,5 +79,21 @@ function renderPostCard(post, categoryName) {
         ${(post.tags || []).map((tag) => `<span class="tag">${categoryHelpers.escapeHtml(tag)}</span>`).join("")}
       </div>
     </a>
+  `;
+}
+
+function renderCategoryHeroDecoration(categoryId) {
+  if (categoryId !== "projects") {
+    return "";
+  }
+
+  return `
+    <div class="category-hero-decoration" aria-hidden="true">
+      <img
+        class="category-hero-decoration-image"
+        src="../assets/images/turtle-variants/turtle_book.png"
+        alt=""
+      />
+    </div>
   `;
 }
