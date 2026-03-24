@@ -68,6 +68,23 @@
   ],
   "posts": [
     {
+      "id": "goqrcodermaker",
+      "title": "Go themed QR code maker",
+      "category": "projects",
+      "date": "2026-03-24",
+      "summary": "A simple that returns things to its origin",
+      "published": false,
+      "featured": true,
+      "tags": [
+        "Website",
+        "Static hosting",
+        "online presence",
+        "simple"
+      ],
+      "bodyFormat": "html",
+      "body": "<h2>What to do:&nbsp;</h2><div>GitHub Repo:&nbsp;</div><div><p><a class=\"post-link-button\" href=\"https://github.com/bluemoon012905/Go-stone-QR-code/blob/main/README.md\" target=\"_blank\" rel=\"noreferrer\"><img class=\"post-link-button-logo\" src=\"/assets/images/post-buttons/githublogo.png\" alt=\"\" aria-hidden=\"true\">View repo</a></p><p>Play with it yourself:&nbsp;</p><p><a class=\"post-link-button\" href=\"https://bluemoon012905.github.io/Go-stone-QR-code/\" target=\"_blank\" rel=\"noreferrer\"><img class=\"post-link-button-logo\" src=\"/assets/images/turtle.png\" alt=\"\" aria-hidden=\"true\">Try it out!</a></p></div>"
+    },
+    {
       "id": "websitelore",
       "title": "How did we get to Yuda.work?",
       "category": "projects",
