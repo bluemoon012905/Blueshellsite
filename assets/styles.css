@@ -542,7 +542,15 @@ textarea {
 .post-body h2,
 .post-body h3 {
   margin: 32px 0 10px;
-  font-size: 1.8rem;
+}
+
+.post-body h2 {
+  font-size: 2rem;
+}
+
+.post-body h3 {
+  font-size: 1.45rem;
+  line-height: 1.15;
 }
 
 .post-body ul {

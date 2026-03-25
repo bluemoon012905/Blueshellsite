@@ -385,6 +385,16 @@ button.danger {
   line-height: 0.95;
 }
 
+.preview-body h2 {
+  font-size: 1.8rem;
+  line-height: 1.04;
+}
+
+.preview-body h3 {
+  font-size: 1.35rem;
+  line-height: 1.12;
+}
+
 .preview-summary,
 .preview-body p,
 .preview-body li {
@@ -593,6 +603,16 @@ button.danger {
 .rich-editor h2,
 .rich-editor h3 {
   font-family: "Fraunces", serif;
+}
+
+.rich-editor h2 {
+  font-size: 1.9rem;
+  line-height: 1.04;
+}
+
+.rich-editor h3 {
+  font-size: 1.4rem;
+  line-height: 1.12;
 }
 
 .rich-editor img,
