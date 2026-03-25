@@ -339,17 +339,19 @@ textarea {
 .category-grid,
 .featured-grid,
 .post-grid {
-  display: grid;
   gap: 18px;
 }
 
 .category-grid {
+  display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .featured-grid,
 .post-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-count: 2;
+  column-gap: 18px;
+  align-items: start;
 }
 
 .category-card,
@@ -363,6 +365,13 @@ textarea {
     transform 180ms ease,
     border-color 180ms ease,
     box-shadow 180ms ease;
+}
+
+.featured-grid > *,
+.post-grid > * {
+  break-inside: avoid;
+  display: block;
+  margin-bottom: 18px;
 }
 
 .category-card:hover,
@@ -673,6 +682,10 @@ textarea {
   .category-grid,
   .featured-grid,
   .post-grid {
+    column-count: 2;
+  }
+
+  .category-grid {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -717,6 +730,7 @@ textarea {
   .featured-grid,
   .post-grid {
     grid-template-columns: 1fr;
+    column-count: 1;
   }
 
   .search-field input,
