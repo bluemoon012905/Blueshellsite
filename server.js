@@ -7,6 +7,7 @@ const rootDir = __dirname;
 const contentPath = path.join(rootDir, "data", "content.json");
 const assetsImagesDir = path.join(rootDir, "assets", "images");
 const postButtonsDir = path.join(assetsImagesDir, "post-buttons");
+const postCoversDir = path.join(assetsImagesDir, "post-covers");
 const port = process.env.PORT || 4321;
 const host = process.env.HOST || "127.0.0.1";
 
@@ -138,12 +139,13 @@ function listImageAssets(response) {
 async function saveImageAsset(request, response) {
   try {
     const rawBody = await readBody(request);
-    const { filename, dataUrl } = JSON.parse(rawBody);
+    const { filename, dataUrl, collection } = JSON.parse(rawBody);
     const parsedUpload = parseImageUpload(filename, dataUrl);
-    fs.mkdirSync(postButtonsDir, { recursive: true });
+    const targetDir = getImageCollectionDir(collection);
+    fs.mkdirSync(targetDir, { recursive: true });
 
-    const finalName = getUniqueUploadName(parsedUpload.filename);
-    const filePath = path.join(postButtonsDir, finalName);
+    const finalName = getUniqueUploadName(targetDir, parsedUpload.filename);
+    const filePath = path.join(targetDir, finalName);
     fs.writeFileSync(filePath, parsedUpload.buffer);
 
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
@@ -178,6 +180,14 @@ function walkImageAssets(startDir) {
     }
   });
   return files;
+}
+
+function getImageCollectionDir(collection) {
+  if (collection === "post-covers") {
+    return postCoversDir;
+  }
+
+  return postButtonsDir;
 }
 
 function isImageFilename(filename) {
@@ -223,13 +233,13 @@ function normalizeImageExtension(mimeType) {
   return extension;
 }
 
-function getUniqueUploadName(filename) {
+function getUniqueUploadName(targetDir, filename) {
   const extension = path.extname(filename);
   const baseName = path.basename(filename, extension);
   let candidate = filename;
   let counter = 1;
 
-  while (fs.existsSync(path.join(postButtonsDir, candidate))) {
+  while (fs.existsSync(path.join(targetDir, candidate))) {
     counter += 1;
     candidate = `${baseName}-${counter}${extension}`;
   }

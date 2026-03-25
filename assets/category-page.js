@@ -69,8 +69,16 @@ async function loadCategory() {
 }
 
 function renderPostCard(post, categoryName) {
+  const coverImage = categoryHelpers.getSafeImageSource(post.coverImage);
   return `
     <a class="post-card" href="/post/?post=${encodeURIComponent(post.id)}">
+      ${
+        coverImage
+          ? `<img class="post-card-cover" src="${categoryHelpers.escapeAttribute(coverImage)}" alt="${categoryHelpers.escapeAttribute(
+              post.title || "Post cover image"
+            )}" />`
+          : ""
+      }
       <span class="post-chip">${categoryHelpers.escapeHtml(categoryName)}</span>
       <h3>${categoryHelpers.escapeHtml(post.title)}</h3>
       <p>${categoryHelpers.escapeHtml(post.summary)}</p>

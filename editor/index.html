@@ -203,6 +203,15 @@
                 <span>Summary</span>
                 <textarea id="post-summary" rows="3"></textarea>
               </label>
+              <label class="full-width">
+                <span>Cover image path or URL</span>
+                <input id="post-cover-image" type="text" placeholder="/assets/images/example.png" />
+              </label>
+              <div class="full-width cover-image-tools">
+                <button id="upload-cover-image-button" type="button" class="secondary-ink">Upload cover</button>
+                <span class="cover-image-hint">Or paste an image from your clipboard while the cover field is focused.</span>
+                <input id="cover-image-upload-input" type="file" accept="image/*" class="visually-hidden" />
+              </div>
             </div>
             <div class="rich-editor-shell">
               <div class="rich-editor-head">
@@ -235,6 +244,7 @@
                 <button type="button" data-command="justifyLeft">Left</button>
                 <button type="button" data-command="justifyCenter">Center</button>
                 <button id="insert-button-link-button" type="button">Button</button>
+                <button id="insert-citation-link-button" type="button">Citation</button>
                 <label class="toolbar-swatch">
                   <span>Text</span>
                   <input id="text-color-input" type="color" value="#1f2430" />
@@ -303,6 +313,35 @@
         <p id="button-builder-status" class="workspace-copy">Choose an existing image from `assets/images` or upload a new one into `assets/images/post-buttons/`.</p>
         <div class="workspace-actions">
           <button id="save-button-link-button" type="button">Insert button</button>
+        </div>
+      </section>
+    </div>
+    <div id="citation-builder-modal" class="composer-modal hidden" aria-hidden="true">
+      <div id="citation-builder-backdrop" class="composer-backdrop"></div>
+      <section class="composer-panel citation-builder-panel" role="dialog" aria-modal="true" aria-labelledby="citation-builder-title">
+        <div class="composer-head">
+          <div>
+            <p class="eyebrow">Inline citation</p>
+            <h2 id="citation-builder-title">Insert citation</h2>
+            <p class="composer-copy">Drop a quiet inline reference link into the current sentence without turning it into a big callout.</p>
+          </div>
+          <div class="composer-head-actions">
+            <button id="close-citation-builder-button" type="button" class="secondary-ink">Close</button>
+          </div>
+        </div>
+        <div class="form-grid post-grid">
+          <label>
+            <span>Citation label</span>
+            <input id="citation-label-input" type="text" placeholder="source" />
+          </label>
+          <label>
+            <span>Link URL</span>
+            <input id="citation-url-input" type="url" placeholder="https://example.com" />
+          </label>
+        </div>
+        <p id="citation-builder-status" class="workspace-copy">This inserts a small inline citation link at your cursor position.</p>
+        <div class="workspace-actions">
+          <button id="save-citation-link-button" type="button">Insert citation</button>
         </div>
       </section>
     </div>

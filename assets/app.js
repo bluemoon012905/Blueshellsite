@@ -7,6 +7,7 @@ const {
   sanitizeRichHtml,
   escapeHtml,
   escapeAttribute,
+  getSafeImageSource,
 } = window.BlueshellContent;
 
 const state = {
@@ -313,8 +314,14 @@ function renderSectionHeading(panel, headingId) {
 
 function renderPostCard(post) {
   const categoryName = getCategoryName(post.category);
+  const coverImage = getSafeImageSource(post.coverImage);
   return `
     <a class="post-card" href="/post/?post=${encodeURIComponent(post.id)}">
+      ${
+        coverImage
+          ? `<img class="post-card-cover" src="${escapeAttribute(coverImage)}" alt="${escapeAttribute(post.title || "Post cover image")}" />`
+          : ""
+      }
       <span class="post-chip">${escapeHtml(categoryName)}</span>
       <h3>${escapeHtml(post.title)}</h3>
       <p>${escapeHtml(post.summary)}</p>

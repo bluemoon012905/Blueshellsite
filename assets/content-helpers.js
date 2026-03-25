@@ -197,6 +197,24 @@ const BlueshellContent = {
     return BlueshellContent.renderMarkdown(post.body || "");
   },
 
+  getSafeImageSource(value) {
+    if (typeof value !== "string") {
+      return "";
+    }
+
+    const normalized = value.trim();
+    if (
+      normalized.startsWith("data:image/") ||
+      normalized.startsWith("http://") ||
+      normalized.startsWith("https://") ||
+      normalized.startsWith("/")
+    ) {
+      return normalized;
+    }
+
+    return "";
+  },
+
   escapeHtml(value) {
     return String(value)
       .replaceAll("&", "&amp;")

@@ -150,6 +150,24 @@ const BlueshellEditorHelpers = {
     return cleaned || "<p></p>";
   },
 
+  getSafeImageSource(value) {
+    if (typeof value !== "string") {
+      return "";
+    }
+
+    const normalized = value.trim();
+    if (
+      normalized.startsWith("data:image/") ||
+      normalized.startsWith("http://") ||
+      normalized.startsWith("https://") ||
+      normalized.startsWith("/")
+    ) {
+      return normalized;
+    }
+
+    return "";
+  },
+
   readFileAsDataUrl(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();

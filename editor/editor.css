@@ -262,6 +262,18 @@ button.danger {
   gap: 12px;
 }
 
+.cover-image-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.cover-image-hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .checkbox-row input {
   width: auto;
 }
@@ -628,6 +640,10 @@ button.danger {
   width: min(720px, calc(100vw - 32px));
 }
 
+.citation-builder-panel {
+  width: min(640px, calc(100vw - 32px));
+}
+
 .post-link-button,
 .preview-body .post-link-button,
 .rich-editor .post-link-button {
@@ -647,6 +663,31 @@ button.danger {
 .preview-body .post-link-button:hover,
 .rich-editor .post-link-button:hover {
   background: rgba(31, 36, 48, 0.06);
+}
+
+.post-citation,
+.preview-body .post-citation,
+.rich-editor .post-citation {
+  margin-left: 0.18em;
+  font-size: 0.72em;
+  line-height: 1;
+  vertical-align: super;
+  white-space: nowrap;
+}
+
+.post-citation a,
+.preview-body .post-citation a,
+.rich-editor .post-citation a {
+  color: rgba(31, 36, 48, 0.62);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(31, 36, 48, 0.22);
+}
+
+.post-citation a:hover,
+.preview-body .post-citation a:hover,
+.rich-editor .post-citation a:hover {
+  color: var(--accent);
+  border-bottom-color: rgba(184, 86, 42, 0.45);
 }
 
 .visually-hidden {

@@ -4,6 +4,7 @@ const {
   getEditableBodyHtml,
   renderPostBody,
   normalizeComposerHtml,
+  getSafeImageSource,
   readFileAsDataUrl,
   slugify,
   escapeHtml,
@@ -17,6 +18,7 @@ const editorState = {
   composerOpen: false,
   composerPreviewVisible: true,
   buttonBuilderOpen: false,
+  citationBuilderOpen: false,
   imageAssets: [],
   savedSelection: null,
   hasUnsavedChanges: false,
@@ -105,6 +107,9 @@ const fields = {
   postPublishState: document.getElementById("post-publish-state"),
   postFeatured: document.getElementById("post-featured"),
   postSummary: document.getElementById("post-summary"),
+  postCoverImage: document.getElementById("post-cover-image"),
+  uploadCoverImageButton: document.getElementById("upload-cover-image-button"),
+  coverImageUploadInput: document.getElementById("cover-image-upload-input"),
   postBodyEditor: document.getElementById("post-body-editor"),
   toolbar: document.querySelector(".toolbar"),
   fontFamilySelect: document.getElementById("font-family-select"),
@@ -112,6 +117,7 @@ const fields = {
   textColorInput: document.getElementById("text-color-input"),
   highlightColorInput: document.getElementById("highlight-color-input"),
   insertButtonLinkButton: document.getElementById("insert-button-link-button"),
+  insertCitationLinkButton: document.getElementById("insert-citation-link-button"),
   buttonBuilderModal: document.getElementById("button-builder-modal"),
   buttonBuilderBackdrop: document.getElementById("button-builder-backdrop"),
   closeButtonBuilderButton: document.getElementById("close-button-builder-button"),
@@ -121,6 +127,13 @@ const fields = {
   buttonLogoSelect: document.getElementById("button-logo-select"),
   buttonLogoUploadInput: document.getElementById("button-logo-upload-input"),
   buttonBuilderStatus: document.getElementById("button-builder-status"),
+  citationBuilderModal: document.getElementById("citation-builder-modal"),
+  citationBuilderBackdrop: document.getElementById("citation-builder-backdrop"),
+  closeCitationBuilderButton: document.getElementById("close-citation-builder-button"),
+  saveCitationLinkButton: document.getElementById("save-citation-link-button"),
+  citationLabelInput: document.getElementById("citation-label-input"),
+  citationUrlInput: document.getElementById("citation-url-input"),
+  citationBuilderStatus: document.getElementById("citation-builder-status"),
 };
 
 async function initEditor() {
@@ -353,6 +366,7 @@ function hydratePostUI(post) {
     fields.postPublishState.value = "published";
     fields.postFeatured.checked = false;
     fields.postSummary.value = "";
+    fields.postCoverImage.value = "";
     fields.postBodyEditor.innerHTML = "";
     renderPostPreview(null);
     updatePublicLinks(null);
@@ -367,6 +381,7 @@ function hydratePostUI(post) {
   fields.postPublishState.value = isPublished(post) ? "published" : "unpublished";
   fields.postFeatured.checked = Boolean(post.featured);
   fields.postSummary.value = post.summary || "";
+  fields.postCoverImage.value = post.coverImage || "";
   fields.postBodyEditor.innerHTML = getEditableBodyHtml(post);
   renderPostPreview(post);
   updatePublicLinks(post);
@@ -418,6 +433,7 @@ function openComposer() {
 function closeComposer() {
   editorState.composerOpen = false;
   closeButtonBuilder();
+  closeCitationBuilder();
   fields.postEditorModal.classList.add("hidden");
   fields.postEditorModal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
@@ -456,6 +472,22 @@ function closeButtonBuilder() {
   fields.buttonLogoUploadInput.value = "";
 }
 
+function openCitationBuilder() {
+  editorState.citationBuilderOpen = true;
+  fields.citationBuilderModal.classList.remove("hidden");
+  fields.citationBuilderModal.setAttribute("aria-hidden", "false");
+  fields.citationBuilderStatus.textContent = "This inserts a small inline citation link at your cursor position.";
+  fields.citationLabelInput.focus();
+}
+
+function closeCitationBuilder() {
+  editorState.citationBuilderOpen = false;
+  fields.citationBuilderModal.classList.add("hidden");
+  fields.citationBuilderModal.setAttribute("aria-hidden", "true");
+  fields.citationLabelInput.value = "";
+  fields.citationUrlInput.value = "";
+}
+
 async function loadImageAssets() {
   const response = await fetch("/api/image-assets", { cache: "no-store" });
   if (!response.ok) {
@@ -471,6 +503,14 @@ async function loadImageAssets() {
 }
 
 async function uploadButtonLogo(file) {
+  return uploadImageAsset(file, "post-buttons");
+}
+
+async function uploadCoverImageAsset(file) {
+  return uploadImageAsset(file, "post-covers");
+}
+
+async function uploadImageAsset(file, collection) {
   const dataUrl = await readFileAsDataUrl(file);
   const response = await fetch("/api/image-assets", {
     method: "POST",
@@ -480,6 +520,7 @@ async function uploadButtonLogo(file) {
     body: JSON.stringify({
       filename: file.name,
       dataUrl,
+      collection,
     }),
   });
 
@@ -502,6 +543,14 @@ function buildPostButtonMarkup({ label, url, logoPath }) {
   return `<p><a class="post-link-button" href="${safeUrl}"${extraAttrs}>${logoHtml}<span>${safeLabel}</span></a></p>`;
 }
 
+function buildCitationMarkup({ label, url }) {
+  const safeLabel = escapeHtml(label || "source");
+  const safeUrl = escapeAttribute(url);
+  const isExternal = /^https?:\/\//i.test(url);
+  const extraAttrs = isExternal ? ` target="_blank" rel="noreferrer"` : "";
+  return `<sup class="post-citation"><a href="${safeUrl}"${extraAttrs}>[${safeLabel}]</a></sup>`;
+}
+
 async function insertCustomButton() {
   const label = fields.buttonLabelInput.value.trim();
   const url = fields.buttonUrlInput.value.trim();
@@ -519,6 +568,17 @@ async function insertCustomButton() {
 
   applyFormatting("insertHTML", buildPostButtonMarkup({ label, url, logoPath }));
   closeButtonBuilder();
+}
+
+function insertCitationLink() {
+  const label = fields.citationLabelInput.value.trim() || "source";
+  const url = fields.citationUrlInput.value.trim();
+  if (!url) {
+    throw new Error("The citation needs a URL.");
+  }
+
+  applyFormatting("insertHTML", buildCitationMarkup({ label, url }));
+  closeCitationBuilder();
 }
 
 function syncSiteFields() {
@@ -677,6 +737,7 @@ function syncCurrentPost() {
   post.published = fields.postPublishState.value === "published";
   post.featured = fields.postFeatured.checked;
   post.summary = fields.postSummary.value.trim();
+  post.coverImage = fields.postCoverImage.value.trim();
   post.body = normalizeComposerHtml(fields.postBodyEditor.innerHTML);
   post.bodyFormat = "html";
 
@@ -714,6 +775,7 @@ function createPost() {
     category: editorState.content.categories[0]?.id || "personal",
     date: new Date().toISOString().slice(0, 10),
     summary: "",
+    coverImage: "",
     published: false,
     featured: false,
     tags: [],
@@ -812,6 +874,7 @@ function renderPostPreview(post) {
   }
 
   const bodyHtml = renderPostBody(post);
+  const coverImage = getSafeImageSource(post.coverImage);
   const markup = `
     <p class="eyebrow">${escapeHtml(getCategoryName(post.category))}</p>
     <h3 class="preview-title">${escapeHtml(post.title || "Untitled")}</h3>
@@ -822,6 +885,11 @@ function renderPostPreview(post) {
       <span class="preview-chip">${post.bodyFormat === "html" ? "Rich HTML" : "Markdown"}</span>
     </div>
     <p class="preview-summary">${escapeHtml(post.summary || "Add a summary to preview the lead text here.")}</p>
+    ${
+      coverImage
+        ? `<img class="preview-cover-image" src="${escapeAttribute(coverImage)}" alt="${escapeAttribute(post.title || "Post cover image")}" />`
+        : ""
+    }
     <div class="preview-tags">
       ${
         (post.tags || []).length
@@ -914,4 +982,16 @@ async function handleImageFile(file) {
   const dataUrl = await readFileAsDataUrl(file);
   const safeAlt = file.name ? escapeAttribute(file.name.replace(/\.[^.]+$/, "")) : "Pasted image";
   applyFormatting("insertHTML", `<figure><img src="${dataUrl}" alt="${safeAlt}" /></figure><p></p>`);
+}
+
+async function setCoverImageFromFile(file) {
+  if (!file) {
+    return;
+  }
+
+  setStatus("Saving cover image...");
+  const coverImagePath = await uploadCoverImageAsset(file);
+  fields.postCoverImage.value = coverImagePath;
+  syncCurrentPost();
+  setStatus("Saved cover image into assets/images/post-covers/");
 }

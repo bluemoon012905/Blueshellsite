@@ -201,6 +201,25 @@ a {
   max-width: min(56ch, calc(100% - 280px));
 }
 
+.post-hero-cover {
+  position: absolute;
+  right: 44px;
+  top: 50%;
+  width: clamp(180px, 26vw, 360px);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.post-hero-cover-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 24px 48px rgba(31, 36, 48, 0.14);
+}
+
 .category-hero-decoration {
   position: absolute;
   right: 44px;
@@ -353,6 +372,16 @@ textarea {
   box-shadow: 0 16px 36px rgba(53, 37, 17, 0.08);
 }
 
+.post-card-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: rgba(31, 36, 48, 0.08);
+}
+
 .category-card h3,
 .post-card h3 {
   margin: 12px 0 10px;
@@ -482,6 +511,15 @@ textarea {
   background: rgba(255, 250, 244, 0.92);
 }
 
+.preview-cover-image {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  margin: 18px 0 4px;
+  border-radius: 18px;
+}
+
 .post-lead {
   font-size: 1.16rem;
   line-height: 1.75;
@@ -534,6 +572,25 @@ textarea {
   margin: 0;
   border-radius: 0;
   vertical-align: middle;
+}
+
+.post-body .post-citation {
+  margin-left: 0.18em;
+  font-size: 0.72em;
+  line-height: 1;
+  vertical-align: super;
+  white-space: nowrap;
+}
+
+.post-body .post-citation a {
+  color: rgba(31, 36, 48, 0.62);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(31, 36, 48, 0.22);
+}
+
+.post-body .post-citation a:hover {
+  color: var(--accent);
+  border-bottom-color: rgba(184, 86, 42, 0.45);
 }
 
 .post-body blockquote {
@@ -604,6 +661,15 @@ textarea {
 }
 
 @media (max-width: 960px) {
+  .post-hero-cover {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: min(100%, 360px);
+    margin-top: 24px;
+    transform: none;
+  }
+
   .category-grid,
   .featured-grid,
   .post-grid {

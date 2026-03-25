@@ -75,6 +75,7 @@ The local editor can:
 - Manage built-in and custom homepage panels
 - Create, edit, preview, and delete categories
 - Create, edit, preview, and delete posts
+- Set an optional cover image per post using an asset path or image URL
 - Edit post bodies in a rich composer with formatting controls and image paste/upload support
 - Toggle the composer preview panel on and off while writing
 - Export a backup JSON file

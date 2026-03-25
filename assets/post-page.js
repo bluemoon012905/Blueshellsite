@@ -1,4 +1,4 @@
-const { escapeHtml, formatDate, renderPostBody, escapeAttribute } = window.BlueshellContent;
+const { escapeHtml, formatDate, renderPostBody, escapeAttribute, getSafeImageSource } = window.BlueshellContent;
 const speechState = {
   supported: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
   active: false,
@@ -42,9 +42,16 @@ async function loadPost() {
 
   const category = (content.categories || []).find((entry) => entry.id === post.category);
   const categoryName = category?.name || post.category;
+  const coverImage = getSafeImageSource(post.coverImage);
+  const heroClassNames = ["hero"];
+  if (coverImage) {
+    heroClassNames.push("hero-with-decoration");
+  }
 
   document.title = `${post.title} | ${content.site?.title || "Blue's collection"}`;
-  document.getElementById("post-hero").innerHTML = `
+  const heroElement = document.getElementById("post-hero");
+  heroElement.className = heroClassNames.join(" ");
+  heroElement.innerHTML = `
     <div class="hero-nav">
       <div class="brand-mark">
         <span>${escapeHtml(content.site?.brandMark || content.site?.title || "Blue's collection")}</span>
@@ -59,6 +66,13 @@ async function loadPost() {
       <h1>${escapeHtml(post.title)}</h1>
       <p>${escapeHtml(post.summary)}</p>
     </div>
+    ${
+      coverImage
+        ? `<div class="post-hero-cover">
+            <img class="post-hero-cover-image" src="${escapeAttribute(coverImage)}" alt="${escapeAttribute(post.title || "Post cover image")}" />
+          </div>`
+        : ""
+    }
   `;
 
   document.getElementById("post-shell").innerHTML = `

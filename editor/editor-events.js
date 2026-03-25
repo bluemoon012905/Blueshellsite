@@ -44,6 +44,7 @@ fields.categoryFields.addEventListener("input", () => {
   fields.postDate,
   fields.postTags,
   fields.postSummary,
+  fields.postCoverImage,
 ].forEach((field) => {
   field.addEventListener("input", () => {
     syncCurrentPost();
@@ -130,10 +131,45 @@ fields.insertButtonLinkButton.addEventListener("click", async () => {
   }
 });
 
+fields.insertCitationLinkButton.addEventListener("click", () => {
+  openCitationBuilder();
+});
+
 fields.imageUploadInput.addEventListener("change", async (event) => {
   const [file] = event.target.files || [];
   await handleImageFile(file);
   event.target.value = "";
+});
+
+fields.uploadCoverImageButton.addEventListener("click", () => {
+  fields.coverImageUploadInput.click();
+});
+
+fields.coverImageUploadInput.addEventListener("change", async (event) => {
+  try {
+    const [file] = event.target.files || [];
+    await setCoverImageFromFile(file);
+  } catch (error) {
+    setStatus(error.message);
+  } finally {
+    event.target.value = "";
+  }
+});
+
+fields.postCoverImage.addEventListener("paste", async (event) => {
+  const items = [...(event.clipboardData?.items || [])];
+  const imageItem = items.find((item) => item.type.startsWith("image/"));
+  if (!imageItem) {
+    return;
+  }
+
+  event.preventDefault();
+  try {
+    const file = imageItem.getAsFile();
+    await setCoverImageFromFile(file);
+  } catch (error) {
+    setStatus(error.message);
+  }
 });
 
 fields.postList.addEventListener("click", (event) => {
@@ -202,11 +238,27 @@ fields.buttonBuilderBackdrop.addEventListener("click", () => {
   closeButtonBuilder();
 });
 
+fields.closeCitationBuilderButton.addEventListener("click", () => {
+  closeCitationBuilder();
+});
+
+fields.citationBuilderBackdrop.addEventListener("click", () => {
+  closeCitationBuilder();
+});
+
 fields.saveButtonLinkButton.addEventListener("click", async () => {
   try {
     await insertCustomButton();
   } catch (error) {
     fields.buttonBuilderStatus.textContent = error.message;
+  }
+});
+
+fields.saveCitationLinkButton.addEventListener("click", () => {
+  try {
+    insertCitationLink();
+  } catch (error) {
+    fields.citationBuilderStatus.textContent = error.message;
   }
 });
 
@@ -230,6 +282,11 @@ fields.saveButton.addEventListener("click", async () => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && editorState.buttonBuilderOpen) {
     closeButtonBuilder();
+    return;
+  }
+
+  if (event.key === "Escape" && editorState.citationBuilderOpen) {
+    closeCitationBuilder();
     return;
   }
 
