@@ -91,17 +91,29 @@ function renderPostCard(post, categoryName) {
 }
 
 function renderCategoryHeroDecoration(categoryId) {
-  if (categoryId !== "projects") {
-    return "";
+  if (categoryId === "projects") {
+    return `
+      <div class="category-hero-decoration" aria-hidden="true">
+        <img
+          class="category-hero-decoration-image"
+          src="../assets/images/turtle-variants/turtle_book.png"
+          alt=""
+        />
+      </div>
+    `;
   }
 
-  return `
-    <div class="category-hero-decoration" aria-hidden="true">
-      <img
-        class="category-hero-decoration-image"
-        src="../assets/images/turtle-variants/turtle_book.png"
-        alt=""
-      />
-    </div>
-  `;
+  if (categoryId === "Research") {
+    return `
+      <div class="category-hero-decoration" aria-hidden="true">
+        <img
+          class="category-hero-decoration-image"
+          src="../assets/images/turtle_DNA.png"
+          alt=""
+        />
+      </div>
+    `;
+  }
+
+  return "";
 }
