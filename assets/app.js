@@ -57,6 +57,7 @@ const elements = {
 
 async function loadContent() {
   applyDeviceMode();
+  renderTopBanner();
   await initializeTurtleAppearance();
   const response = await fetch("data/content.json", { cache: "no-store" });
   if (!response.ok) {
@@ -126,20 +127,17 @@ async function discoverTurtleVariants() {
 
 function renderHero() {
   const { site } = state.content;
-  const archiveCount = getPublishedPosts().length;
   document.title = site.title;
   const aboutPageHref = "/about/";
+  const outlinePanel = (site.homepagePanels || []).find((entry) => entry.id === "outline");
+  const featuredPanel = (site.homepagePanels || []).find((entry) => entry.id === "featured");
+  const featuredPosts = getPublishedPosts()
+    .filter((post) => post.featured)
+    .sort(byNewestDate)
+    .slice(0, 4);
   const turtleFlipClass = state.turtleFlipped ? " is-flipped" : "";
   const turtleSpinStyle = `style="--spin-duration: ${state.turtleSpinDuration.toFixed(2)}s;"`;
-  const mobileTurtle =
-    state.deviceMode === "mobile"
-      ? `<button class="turtle-button turtle-button-mobile" type="button" aria-label="Flip turtle">
-          <span class="turtle-spin" ${turtleSpinStyle} aria-hidden="true">
-            <img class="brand-turtle brand-turtle-mobile${turtleFlipClass}" src="${state.turtleImageSrc}" alt="" />
-          </span>
-        </button>`
-      : "";
-  const desktopTurtle =
+  const slideTurtle =
     state.deviceMode === "desktop"
       ? `
         <button class="hero-turtle-wrap turtle-button" type="button" aria-label="Flip turtle">
@@ -148,42 +146,97 @@ function renderHero() {
           </span>
         </button>
       `
-      : "";
-  const localOnlyActions = isLocalEnvironment
-    ? `
-      <div class="hero-actions">
-        <a class="ghost-link" href="#archive-heading">Browse archive</a>
-        <a class="pill-link" href="/editor/">Open local editor</a>
-      </div>
-    `
-    : "";
-
+      : `
+        <div class="hero-slide-mobile-turtle">
+          <button class="turtle-button turtle-button-mobile" type="button" aria-label="Flip turtle">
+            <span class="turtle-spin" ${turtleSpinStyle} aria-hidden="true">
+              <img class="brand-turtle brand-turtle-mobile${turtleFlipClass}" src="${state.turtleImageSrc}" alt="" />
+            </span>
+          </button>
+        </div>
+      `;
   const hero = document.querySelector(".hero");
   hero.innerHTML = `
-    ${desktopTurtle}
     <div class="hero-nav">
       <div class="brand-mark">
         <span>${escapeHtml(site.brandMark || site.title)}</span>
-        ${mobileTurtle}
       </div>
-      ${localOnlyActions}
     </div>
-    <div class="hero-copy">
-      <p class="eyebrow">${escapeHtml(site.heroEyebrow || "Project journal")}</p>
-      <h1>${escapeHtml(site.title)}</h1>
-      <p>${escapeHtml(site.tagline)}</p>
-      <p>${escapeHtml(site.intro)}</p>
-      <div class="hero-actions">
-        ${
-          isLocalEnvironment
-            ? `<a class="pill-link" href="#archive-heading">${archiveCount} posts in the archive</a>`
-            : ""
-        }
-        <a class="ghost-link hero-contact-link" href="${aboutPageHref}">${escapeHtml(site.contactLabel)}</a>
+    <div class="hero-carousel">
+      <div class="hero-carousel-track" tabindex="0" aria-label="Homepage highlights">
+        <section class="hero-slide hero-slide-intro">
+          ${slideTurtle}
+          <div class="hero-copy">
+            <p class="eyebrow">${escapeHtml(site.heroEyebrow || "Project journal")}</p>
+            <h1>${escapeHtml(site.title)}</h1>
+            <p>${escapeHtml(site.tagline)}</p>
+            <p>${escapeHtml(site.intro)}</p>
+            <div class="hero-actions">
+              <a class="ghost-link hero-contact-link" href="${aboutPageHref}">${escapeHtml(site.contactLabel)}</a>
+            </div>
+          </div>
+        </section>
+        <section class="hero-slide hero-slide-panel">
+          <div class="hero-slide-head">
+            <p class="eyebrow">${escapeHtml(outlinePanel?.eyebrow || "Outline")}</p>
+            <h2>${escapeHtml(outlinePanel?.title || "Outline")}</h2>
+          </div>
+          <div class="category-grid hero-slide-category-grid">${renderCategories()}</div>
+        </section>
+        <section class="hero-slide hero-slide-panel">
+          <div class="hero-slide-head">
+            <p class="eyebrow">${escapeHtml(featuredPanel?.eyebrow || "Featured")}</p>
+            <h2>${escapeHtml(featuredPanel?.title || "Current highlights")}</h2>
+          </div>
+          <div class="featured-grid hero-slide-featured-grid">
+            ${
+              featuredPosts.length
+                ? featuredPosts.map(renderPostCard).join("")
+                : `<p class="empty-state">Mark a post as featured in the editor to pin it here.</p>`
+            }
+          </div>
+        </section>
+        <section class="hero-slide hero-slide-panel">
+          <div class="hero-slide-head">
+            <p class="eyebrow">${escapeHtml(site.aboutEyebrow || "About me")}</p>
+            <h2>${escapeHtml(site.contactLabel || "About me")}</h2>
+          </div>
+          <div class="custom-panel-body">
+            <p>${escapeHtml(site.about || "")}</p>
+          </div>
+          <div class="hero-actions">
+            <a class="pill-link" href="/about/">Read more</a>
+          </div>
+        </section>
+      </div>
+      <div class="hero-carousel-dots" aria-label="Hero pages">
+        <button class="hero-dot is-active" type="button" aria-label="Go to page 1" data-slide-index="0"></button>
+        <button class="hero-dot" type="button" aria-label="Go to page 2" data-slide-index="1"></button>
+        <button class="hero-dot" type="button" aria-label="Go to page 3" data-slide-index="2"></button>
+        <button class="hero-dot" type="button" aria-label="Go to page 4" data-slide-index="3"></button>
       </div>
     </div>
   `;
   bindTurtleFlip();
+  bindHeroCarousel();
+}
+
+function renderTopBanner() {
+  const banner = document.querySelector(".top-banner");
+  if (!banner) {
+    return;
+  }
+
+  const existingLocalLink = banner.querySelector('[data-local-editor-link="true"]');
+  if (isLocalEnvironment && !existingLocalLink) {
+    banner.insertAdjacentHTML(
+      "beforeend",
+      '<a class="top-banner-link" data-local-editor-link="true" href="/editor/">Local editor</a>'
+    );
+  }
+  if (!isLocalEnvironment && existingLocalLink) {
+    existingLocalLink.remove();
+  }
 }
 
 function bindTurtleFlip() {
@@ -196,6 +249,35 @@ function bindTurtleFlip() {
     state.turtleFlipped = !state.turtleFlipped;
     renderHero();
   });
+}
+
+function bindHeroCarousel() {
+  const track = document.querySelector(".hero-carousel-track");
+  const dots = [...document.querySelectorAll(".hero-dot")];
+  if (!track || !dots.length) {
+    return;
+  }
+
+  const updateActiveDot = () => {
+    const slideWidth = track.clientWidth || 1;
+    const nextIndex = Math.round(track.scrollLeft / slideWidth);
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("is-active", index === nextIndex);
+    });
+  };
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      const index = Number(dot.dataset.slideIndex || 0);
+      track.scrollTo({
+        left: track.clientWidth * index,
+        behavior: "smooth",
+      });
+    });
+  });
+
+  track.addEventListener("scroll", updateActiveDot, { passive: true });
+  updateActiveDot();
 }
 
 function pickRandom(items) {
@@ -242,6 +324,10 @@ function renderHomepageSections() {
   const panels = (state.content.site.homepagePanels || []).filter((panel) => panel.enabled !== false);
   elements.homepageSections.innerHTML = panels
     .map((panel) => {
+      if (panel.id === "outline" || panel.id === "featured") {
+        return "";
+      }
+
       if (panel.type === "category-overview") {
         return `
           <section class="section" aria-labelledby="category-heading">
