@@ -68,6 +68,19 @@
   ],
   "posts": [
     {
+      "id": "new-post",
+      "title": "Reading a Clock",
+      "category": "projects",
+      "date": "2026-03-28",
+      "summary": "",
+      "coverImage": "",
+      "published": false,
+      "featured": false,
+      "tags": [],
+      "bodyFormat": "html",
+      "body": "<h2>Start here</h2><p>Write the first draft of this post.</p>"
+    },
+    {
       "id": "goqrcodermaker",
       "title": "Go themed QR code maker",
       "category": "projects",
@@ -130,7 +143,8 @@
       ],
       "body": "<h2>How it started</h2><div><br></div><h2>Where we are</h2><div><br></div><p><br></p>",
       "published": false,
-      "bodyFormat": "html"
+      "bodyFormat": "html",
+      "coverImage": ""
     },
     {
       "id": "notes-on-voice",
@@ -146,7 +160,8 @@
       ],
       "body": "<h2>Starting point</h2><p>I used to think voice was a finish you applied at the end. It feels closer to pressure now: what you notice, what you omit, what rhythm you trust, and how much risk you allow into the sentence.</p><h2>Working rule</h2><p>Write closer to the real temperature of the thought. Clean it up later, but do not cool it down too early.</p>",
       "published": false,
-      "bodyFormat": "html"
+      "bodyFormat": "html",
+      "coverImage": ""
     }
   ]
 }
