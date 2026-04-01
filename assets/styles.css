@@ -1,6 +1,6 @@
 :root {
-  --bg: #d6dde7;
-  --bg-strong: #bcc9d8;
+  --bg: #c9dff3;
+  --bg-strong: #9fc1e1;
   --surface: rgba(235, 241, 247, 0.78);
   --surface-strong: #f5f8fc;
   --ink: #101a28;
@@ -34,10 +34,11 @@ body {
   background:
     linear-gradient(rgba(16, 26, 40, 0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(16, 26, 40, 0.06) 1px, transparent 1px),
-    radial-gradient(circle at top left, rgba(77, 143, 196, 0.28), transparent 34%),
-    radial-gradient(circle at top right, rgba(33, 93, 143, 0.2), transparent 28%),
-    linear-gradient(180deg, #e7edf4 0%, var(--bg) 100%);
-  background-size: 28px 28px, 28px 28px, auto, auto, auto;
+    radial-gradient(circle at top left, rgba(88, 164, 224, 0.42), transparent 36%),
+    radial-gradient(circle at top right, rgba(40, 111, 174, 0.3), transparent 30%),
+    radial-gradient(circle at bottom center, rgba(126, 181, 231, 0.22), transparent 42%),
+    linear-gradient(180deg, #ecf5ff 0%, var(--bg) 52%, var(--bg-strong) 100%);
+  background-size: 28px 28px, 28px 28px, auto, auto, auto, auto;
 }
 
 body[data-device="mobile"] {
