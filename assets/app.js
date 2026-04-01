@@ -128,7 +128,7 @@ async function discoverTurtleVariants() {
 function renderHero() {
   const { site } = state.content;
   document.title = site.title;
-  const aboutPageHref = "/about/";
+  const contactPageHref = "/contact/";
   const outlinePanel = (site.homepagePanels || []).find((entry) => entry.id === "outline");
   const featuredPanel = (site.homepagePanels || []).find((entry) => entry.id === "featured");
   const featuredPosts = getPublishedPosts()
@@ -161,6 +161,10 @@ function renderHero() {
       <div class="brand-mark">
         <span>${escapeHtml(site.brandMark || site.title)}</span>
       </div>
+      <div class="hero-carousel-arrows" aria-label="Hero navigation">
+        <button class="hero-arrow" type="button" aria-label="Previous panel" data-hero-direction="prev">&lt;</button>
+        <button class="hero-arrow" type="button" aria-label="Next panel" data-hero-direction="next">&gt;</button>
+      </div>
     </div>
     <div class="hero-carousel">
       <div class="hero-carousel-track" tabindex="0" aria-label="Homepage highlights">
@@ -171,8 +175,8 @@ function renderHero() {
             <h1>${escapeHtml(site.title)}</h1>
             <p>${escapeHtml(site.tagline)}</p>
             <p>${escapeHtml(site.intro)}</p>
-            <div class="hero-actions">
-              <a class="ghost-link hero-contact-link" href="${aboutPageHref}">${escapeHtml(site.contactLabel)}</a>
+            <div class="hero-actions hero-actions-intro">
+              <button class="pill-link hero-next-button" type="button">Take a look!</button>
             </div>
           </div>
         </section>
@@ -215,7 +219,7 @@ function renderHero() {
         <button class="hero-dot" type="button" aria-label="Go to page 3" data-slide-index="2"></button>
         <button class="hero-dot" type="button" aria-label="Go to page 4" data-slide-index="3"></button>
       </div>
-      <p class="hero-carousel-page-indicator" aria-live="polite">01 / 04</p>
+      <p class="hero-carousel-page-indicator" aria-live="polite">01 | 04</p>
     </div>
   `;
   bindTurtleFlip();
@@ -256,6 +260,8 @@ function bindHeroCarousel() {
   const track = document.querySelector(".hero-carousel-track");
   const dots = [...document.querySelectorAll(".hero-dot")];
   const pageIndicator = document.querySelector(".hero-carousel-page-indicator");
+  const nextButton = document.querySelector(".hero-next-button");
+  const arrowButtons = [...document.querySelectorAll(".hero-arrow")];
   if (!track || !dots.length) {
     return;
   }
@@ -267,7 +273,7 @@ function bindHeroCarousel() {
       dot.classList.toggle("is-active", index === nextIndex);
     });
     if (pageIndicator) {
-      pageIndicator.textContent = `${String(nextIndex + 1).padStart(2, "0")} / ${String(dots.length).padStart(2, "0")}`;
+      pageIndicator.textContent = `${String(nextIndex + 1).padStart(2, "0")} | ${String(dots.length).padStart(2, "0")}`;
     }
   };
 
@@ -276,6 +282,28 @@ function bindHeroCarousel() {
       const index = Number(dot.dataset.slideIndex || 0);
       track.scrollTo({
         left: track.clientWidth * index,
+        behavior: "smooth",
+      });
+    });
+  });
+
+  if (nextButton) {
+    nextButton.addEventListener("click", () => {
+      track.scrollTo({
+        left: track.clientWidth,
+        behavior: "smooth",
+      });
+    });
+  }
+
+  arrowButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const direction = button.dataset.heroDirection === "prev" ? -1 : 1;
+      const slideWidth = track.clientWidth || 1;
+      const currentIndex = Math.round(track.scrollLeft / slideWidth);
+      const nextIndex = Math.max(0, Math.min(dots.length - 1, currentIndex + direction));
+      track.scrollTo({
+        left: slideWidth * nextIndex,
         behavior: "smooth",
       });
     });

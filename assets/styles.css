@@ -109,6 +109,12 @@ a {
   font-size: 0.78rem;
 }
 
+.top-banner-link[aria-current="page"] {
+  background: rgba(16, 26, 40, 0.16);
+  border-color: rgba(16, 26, 40, 0.5);
+  font-weight: 700;
+}
+
 .hero > *,
 .section > *,
 .post-view > * {
@@ -119,7 +125,7 @@ a {
 .hero::after {
   content: "";
   position: absolute;
-  right: 116px;
+  left: 108px;
   top: 50%;
   width: 300px;
   height: 300px;
@@ -144,10 +150,38 @@ a {
   gap: 12px;
 }
 
+.hero-actions-intro {
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+.hero-next-button {
+  min-height: 56px;
+  padding: 0 24px;
+  font-size: 0.98rem;
+}
+
 .hero-nav {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 56px;
+}
+
+.hero-carousel-arrows {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-arrow {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid rgba(16, 26, 40, 0.32);
+  background: rgba(245, 248, 252, 0.46);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
 }
 
 .brand-mark,
@@ -208,7 +242,7 @@ a {
 
 .hero-turtle-wrap {
   position: absolute;
-  right: 96px;
+  left: 88px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
@@ -242,9 +276,14 @@ a {
 }
 
 .hero-copy {
-  max-width: 720px;
+  max-width: min(46ch, calc(100% - 140px));
+  margin-left: auto;
   position: relative;
   z-index: 1;
+  min-height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 14px;
 }
 
 .hero-with-decoration .hero-copy {
@@ -292,7 +331,7 @@ a {
 }
 
 .hero p {
-  max-width: 58ch;
+  max-width: 42ch;
   font-size: 1.05rem;
   line-height: 1.7;
   color: var(--muted);
@@ -361,7 +400,7 @@ textarea {
 
 .hero-carousel {
   display: grid;
-  gap: 10px;
+  gap: 6px;
 }
 
 .hero-carousel-track {
@@ -383,7 +422,7 @@ textarea {
   width: 100%;
   min-width: 100%;
   max-width: 100%;
-  min-height: 420px;
+  min-height: 360px;
   padding: 4px 0;
   scroll-snap-align: start;
   display: grid;
@@ -392,6 +431,8 @@ textarea {
 
 .hero-slide-intro {
   position: relative;
+  padding-left: clamp(120px, 20vw, 260px);
+  padding-right: 0;
 }
 
 .hero-slide-panel {
@@ -434,6 +475,7 @@ textarea {
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+  margin-top: 12px;
 }
 
 .hero-dot {
@@ -452,12 +494,12 @@ textarea {
 }
 
 .hero-carousel-page-indicator {
-  margin: -2px 0 0;
-  text-align: right;
+  margin: 4px 0 0;
+  text-align: center;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 0.78rem;
+  font-size: 0.92rem;
 }
 
 .section,
@@ -882,6 +924,11 @@ textarea {
     margin-bottom: 36px;
   }
 
+  .hero-carousel-arrows {
+    align-self: stretch;
+    justify-content: flex-end;
+  }
+
   .top-banner {
     justify-content: flex-end;
   }
@@ -898,6 +945,12 @@ textarea {
 
   .hero-with-decoration .hero-copy {
     max-width: 100%;
+  }
+
+  .hero-copy,
+  .hero-slide-intro {
+    max-width: 100%;
+    padding-right: 0;
   }
 
   .category-hero-decoration {

@@ -73,9 +73,25 @@ function renderAboutHero(site) {
       <a class="ghost-link" href="/">Back home</a>
     </div>
     <div class="hero-copy">
-      <p class="eyebrow">Contact</p>
+      <p class="eyebrow">About</p>
       <h1 id="about-title">Blue</h1>
       <p id="about-body">${escapeHtml(site.about || "")}</p>
+    </div>
+  `;
+}
+
+function renderContactHero(site) {
+  return `
+    <div class="hero-nav">
+      <div class="brand-mark">
+        <span>${escapeHtml(site.contactLabel || "Contact")}</span>
+      </div>
+      <a class="ghost-link" href="/about/">About me</a>
+    </div>
+    <div class="hero-copy">
+      <p class="eyebrow">Contact</p>
+      <h1 id="contact-title">Reach out</h1>
+      <p>Want to say hi, put in a commission, or collaborate on a project? Reach out to me with one of the ways below!</p>
     </div>
   `;
 }
@@ -210,21 +226,28 @@ function renderInterestsSection() {
 }
 
 function renderAboutPage(site) {
-  const rawEmail = String(site.contactHref || "").trim();
-  const email = rawEmail.replace(/^mailto:/i, "");
-
   return {
     hero: renderAboutHero(site),
     sections: [
       renderAsuSection(),
       renderMakingSection(),
       renderInterestsSection(),
-      renderContactSection(email),
     ].join(""),
+  };
+}
+
+function renderContactPage(site) {
+  const rawEmail = String(site.contactHref || "").trim();
+  const email = rawEmail.replace(/^mailto:/i, "");
+
+  return {
+    hero: renderContactHero(site),
+    sections: renderContactSection(email),
     email,
   };
 }
 
 window.BlueshellAboutSections = {
   renderAboutPage,
+  renderContactPage,
 };
