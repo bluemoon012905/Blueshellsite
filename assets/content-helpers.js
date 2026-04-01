@@ -1,4 +1,5 @@
 const BlueshellContent = {
+  isLocalEnvironment: ["localhost", "127.0.0.1", ""].includes(window.location.hostname),
   DEFAULT_HOME_PANELS: [
     {
       id: "outline",
@@ -226,6 +227,107 @@ const BlueshellContent = {
 
   escapeAttribute(value) {
     return BlueshellContent.escapeHtml(value);
+  },
+
+  initLocalDebugPanels() {
+    if (!BlueshellContent.isLocalEnvironment) {
+      return;
+    }
+
+    const storageKey = "blueshell-debug-panels";
+    const banner = document.querySelector(".top-banner");
+    if (banner && !banner.querySelector('[data-local-debug-toggle="true"]')) {
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "top-banner-link top-banner-button";
+      toggle.dataset.localDebugToggle = "true";
+      banner.append(toggle);
+
+      toggle.addEventListener("click", () => {
+        const enabled = !document.body.classList.contains("debug-panels");
+        document.body.classList.toggle("debug-panels", enabled);
+        try {
+          window.localStorage.setItem(storageKey, enabled ? "1" : "0");
+        } catch {}
+        BlueshellContent.initLocalDebugPanels();
+      });
+    }
+
+    let enabled = false;
+    try {
+      enabled = window.localStorage.getItem(storageKey) === "1";
+    } catch {}
+    document.body.classList.toggle("debug-panels", enabled);
+
+    const toggle = document.querySelector('[data-local-debug-toggle="true"]');
+    if (toggle) {
+      toggle.textContent = enabled ? "Debug panels: on" : "Debug panels";
+      toggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+    }
+
+    const targets = document.querySelectorAll(".hero, .section, .post-view, .hero-slide, .asu-media-stage, .contact-link");
+    targets.forEach((element, index) => {
+      element.classList.add("debug-panel-target");
+      element.querySelectorAll(":scope > .debug-panel-label").forEach((label) => label.remove());
+
+      const label = document.createElement("span");
+      label.className = "debug-panel-label";
+      label.textContent = BlueshellContent.getDebugPanelName(element, index);
+      element.prepend(label);
+    });
+  },
+
+  getDebugPanelName(element, index) {
+    const explicitName = element.dataset.debugName?.trim();
+    if (explicitName) {
+      return explicitName;
+    }
+
+    const labelledBy = element.getAttribute("aria-labelledby");
+    if (labelledBy) {
+      const source = document.getElementById(labelledBy);
+      const text = source?.textContent?.trim();
+      if (text) {
+        return text;
+      }
+    }
+
+    const ariaLabel = element.getAttribute("aria-label")?.trim();
+    if (ariaLabel) {
+      return ariaLabel;
+    }
+
+    const heading = element.querySelector(":scope h1, :scope h2, :scope h3, :scope .eyebrow, :scope strong");
+    const headingText = heading?.textContent?.trim();
+    if (headingText) {
+      return headingText;
+    }
+
+    if (element.id) {
+      return element.id;
+    }
+
+    if (element.classList.contains("hero-slide-intro")) {
+      return "Hero intro slide";
+    }
+
+    if (element.classList.contains("hero-slide-panel")) {
+      return `Hero panel ${index + 1}`;
+    }
+
+    if (element.classList.contains("hero")) {
+      return "Hero";
+    }
+
+    if (element.classList.contains("section")) {
+      return `Section ${index + 1}`;
+    }
+
+    if (element.classList.contains("contact-link")) {
+      return element.querySelector("strong")?.textContent?.trim() || `Contact link ${index + 1}`;
+    }
+
+    return element.className.split(/\s+/).filter(Boolean)[0] || `Panel ${index + 1}`;
   },
 };
 

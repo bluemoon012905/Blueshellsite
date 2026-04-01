@@ -25,6 +25,7 @@ loadAboutPage().catch(() => {
       <p class="empty-state">Email unavailable.</p>
     </section>
   `;
+  window.BlueshellContent.initLocalDebugPanels();
 });
 
 async function loadAboutPage() {
@@ -42,6 +43,7 @@ async function loadAboutPage() {
   aboutElements.sections.innerHTML = page.sections;
   bindCopyEmail(page.email);
   initializeAsuMotion();
+  window.BlueshellContent.initLocalDebugPanels();
 }
 
 function bindCopyEmail(email) {

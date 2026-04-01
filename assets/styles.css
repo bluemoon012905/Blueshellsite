@@ -109,6 +109,12 @@ a {
   font-size: 0.78rem;
 }
 
+.top-banner-button {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+}
+
 .top-banner-link[aria-current="page"] {
   background: rgba(16, 26, 40, 0.16);
   border-color: rgba(16, 26, 40, 0.5);
@@ -269,15 +275,17 @@ a {
 }
 
 .hero h1 {
-  max-width: 10ch;
+  max-width: min(10ch, 100%);
   margin: 0 0 20px;
   font-size: clamp(3.2rem, 7vw, 6.8rem);
   line-height: 1.04;
+  overflow-wrap: anywhere;
 }
 
 .hero-copy {
-  max-width: min(46ch, calc(100% - 140px));
-  margin-left: auto;
+  width: min(46ch, 100%);
+  max-width: 100%;
+  min-width: 0;
   position: relative;
   z-index: 1;
   min-height: 100%;
@@ -405,6 +413,7 @@ textarea {
 
 .hero-carousel-track {
   display: flex;
+  align-items: flex-start;
   gap: 18px;
   width: 100%;
   overflow-x: auto;
@@ -431,8 +440,10 @@ textarea {
 
 .hero-slide-intro {
   position: relative;
+  display: flex;
+  justify-content: flex-end;
   padding-left: clamp(120px, 20vw, 260px);
-  padding-right: 0;
+  padding-right: clamp(24px, 4vw, 48px);
 }
 
 .hero-slide-panel {
@@ -879,6 +890,33 @@ textarea {
   border: 0;
 }
 
+body.debug-panels .debug-panel-target {
+  position: relative;
+  outline: 2px dashed rgba(217, 59, 31, 0.95);
+  outline-offset: -2px;
+}
+
+.debug-panel-label {
+  display: none;
+}
+
+body.debug-panels .debug-panel-label {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 20;
+  display: inline-flex;
+  max-width: calc(100% - 20px);
+  padding: 4px 8px;
+  background: rgba(217, 59, 31, 0.92);
+  color: #fff;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
 @media (max-width: 960px) {
   .post-hero-cover {
     position: relative;
@@ -904,6 +942,36 @@ textarea {
   .about-strip {
     align-items: start;
     flex-direction: column;
+  }
+
+  .hero-turtle-wrap {
+    display: none;
+  }
+
+  .hero-slide-mobile-turtle {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 18px;
+  }
+
+  .hero-slide-intro {
+    display: block;
+    min-height: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .hero-slide {
+    min-height: auto;
+  }
+
+  .hero-copy {
+    width: min(52ch, 100%);
+    min-height: 0;
+  }
+
+  .hero-actions-intro {
+    margin-top: 18px;
   }
 }
 
@@ -931,16 +999,6 @@ textarea {
 
   .top-banner {
     justify-content: flex-end;
-  }
-
-  .hero-turtle-wrap {
-    display: none;
-  }
-
-  .hero-slide-mobile-turtle {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 18px;
   }
 
   .hero-with-decoration .hero-copy {

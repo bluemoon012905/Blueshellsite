@@ -12,6 +12,7 @@ loadContactPage().catch(() => {
   });
   contactElements.hero.innerHTML = page.hero;
   contactElements.sections.innerHTML = page.sections;
+  window.BlueshellContent.initLocalDebugPanels();
 });
 
 async function loadContactPage() {
@@ -28,6 +29,7 @@ async function loadContactPage() {
   contactElements.hero.innerHTML = page.hero;
   contactElements.sections.innerHTML = page.sections;
   bindCopyEmail(page.email);
+  window.BlueshellContent.initLocalDebugPanels();
 }
 
 function bindCopyEmail(email) {

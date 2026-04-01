@@ -19,7 +19,7 @@ const state = {
   turtleImageSrc: "assets/images/turtle.png",
   turtleSpinDuration: 10,
 };
-const isLocalEnvironment = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+const isLocalEnvironment = window.BlueshellContent.isLocalEnvironment;
 const DEFAULT_TURTLE_IMAGE = "assets/images/turtle.png";
 const TURTLE_VARIANTS_DIR = "/assets/images/turtle-variants/";
 const STATIC_TURTLE_VARIANTS = [
@@ -57,6 +57,7 @@ const elements = {
 
 async function loadContent() {
   applyDeviceMode();
+  window.BlueshellContent.initLocalDebugPanels();
   renderTopBanner();
   await initializeTurtleAppearance();
   const response = await fetch("data/content.json", { cache: "no-store" });
@@ -84,6 +85,7 @@ function renderPage() {
   renderHero();
   renderHomepageSections();
   renderAbout();
+  window.BlueshellContent.initLocalDebugPanels();
 }
 
 function applyDeviceMode() {
@@ -168,7 +170,7 @@ function renderHero() {
     </div>
     <div class="hero-carousel">
       <div class="hero-carousel-track" tabindex="0" aria-label="Homepage highlights">
-        <section class="hero-slide hero-slide-intro">
+        <section class="hero-slide hero-slide-intro" data-debug-name="Hero intro slide">
           ${slideTurtle}
           <div class="hero-copy">
             <p class="eyebrow">${escapeHtml(site.heroEyebrow || "Project journal")}</p>
@@ -180,14 +182,14 @@ function renderHero() {
             </div>
           </div>
         </section>
-        <section class="hero-slide hero-slide-panel">
+        <section class="hero-slide hero-slide-panel" data-debug-name="Hero outline slide">
           <div class="hero-slide-head">
             <p class="eyebrow">${escapeHtml(outlinePanel?.eyebrow || "Outline")}</p>
             <h2>${escapeHtml(outlinePanel?.title || "Outline")}</h2>
           </div>
           <div class="category-grid hero-slide-category-grid">${renderCategories()}</div>
         </section>
-        <section class="hero-slide hero-slide-panel">
+        <section class="hero-slide hero-slide-panel" data-debug-name="Hero featured slide">
           <div class="hero-slide-head">
             <p class="eyebrow">${escapeHtml(featuredPanel?.eyebrow || "Featured")}</p>
             <h2>${escapeHtml(featuredPanel?.title || "Current highlights")}</h2>
@@ -200,7 +202,7 @@ function renderHero() {
             }
           </div>
         </section>
-        <section class="hero-slide hero-slide-panel">
+        <section class="hero-slide hero-slide-panel" data-debug-name="Hero about slide">
           <div class="hero-slide-head">
             <p class="eyebrow">${escapeHtml(site.aboutEyebrow || "About me")}</p>
             <h2>${escapeHtml(site.contactLabel || "About me")}</h2>
@@ -224,6 +226,7 @@ function renderHero() {
   `;
   bindTurtleFlip();
   bindHeroCarousel();
+  window.BlueshellContent.initLocalDebugPanels();
 }
 
 function renderTopBanner() {
@@ -363,7 +366,7 @@ function renderHomepageSections() {
 
       if (panel.type === "category-overview") {
         return `
-          <section class="section" aria-labelledby="category-heading">
+          <section class="section" aria-labelledby="category-heading" data-debug-name="${escapeAttribute(panel.title || "Category overview")}">
             ${renderSectionHeading(panel, "category-heading")}
             <div class="category-grid">${renderCategories()}</div>
           </section>
@@ -372,7 +375,7 @@ function renderHomepageSections() {
 
       if (panel.type === "featured-posts") {
         return `
-          <section class="section" aria-labelledby="featured-heading">
+          <section class="section" aria-labelledby="featured-heading" data-debug-name="${escapeAttribute(panel.title || "Featured posts")}">
             ${renderSectionHeading(panel, "featured-heading")}
             <div class="featured-grid">${renderFeaturedPosts()}</div>
           </section>
@@ -381,7 +384,7 @@ function renderHomepageSections() {
 
       if (panel.type === "archive-posts") {
         return `
-          <section class="section archive-section" aria-labelledby="archive-heading">
+          <section class="section archive-section" aria-labelledby="archive-heading" data-debug-name="${escapeAttribute(panel.title || "Archive")}">
             <div class="section-heading archive-heading">
               <div>
                 <p class="eyebrow">${escapeHtml(panel.eyebrow || "Archive")}</p>
@@ -405,7 +408,7 @@ function renderHomepageSections() {
       }
 
       return `
-        <section class="section custom-panel" aria-labelledby="${escapeAttribute(panel.id)}-heading">
+        <section class="section custom-panel" aria-labelledby="${escapeAttribute(panel.id)}-heading" data-debug-name="${escapeAttribute(panel.title || panel.id || "Custom panel")}">
           ${renderSectionHeading(panel, `${escapeAttribute(panel.id)}-heading`)}
           <div class="custom-panel-body">${renderMarkdown(panel.body || "")}</div>
         </section>
@@ -417,6 +420,7 @@ function renderHomepageSections() {
   elements.categoryFilter = document.getElementById("category-filter");
   hydrateFilters();
   bindArchiveControls();
+  window.BlueshellContent.initLocalDebugPanels();
 }
 
 function renderSectionHeading(panel, headingId) {
@@ -454,6 +458,7 @@ function renderPostCard(post) {
 
 function renderAbout() {
   const { site } = state.content;
+  elements.aboutStrip.dataset.debugName = "About strip";
   elements.aboutStrip.innerHTML = `
     <div class="about-copy">
       <p class="eyebrow">${escapeHtml(site.aboutEyebrow || "About this archive")}</p>
@@ -468,6 +473,7 @@ function renderAbout() {
       }
     </div>
   `;
+  window.BlueshellContent.initLocalDebugPanels();
 }
 
 function getFilteredPosts() {

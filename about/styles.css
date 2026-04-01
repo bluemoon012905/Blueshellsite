@@ -137,6 +137,25 @@
   line-height: 1.8;
 }
 
+.about-contact-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.about-contact-cta-copy {
+  display: grid;
+  gap: 10px;
+  max-width: 44rem;
+}
+
+.about-contact-cta-copy .eyebrow,
+.about-contact-cta-copy h2,
+.about-contact-cta-copy p {
+  margin: 0;
+}
+
 @media (max-width: 1080px) {
   .asu-panel-grid {
     grid-template-columns: 1fr;
@@ -152,6 +171,11 @@
     max-width: 680px;
     margin: 0 auto;
     padding: 0;
+  }
+
+  .about-contact-cta {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -244,7 +268,7 @@
   stroke: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .about-hero::after {
     width: 260px;
     height: 260px;

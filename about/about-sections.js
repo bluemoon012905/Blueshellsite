@@ -136,7 +136,7 @@ function renderSocialLinks() {
 
 function renderContactSection(email) {
   return `
-    <section class="section" aria-labelledby="reach-out-heading">
+    <section class="section" aria-labelledby="reach-out-heading" data-debug-name="Contact links panel">
       <div class="section-heading">
         <div>
           <h2 id="reach-out-heading">Reach out</h2>
@@ -154,7 +154,7 @@ function renderContactSection(email) {
 
 function renderAsuSection() {
   return `
-    <section class="section asu-panel" aria-labelledby="asu-heading">
+    <section class="section asu-panel" aria-labelledby="asu-heading" data-debug-name="ASU panel">
       <div class="asu-panel-grid">
         <div class="asu-media-stage" aria-hidden="true">
           <img
@@ -195,7 +195,7 @@ function renderAsuSection() {
 
 function renderMakingSection() {
   return `
-    <section class="section" aria-labelledby="making-heading">
+    <section class="section" aria-labelledby="making-heading" data-debug-name="Making panel">
       <div class="section-heading">
         <div>
           <p class="eyebrow">What I'm making</p>
@@ -211,7 +211,7 @@ function renderMakingSection() {
 
 function renderInterestsSection() {
   return `
-    <section class="section" aria-labelledby="interests-heading">
+    <section class="section" aria-labelledby="interests-heading" data-debug-name="Interests panel">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Interests</p>
@@ -225,6 +225,21 @@ function renderInterestsSection() {
   `;
 }
 
+function renderContactCtaSection() {
+  return `
+    <section class="section about-contact-cta" aria-labelledby="about-contact-cta-heading" data-debug-name="About contact CTA">
+      <div class="about-contact-cta-copy">
+        <p class="eyebrow">Next step</p>
+        <h2 id="about-contact-cta-heading">Want to get in touch?</h2>
+        <p>Head over to the contact page if you want to say hi, ask about a project, or start a conversation.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="pill-link" href="/contact/">Go to contact page</a>
+      </div>
+    </section>
+  `;
+}
+
 function renderAboutPage(site) {
   return {
     hero: renderAboutHero(site),
@@ -232,6 +247,7 @@ function renderAboutPage(site) {
       renderAsuSection(),
       renderMakingSection(),
       renderInterestsSection(),
+      renderContactCtaSection(),
     ].join(""),
   };
 }
