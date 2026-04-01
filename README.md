@@ -1,6 +1,7 @@
 # Blueshellsite
 
 A small content-driven site for art, school, personal work, writing, and everything between them.
+Yuda.work
 
 ## What is in this repo
 
