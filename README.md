@@ -1,8 +1,8 @@
 # Blueshellsite
 
 A small content-driven site for art, school, personal work, writing, and everything between them.
-Yuda.work
 
+https://yuda.work/
 ## What is in this repo
 
 - A static public site powered by `data/content.json`
