@@ -361,7 +361,7 @@ textarea {
 
 .hero-carousel {
   display: grid;
-  gap: 20px;
+  gap: 10px;
 }
 
 .hero-carousel-track {
@@ -431,14 +431,14 @@ textarea {
 
 .hero-carousel-dots {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 10px;
 }
 
 .hero-dot {
-  width: 10px;
-  height: 10px;
+  width: 18px;
+  height: 8px;
   padding: 0;
   border: 0;
   border-radius: 999px;
@@ -447,8 +447,17 @@ textarea {
 }
 
 .hero-dot.is-active {
-  width: 28px;
+  width: 42px;
   background: rgba(16, 26, 40, 0.68);
+}
+
+.hero-carousel-page-indicator {
+  margin: -2px 0 0;
+  text-align: right;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
 }
 
 .section,

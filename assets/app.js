@@ -215,6 +215,7 @@ function renderHero() {
         <button class="hero-dot" type="button" aria-label="Go to page 3" data-slide-index="2"></button>
         <button class="hero-dot" type="button" aria-label="Go to page 4" data-slide-index="3"></button>
       </div>
+      <p class="hero-carousel-page-indicator" aria-live="polite">01 / 04</p>
     </div>
   `;
   bindTurtleFlip();
@@ -254,6 +255,7 @@ function bindTurtleFlip() {
 function bindHeroCarousel() {
   const track = document.querySelector(".hero-carousel-track");
   const dots = [...document.querySelectorAll(".hero-dot")];
+  const pageIndicator = document.querySelector(".hero-carousel-page-indicator");
   if (!track || !dots.length) {
     return;
   }
@@ -264,6 +266,9 @@ function bindHeroCarousel() {
     dots.forEach((dot, index) => {
       dot.classList.toggle("is-active", index === nextIndex);
     });
+    if (pageIndicator) {
+      pageIndicator.textContent = `${String(nextIndex + 1).padStart(2, "0")} / ${String(dots.length).padStart(2, "0")}`;
+    }
   };
 
   dots.forEach((dot) => {
