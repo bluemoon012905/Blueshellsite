@@ -68,6 +68,23 @@
   ],
   "posts": [
     {
+      "id": "aiseriessources",
+      "title": "What is AI? (sources)",
+      "category": "Research",
+      "date": "2026-04-02",
+      "summary": "A quick collection of info. for presenting purposes.",
+      "coverImage": "",
+      "published": true,
+      "featured": false,
+      "tags": [
+        "Website",
+        "Static hosting",
+        "onlin simple"
+      ],
+      "bodyFormat": "html",
+      "body": "<h2>Links:</h2><div><p><a class=\"post-link-button\" href=\"https://bluemoon012905.github.io/tokenization_and_parsing_visualizer/\" target=\"_blank\" rel=\"noreferrer\"><img class=\"post-link-button-logo\" src=\"/assets/images/turtle-variants/turtle_sprial.png\" alt=\"\" aria-hidden=\"true\">View Demo(Try me!)</a></p></div><p><a class=\"post-link-button\" href=\"https://github.com/bluemoon012905/tokenization_and_parsing_visualizer\" target=\"_blank\" rel=\"noreferrer\"><img class=\"post-link-button-logo\" src=\"/assets/images/post-buttons/githublogo.png\" alt=\"\" aria-hidden=\"true\">View repo</a></p><p>Sources:&nbsp;</p><p>Bender, E. M., Gebru, T., McMillan-Major, A., &amp; Shmitchell, S. (2021).</p><p>On the dangers of stochastic parrots: Can language models be too big? Proceedings of the 2021 ACM Conference on Fairness, Accountability, and Transparency.</p><div><p><a class=\"post-link-button\" href=\"https://dl.acm.org/doi/epdf/10.1145/3442188.3445922\" target=\"_blank\" rel=\"noreferrer\">short excerpt</a></p><p>Jurafsky, D., &amp; Martin, J. H. (2026).</p><p>Speech and language processing: An introduction to natural language processing, computational linguistics, and speech recognition with language models (3rd ed.). Stanford University.</p></div><div><p><a class=\"post-link-button\" href=\"https://web.stanford.edu/~jurafsky/slp3/\" target=\"_blank\" rel=\"noreferrer\">Text book on NLP</a></p><p>If you are interested in the service dog project, you can find it here:</p><p><a class=\"post-link-button\" href=\"https://news.asu.edu/20250826-science-and-technology-asu-team-unleashes-aipowered-robodog-help-humanity\" target=\"_blank\" rel=\"noreferrer\">ASU site</a></p></div>"
+    },
+    {
       "id": "nlpmath",
       "title": "NLP math",
       "category": "Research",
