@@ -29,6 +29,11 @@
 }
 
 .about-turtle-wrap {
+  position: absolute;
+  left: auto;
+  right: 44px;
+  top: 50%;
+  transform: translateY(-50%);
   pointer-events: none;
   z-index: 1;
 }
