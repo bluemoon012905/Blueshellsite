@@ -1,0 +1,439 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  urlcolor=blue!50!black
+}
+
+\setlist[itemize]{topsep=3pt,itemsep=2pt,leftmargin=1.5em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\title{CSE 476 Formula Sheet Extracted From Notes}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+This document normalizes the formulas that appear in the lecture notes into readable LaTeX. A few formulas were reconstructed in standard notation where PDF text extraction dropped symbols, but the content follows the notes.
+
+\section*{1. Markov Chains and HMMs}
+
+\textbf{Markov chain sequence probability}
+\[
+P(s_1, s_2, \dots, s_n) = P(s_1)\prod_{t=2}^{n} P(s_t \mid s_{t-1})
+\]
+
+\textbf{Example from notes}
+\[
+P(\text{HOT}, \text{HOT}, \text{COLD}) = 0.33 \cdot 0.6 \cdot 0.1
+\]
+
+\textbf{HMM transition and emission probabilities}
+\[
+P(\ell_t \mid \ell_{t-1}), \qquad P(w_t \mid \ell_t)
+\]
+
+\textbf{Examples from notes}
+\[
+P(O \mid I\text{-PER}), \qquad P(I\text{-LOC} \mid B\text{-LOC})
+\]
+\[
+P(\text{Sebastian} \mid B\text{-PER}), \qquad P(\text{started} \mid O)
+\]
+
+\textbf{Local label decoding example}
+\[
+\hat{\ell} = \arg\max_{\ell} P(\ell \mid O)\, P(\text{Paris} \mid \ell)
+\]
+
+\textbf{Sequence-level HMM scoring from the notes}
+\[
+P(L_3 \mid L_2)\, P(L_2 \mid L_1)\, P(L_1)\,
+P(w_1 \mid L_1)\, P(w_2 \mid L_2)\, P(w_3 \mid L_3)
+\]
+
+\section*{2. Language Modeling}
+
+\textbf{Sentence probability}
+\[
+P(W) = P(w_1, w_2, \dots, w_n)
+\]
+
+\textbf{Next-word prediction}
+\[
+P(w_n \mid w_1, w_2, \dots, w_{n-1})
+\]
+
+\textbf{Chain rule}
+\[
+P(x_1, x_2, \dots, x_n) = P(x_1)\, P(x_2 \mid x_1)\, P(x_3 \mid x_1, x_2)\cdots P(x_n \mid x_1, \dots, x_{n-1})
+\]
+
+\textbf{Example from the notes}
+\[
+\begin{aligned}
+P(\text{``The water of Walden Pond''}) = {} & P(\text{The}) \cdot P(\text{water} \mid \text{The}) \\
+& \cdot P(\text{of} \mid \text{The water}) \cdot P(\text{Walden} \mid \text{The water of}) \\
+& \cdot P(\text{Pond} \mid \text{The water of Walden})
+\end{aligned}
+\]
+
+\textbf{Bigram approximation}
+\[
+\begin{aligned}
+P(\text{``The water of Walden Pond''}) \approx {} & P(\text{The}) \cdot P(\text{water} \mid \text{The}) \\
+& \cdot P(\text{of} \mid \text{water}) \cdot P(\text{Walden} \mid \text{of}) \\
+& \cdot P(\text{Pond} \mid \text{Walden})
+\end{aligned}
+\]
+
+\textbf{Trigram approximation}
+\[
+\begin{aligned}
+P(\text{``The water of Walden Pond''}) \approx {} & P(\text{The}) \cdot P(\text{water} \mid \text{NULL}, \text{The}) \\
+& \cdot P(\text{of} \mid \text{The}, \text{water}) \cdot P(\text{Walden} \mid \text{water}, \text{of}) \\
+& \cdot P(\text{Pond} \mid \text{of}, \text{Walden})
+\end{aligned}
+\]
+
+\textbf{Bigram MLE estimate}
+\[
+P(w_i \mid w_{i-1}) = \frac{\operatorname{count}(w_{i-1}, w_i)}{\operatorname{count}(w_{i-1})}
+\]
+
+\textbf{Example from the notes}
+\[
+P(\text{what} \mid \text{get}) = \frac{\operatorname{count}(\text{get what})}{\operatorname{count}(\text{get})} = \frac{1}{2} = 0.5
+\]
+
+\textbf{Perplexity}
+\[
+\operatorname{PP}(W) = P(w_1 w_2 \dots w_N)^{-1/N}
+= \sqrt[N]{\frac{1}{P(w_1 w_2 \dots w_N)}}
+\]
+
+\section*{3. Naive Bayes and Generative Classification}
+
+\textbf{Bayes rule}
+\[
+P(c \mid d) = \frac{P(d \mid c)P(c)}{P(d)}
+\]
+
+\textbf{MAP decision rule}
+\[
+c_{\text{MAP}} = \arg\max_{c \in C} P(c \mid d)
+= \arg\max_{c \in C} P(d \mid c)P(c)
+\]
+
+\textbf{Bag-of-words representation}
+\[
+\operatorname{Representation}(d) = (x_1, x_2, \dots, x_n)
+\]
+
+\textbf{Naive Bayes factorization}
+\[
+P(x_1, x_2, \dots, x_n \mid c) = \prod_{i=1}^{n} P(x_i \mid c)
+\]
+
+\textbf{Naive Bayes classifier}
+\[
+c_{\text{NB}} = \arg\max_{c \in C} P(c)\prod_{x \in X} P(x \mid c)
+\]
+
+\textbf{Generative model identity}
+\[
+P(x, y) = P(x \mid y)P(y)
+\]
+
+\textbf{Laplace smoothing}
+\[
+\hat{P}(w_i \mid c) =
+\frac{\operatorname{count}(w_i, c)+1}
+{\sum_{w \in V}\bigl(\operatorname{count}(w, c)+1\bigr)}
+=
+\frac{\operatorname{count}(w_i, c)+1}
+{\left(\sum_{w \in V}\operatorname{count}(w, c)\right)+|V|}
+\]
+
+\section*{4. Logistic Regression, Cross-Entropy, and Gradient Descent}
+
+\textbf{Linear score}
+\[
+z = w \cdot x + b
+\]
+
+\textbf{Sigmoid}
+\[
+\sigma(z) = \frac{1}{1 + e^{-z}}
+\]
+
+\textbf{Sigmoid identity from the notes}
+\[
+\sigma(x) = 1 - \sigma(-x)
+\]
+
+\textbf{Binary logistic regression probabilities}
+\[
+P(y=1 \mid x) = \sigma(w \cdot x + b)
+\]
+\[
+P(y=0 \mid x) = 1 - \sigma(w \cdot x + b)
+\]
+
+\textbf{Cross-entropy objective shown in the notes}
+\[
+y \cdot P(y=1 \mid x) + (1-y)\cdot P(y=0 \mid x)
+\]
+
+\textbf{Cross-entropy loss in standard form}
+\[
+L_{\text{CE}} = -\Bigl(y \log P(y=1 \mid x) + (1-y)\log P(y=0 \mid x)\Bigr)
+\]
+
+\textbf{Single-variable squared loss example}
+\[
+L = (xw - y)^2
+\]
+
+\textbf{Gradient vector}
+\[
+\nabla_{\theta} L(f(x;\theta), y)
+=
+\begin{bmatrix}
+\dfrac{\partial}{\partial w_1} L(f(x;\theta), y) \\
+\dfrac{\partial}{\partial w_2} L(f(x;\theta), y) \\
+\vdots \\
+\dfrac{\partial}{\partial w_n} L(f(x;\theta), y)
+\end{bmatrix}
+\]
+
+\textbf{Gradient descent update}
+\[
+\theta_{t+1} = \theta_t - \eta \nabla_{\theta} L(f(x;\theta), y)
+\]
+
+\textbf{Stochastic gradient descent}
+\[
+\theta_{t+1} = \theta_t - \eta \,\widehat{\nabla_{\theta} L}
+\]
+
+\section*{5. Perceptron and Regularization}
+
+\textbf{Perceptron prediction}
+\[
+\hat{y} = \operatorname{sign}(w \cdot x + b)
+=
+\begin{cases}
+1 & \text{if } w \cdot x + b > 0 \\
+-1 & \text{otherwise}
+\end{cases}
+\]
+
+\textbf{Perceptron loss}
+\[
+L(w) = \max\bigl(0, -y(w \cdot x + b)\bigr)
+\]
+
+\textbf{Perceptron update}
+\[
+w' = w + \eta y x_i
+\qquad \text{(only if }x_i\text{ is misclassified)}
+\]
+
+\textbf{Linearly separable condition}
+\[
+(w \cdot x + b)\, y > 0
+\]
+
+\textbf{L2 regularization}
+\[
+\sum_{j=1}^{n} \theta_j^2
+\]
+
+\textbf{L1 regularization}
+\[
+\sum_{j=1}^{n} |\theta_j|
+\]
+
+\section*{6. Multi-class Logistic Regression and Softmax}
+
+\textbf{Class-specific linear scores}
+\[
+z_k = w_k \cdot x + b_k
+\]
+
+\textbf{Softmax}
+\[
+P(y=k \mid x) = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}
+\]
+
+\textbf{Example scores in the notes}
+\[
+z_1 = 6,\qquad z_2 = 7,\qquad z_3 = 8
+\]
+
+\section*{7. Vector Semantics, Similarity, and TF-IDF}
+
+\textbf{Dot product}
+\[
+x \cdot y = \sum_{i=1}^{n} x_i y_i
+\]
+
+\textbf{Examples from the notes}
+\[
+[0, 10, 0] \cdot [1, 5, 1] = 50
+\]
+\[
+[0, 10, 0] \cdot [5, 1, 1] = 10
+\]
+
+\textbf{Cosine similarity}
+\[
+\cos(x, y) = \frac{x \cdot y}{\|x\|\, \|y\|}
+\]
+
+\textbf{Term frequency}
+\[
+\operatorname{tf}_{t,d} = \operatorname{count}(t,d)
+\]
+
+\textbf{Inverse document frequency}
+\[
+\operatorname{idf}_t = \log \frac{N}{\operatorname{df}_t}
+\]
+
+\textbf{TF-IDF}
+\[
+\operatorname{tfidf}(t,d) = \operatorname{tf}_{t,d}\cdot \operatorname{idf}_t
+\]
+
+\section*{8. Word2Vec}
+
+\textbf{Binary training objective}
+\[
+P(+ \mid w, c) = \sigma(w \cdot c)
+\]
+\[
+P(- \mid w, c) = 1 - \sigma(w \cdot c)
+\]
+
+\textbf{Positive-pair target}
+\[
+P(+ \mid w, c) > 0.5
+\]
+
+\textbf{Negative-pair target}
+\[
+P(- \mid w, c) > 0.5
+\]
+
+\textbf{Analogy relationships from the notes}
+\[
+\operatorname{w2v}(\text{apple}) - \operatorname{w2v}(\text{tree})
+=
+\operatorname{w2v}(\text{vine}) - \operatorname{w2v}(\text{grape})
+\]
+\[
+\operatorname{w2v}(\text{US}) - \operatorname{w2v}(\text{DC})
+=
+\operatorname{w2v}(\text{China}) - \operatorname{w2v}(\text{Beijing})
+\]
+
+\section*{9. Neural Networks}
+
+\textbf{Single neuron}
+\[
+z = w \cdot x + b
+\]
+\[
+a = f(z)
+\]
+
+\textbf{Common activations}
+\[
+\sigma(z) = \frac{1}{1+e^{-z}}, \qquad
+\operatorname{ReLU}(z) = \max(0, z), \qquad
+\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}
+\]
+
+\textbf{Composition of linear layers without nonlinearity}
+\[
+W_2(W_1x + b_1) + b_2 = Wx + b
+\]
+
+\textbf{Layer shape from the notes}
+\[
+h = f(Wx), \qquad
+[n_1 \times n_0]\,[n_0 \times 1] = [n_1 \times 1]
+\]
+
+\section*{10. Recurrent Neural Networks}
+
+\textbf{Basic RNN recurrence}
+\[
+h_t = \tanh(Wx_t + Uh_{t-1})
+\]
+\[
+y_t = Vh_t
+\]
+
+\textbf{RNN language-model loss from the notes}
+\[
+L_{\text{CE}}^{(t)} = -\sum_{w \in V} y_t[w]\log \hat{y}_t[w]
+\]
+
+\textbf{Sequence labeling / LM output distribution}
+\[
+\hat{y}_t = \operatorname{softmax}(Vh_t)
+\]
+
+\section*{11. Encoder-Decoder / Seq2Seq}
+
+\textbf{Encoder outputs}
+\[
+x_{1:n} \mapsto h_{1:n}
+\]
+
+\textbf{Context vector}
+\[
+c = f(h_{1:n})
+\]
+
+\textbf{Decoder recurrence from the notes}
+\[
+h_t^{d} = g(\hat{y}_{t-1}, h_{t-1}^{d}, c)
+\]
+
+\textbf{Teacher-forced sequence loss}
+\[
+L_t = -\log P(y_t)
+\]
+\[
+L_{\text{seq}} = \frac{1}{m}\sum_{t=1}^{m} L_t
+= -\frac{1}{m}\sum_{t=1}^{m}\log P(y_t)
+\]
+
+\section*{12. Quick Reference Identities}
+
+\[
+P(y \mid x) \text{: discriminative modeling}
+\]
+\[
+P(x, y) = P(x \mid y)P(y) \text{: generative modeling}
+\]
+\[
+\text{BIO label count with }N\text{ entity types} = 2N + 1
+\]
+
+\end{document}
