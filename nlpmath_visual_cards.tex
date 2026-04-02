@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[12pt,fleqn]{article}
 \usepackage[paperwidth=11in,paperheight=7in,margin=0.55in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -9,6 +9,7 @@
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.6em}
+\setlength{\mathindent}{0pt}
 \pagecolor{white}
 
 \definecolor{cardink}{HTML}{122033}
@@ -19,222 +20,113 @@
 \newcommand{\cardsub}[1]{{\large\color{cardmuted} #1\par}}
 \newcommand{\spacer}{\vspace{0.55em}}
 \newcommand{\ruleline}{\par\noindent\color{cardrule}\rule{\textwidth}{1.1pt}\par\vspace{0.85em}}
+\newcommand{\eqline}[1]{\[
+{\color{cardink}\fontsize{20}{26}\selectfont\displaystyle #1}
+\]}
 
 \begin{document}
 
 \cardtitle{Markov Chains and HMMs}
 \cardsub{State flow, emissions, and sequence scoring}
 \ruleline
-\[
-P(s_1, s_2, \dots, s_n) = P(s_1)\prod_{t=2}^{n} P(s_t \mid s_{t-1})
-\]
-\[
-P(\ell_t \mid \ell_{t-1}), \qquad P(w_t \mid \ell_t)
-\]
-\[
-\hat{\ell} = \arg\max_{\ell} P(\ell \mid O)\, P(\text{Paris} \mid \ell)
-\]
-\[
-P(L_3 \mid L_2)\, P(L_2 \mid L_1)\, P(L_1)\,
-P(w_1 \mid L_1)\, P(w_2 \mid L_2)\, P(w_3 \mid L_3)
-\]
+\eqline{P(s_1, s_2, \dots, s_n) = P(s_1)\prod_{t=2}^{n} P(s_t \mid s_{t-1})}
+\eqline{P(\ell_t \mid \ell_{t-1}), \qquad P(w_t \mid \ell_t)}
+\eqline{\hat{\ell} = \arg\max_{\ell} P(\ell \mid O)\, P(\text{Paris} \mid \ell)}
+\eqline{P(L_3 \mid L_2)\, P(L_2 \mid L_1)\, P(L_1)\, P(w_1 \mid L_1)\, P(w_2 \mid L_2)\, P(w_3 \mid L_3)}
 \newpage
 
 \cardtitle{Language Modeling}
 \cardsub{Chain rule, local context, and uncertainty}
 \ruleline
-\[
-P(W) = P(w_1, w_2, \dots, w_n)
-\]
-\[
-P(x_1, x_2, \dots, x_n) = \prod_{i=1}^{n} P(x_i \mid x_1, \dots, x_{i-1})
-\]
-\[
-P(w_i \mid w_{i-1}) = \frac{\operatorname{count}(w_{i-1}, w_i)}{\operatorname{count}(w_{i-1})}
-\]
-\[
-\operatorname{PP}(W) = P(w_1 w_2 \dots w_N)^{-1/N}
-\]
+\eqline{P(W) = P(w_1, w_2, \dots, w_n)}
+\eqline{P(x_1, x_2, \dots, x_n) = \prod_{i=1}^{n} P(x_i \mid x_1, \dots, x_{i-1})}
+\eqline{P(w_i \mid w_{i-1}) = \frac{\operatorname{count}(w_{i-1}, w_i)}{\operatorname{count}(w_{i-1})}}
+\eqline{\operatorname{PP}(W) = P(w_1 w_2 \dots w_N)^{-1/N}}
 \newpage
 
 \cardtitle{Naive Bayes}
 \cardsub{Class priors, feature likelihoods, and smoothing}
 \ruleline
-\[
-P(c \mid d) = \frac{P(d \mid c)P(c)}{P(d)}
-\]
-\[
-c_{\text{MAP}} = \arg\max_{c \in C} P(d \mid c)P(c)
-\]
-\[
-P(x_1, x_2, \dots, x_n \mid c) = \prod_{i=1}^{n} P(x_i \mid c)
-\]
-\[
-\hat{P}(w_i \mid c) =
-\frac{\operatorname{count}(w_i, c)+1}
-{\left(\sum_{w \in V}\operatorname{count}(w, c)\right)+|V|}
-\]
+\eqline{P(c \mid d) = \frac{P(d \mid c)P(c)}{P(d)}}
+\eqline{c_{\text{MAP}} = \arg\max_{c \in C} P(d \mid c)P(c)}
+\eqline{P(x_1, x_2, \dots, x_n \mid c) = \prod_{i=1}^{n} P(x_i \mid c)}
+\eqline{\hat{P}(w_i \mid c) = \frac{\operatorname{count}(w_i, c)+1}{\left(\sum_{w \in V}\operatorname{count}(w, c)\right)+|V|}}
 \newpage
 
 \cardtitle{Logistic Regression}
 \cardsub{Scores, sigmoid, and gradient updates}
 \ruleline
-\[
-z = w \cdot x + b
-\]
-\[
-\sigma(z) = \frac{1}{1 + e^{-z}}
-\]
-\[
-P(y=1 \mid x) = \sigma(w \cdot x + b)
-\]
-\[
-L_{\text{CE}} = -\Bigl(y \log P(y=1 \mid x) + (1-y)\log P(y=0 \mid x)\Bigr)
-\]
-\[
-\theta_{t+1} = \theta_t - \eta \nabla_{\theta} L(f(x;\theta), y)
-\]
+\eqline{z = w \cdot x + b}
+\eqline{\sigma(z) = \frac{1}{1 + e^{-z}}}
+\eqline{P(y=1 \mid x) = \sigma(w \cdot x + b)}
+\eqline{L_{\text{CE}} = -\Bigl(y \log P(y=1 \mid x) + (1-y)\log P(y=0 \mid x)\Bigr)}
+\eqline{\theta_{t+1} = \theta_t - \eta \nabla_{\theta} L(f(x;\theta), y)}
 \newpage
 
 \cardtitle{Perceptron and Regularization}
 \cardsub{Decision boundary, mistake-driven updates, model restraint}
 \ruleline
-\[
-\hat{y} = \operatorname{sign}(w \cdot x + b)
-\]
-\[
-L(w) = \max\bigl(0, -y(w \cdot x + b)\bigr)
-\]
-\[
-w' = w + \eta y x_i
-\]
-\[
-\sum_{j=1}^{n} \theta_j^2
-\qquad\qquad
-\sum_{j=1}^{n} |\theta_j|
-\]
+\eqline{\hat{y} = \operatorname{sign}(w \cdot x + b)}
+\eqline{L(w) = \max\bigl(0, -y(w \cdot x + b)\bigr)}
+\eqline{w' = w + \eta y x_i}
+\eqline{\sum_{j=1}^{n} \theta_j^2 \qquad\qquad \sum_{j=1}^{n} |\theta_j|}
 \newpage
 
 \cardtitle{Softmax}
 \cardsub{One score per class, normalized into probabilities}
 \ruleline
-\[
-z_k = w_k \cdot x + b_k
-\]
-\[
-P(y=k \mid x) = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}
-\]
-\[
-z_1 = 6,\qquad z_2 = 7,\qquad z_3 = 8
-\]
+\eqline{z_k = w_k \cdot x + b_k}
+\eqline{P(y=k \mid x) = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}}
+\eqline{z_1 = 6,\qquad z_2 = 7,\qquad z_3 = 8}
 \newpage
 
 \cardtitle{Vector Semantics and TF-IDF}
 \cardsub{Similarity in vector space}
 \ruleline
-\[
-x \cdot y = \sum_{i=1}^{n} x_i y_i
-\]
-\[
-\cos(x, y) = \frac{x \cdot y}{\|x\|\, \|y\|}
-\]
-\[
-\operatorname{tf}_{t,d} = \operatorname{count}(t,d)
-\qquad
-\operatorname{idf}_t = \log \frac{N}{\operatorname{df}_t}
-\]
-\[
-\operatorname{tfidf}(t,d) = \operatorname{tf}_{t,d}\cdot \operatorname{idf}_t
-\]
+\eqline{x \cdot y = \sum_{i=1}^{n} x_i y_i}
+\eqline{\cos(x, y) = \frac{x \cdot y}{\|x\|\, \|y\|}}
+\eqline{\operatorname{tf}_{t,d} = \operatorname{count}(t,d) \qquad \operatorname{idf}_t = \log \frac{N}{\operatorname{df}_t}}
+\eqline{\operatorname{tfidf}(t,d) = \operatorname{tf}_{t,d}\cdot \operatorname{idf}_t}
 \newpage
 
 \cardtitle{Word2Vec}
 \cardsub{Context prediction and vector analogies}
 \ruleline
-\[
-P(+ \mid w, c) = \sigma(w \cdot c)
-\qquad
-P(- \mid w, c) = 1 - \sigma(w \cdot c)
-\]
-\[
-P(+ \mid w, c) > 0.5
-\qquad
-P(- \mid w, c) > 0.5
-\]
-\[
-\operatorname{w2v}(\text{apple}) - \operatorname{w2v}(\text{tree})
-=
-\operatorname{w2v}(\text{vine}) - \operatorname{w2v}(\text{grape})
-\]
+\eqline{P(+ \mid w, c) = \sigma(w \cdot c) \qquad P(- \mid w, c) = 1 - \sigma(w \cdot c)}
+\eqline{P(+ \mid w, c) > 0.5 \qquad P(- \mid w, c) > 0.5}
+\eqline{\operatorname{w2v}(\text{apple}) - \operatorname{w2v}(\text{tree}) = \operatorname{w2v}(\text{vine}) - \operatorname{w2v}(\text{grape})}
 \newpage
 
 \cardtitle{Neural Networks}
 \cardsub{Affine transforms, activations, and hidden layers}
 \ruleline
-\[
-z = w \cdot x + b
-\qquad
-a = f(z)
-\]
-\[
-\sigma(z) = \frac{1}{1+e^{-z}}, \qquad
-\operatorname{ReLU}(z) = \max(0, z), \qquad
-\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}
-\]
-\[
-W_2(W_1x + b_1) + b_2 = Wx + b
-\]
-\[
-h = f(Wx), \qquad
-[n_1 \times n_0]\,[n_0 \times 1] = [n_1 \times 1]
-\]
+\eqline{z = w \cdot x + b \qquad a = f(z)}
+\eqline{\sigma(z) = \frac{1}{1+e^{-z}}, \qquad \operatorname{ReLU}(z) = \max(0, z), \qquad \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}}
+\eqline{W_2(W_1x + b_1) + b_2 = Wx + b}
+\eqline{h = f(Wx), \qquad [n_1 \times n_0]\,[n_0 \times 1] = [n_1 \times 1]}
 \newpage
 
 \cardtitle{Recurrent Neural Networks}
 \cardsub{Hidden state over time}
 \ruleline
-\[
-h_t = \tanh(Wx_t + Uh_{t-1})
-\qquad
-y_t = Vh_t
-\]
-\[
-\hat{y}_t = \operatorname{softmax}(Vh_t)
-\]
-\[
-L_{\text{CE}}^{(t)} = -\sum_{w \in V} y_t[w]\log \hat{y}_t[w]
-\]
+\eqline{h_t = \tanh(Wx_t + Uh_{t-1}) \qquad y_t = Vh_t}
+\eqline{\hat{y}_t = \operatorname{softmax}(Vh_t)}
+\eqline{L_{\text{CE}}^{(t)} = -\sum_{w \in V} y_t[w]\log \hat{y}_t[w]}
 \newpage
 
 \cardtitle{Encoder-Decoder / Seq2Seq}
 \cardsub{Encode context, decode outputs step by step}
 \ruleline
-\[
-x_{1:n} \mapsto h_{1:n}
-\qquad
-c = f(h_{1:n})
-\]
-\[
-h_t^{d} = g(\hat{y}_{t-1}, h_{t-1}^{d}, c)
-\]
-\[
-L_t = -\log P(y_t)
-\qquad
-L_{\text{seq}} = -\frac{1}{m}\sum_{t=1}^{m}\log P(y_t)
-\]
+\eqline{x_{1:n} \mapsto h_{1:n} \qquad c = f(h_{1:n})}
+\eqline{h_t^{d} = g(\hat{y}_{t-1}, h_{t-1}^{d}, c)}
+\eqline{L_t = -\log P(y_t) \qquad L_{\text{seq}} = -\frac{1}{m}\sum_{t=1}^{m}\log P(y_t)}
 \newpage
 
 \cardtitle{Quick Reference}
 \cardsub{Useful modeling identities}
 \ruleline
-\[
-P(y \mid x) \text{: discriminative modeling}
-\]
-\[
-P(x, y) = P(x \mid y)P(y) \text{: generative modeling}
-\]
-\[
-\text{BIO label count with }N\text{ entity types} = 2N + 1
-\]
+\eqline{P(y \mid x) \text{: discriminative modeling}}
+\eqline{P(x, y) = P(x \mid y)P(y) \text{: generative modeling}}
+\eqline{\text{BIO label count with }N\text{ entity types} = 2N + 1}
 
 \end{document}
