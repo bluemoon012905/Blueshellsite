@@ -9,7 +9,7 @@ https://yuda.work/
 - Standalone pages for the homepage, category views, post views, and about/contact
 - A local browser editor at `/editor/`
 - A tiny Node server for local development and saving editor changes back into the repo
-
+ 
 ## How it is built
 
 - Plain HTML, CSS, and vanilla JavaScript
