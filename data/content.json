@@ -68,6 +68,24 @@
   ],
   "posts": [
     {
+      "id": "nlpmath",
+      "title": "NLP math",
+      "category": "Research",
+      "date": "2026-04-02",
+      "summary": "A collection of the calculation that can happen when you are processing natural language",
+      "coverImage": "",
+      "published": false,
+      "featured": true,
+      "tags": [
+        "School",
+        "math",
+        "stats",
+        "needs annotation"
+      ],
+      "bodyFormat": "html",
+      "body": "<h2>Start here</h2><p>I still need to annotate these for it to be helpful to the general viewer. For now, iykyk</p>"
+    },
+    {
       "id": "readingaclock",
       "title": "Reading a Clock",
       "category": "projects",
