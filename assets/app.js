@@ -89,9 +89,12 @@ function renderPage() {
 }
 
 function applyDeviceMode() {
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  state.deviceMode = isMobile ? "mobile" : "desktop";
+  const isMobile = window.matchMedia("(max-width: 960px)").matches;
+  const nextMode = isMobile ? "mobile" : "desktop";
+  const changed = state.deviceMode !== nextMode;
+  state.deviceMode = nextMode;
   document.body.dataset.device = state.deviceMode;
+  return changed;
 }
 
 async function initializeTurtleAppearance() {
@@ -142,14 +145,14 @@ function renderHero() {
   const slideTurtle =
     state.deviceMode === "desktop"
       ? `
-        <button class="hero-turtle-wrap turtle-button" type="button" aria-label="Flip turtle">
+        <button class="hero-turtle-wrap turtle-button" type="button" aria-label="Flip turtle" data-debug-name="Hero turtle desktop">
           <span class="turtle-spin" ${turtleSpinStyle} aria-hidden="true">
             <img class="brand-turtle brand-turtle-desktop${turtleFlipClass}" src="${state.turtleImageSrc}" alt="" />
           </span>
         </button>
       `
       : `
-        <div class="hero-slide-mobile-turtle">
+        <div class="hero-slide-mobile-turtle" data-debug-name="Hero turtle mobile">
           <button class="turtle-button turtle-button-mobile" type="button" aria-label="Flip turtle">
             <span class="turtle-spin" ${turtleSpinStyle} aria-hidden="true">
               <img class="brand-turtle brand-turtle-mobile${turtleFlipClass}" src="${state.turtleImageSrc}" alt="" />
@@ -159,25 +162,25 @@ function renderHero() {
       `;
   const hero = document.querySelector(".hero");
   hero.innerHTML = `
-    <div class="hero-nav">
+    <div class="hero-nav" data-debug-name="Hero nav">
       <div class="brand-mark">
         <span>${escapeHtml(site.brandMark || site.title)}</span>
       </div>
-      <div class="hero-carousel-arrows" aria-label="Hero navigation">
+      <div class="hero-carousel-arrows" aria-label="Hero navigation" data-debug-name="Hero arrows">
         <button class="hero-arrow" type="button" aria-label="Previous panel" data-hero-direction="prev">&lt;</button>
         <button class="hero-arrow" type="button" aria-label="Next panel" data-hero-direction="next">&gt;</button>
       </div>
     </div>
-    <div class="hero-carousel">
-      <div class="hero-carousel-track" tabindex="0" aria-label="Homepage highlights">
+    <div class="hero-carousel" data-debug-name="Hero carousel">
+      <div class="hero-carousel-track" tabindex="0" aria-label="Homepage highlights" data-debug-name="Hero track">
         <section class="hero-slide hero-slide-intro" data-debug-name="Hero intro slide">
           ${slideTurtle}
-          <div class="hero-copy">
+          <div class="hero-copy" data-debug-name="Hero intro text">
             <p class="eyebrow">${escapeHtml(site.heroEyebrow || "Project journal")}</p>
             <h1>${escapeHtml(site.title)}</h1>
             <p>${escapeHtml(site.tagline)}</p>
             <p>${escapeHtml(site.intro)}</p>
-            <div class="hero-actions hero-actions-intro">
+            <div class="hero-actions hero-actions-intro" data-debug-name="Hero intro CTA">
               <button class="pill-link hero-next-button" type="button">Take a look!</button>
             </div>
           </div>
@@ -215,13 +218,13 @@ function renderHero() {
           </div>
         </section>
       </div>
-      <div class="hero-carousel-dots" aria-label="Hero pages">
+      <div class="hero-carousel-dots" aria-label="Hero pages" data-debug-name="Hero dots">
         <button class="hero-dot is-active" type="button" aria-label="Go to page 1" data-slide-index="0"></button>
         <button class="hero-dot" type="button" aria-label="Go to page 2" data-slide-index="1"></button>
         <button class="hero-dot" type="button" aria-label="Go to page 3" data-slide-index="2"></button>
         <button class="hero-dot" type="button" aria-label="Go to page 4" data-slide-index="3"></button>
       </div>
-      <p class="hero-carousel-page-indicator" aria-live="polite">01 | 04</p>
+      <p class="hero-carousel-page-indicator" aria-live="polite" data-debug-name="Hero page indicator">01 | 04</p>
     </div>
   `;
   bindTurtleFlip();
@@ -261,13 +264,23 @@ function bindTurtleFlip() {
 
 function bindHeroCarousel() {
   const track = document.querySelector(".hero-carousel-track");
+  const slides = [...document.querySelectorAll(".hero-slide")];
   const dots = [...document.querySelectorAll(".hero-dot")];
   const pageIndicator = document.querySelector(".hero-carousel-page-indicator");
   const nextButton = document.querySelector(".hero-next-button");
   const arrowButtons = [...document.querySelectorAll(".hero-arrow")];
-  if (!track || !dots.length) {
+  if (!track || !dots.length || !slides.length) {
     return;
   }
+
+  const syncTrackHeight = () => {
+    const slideWidth = track.clientWidth || 1;
+    const nextIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / slideWidth)));
+    const activeSlide = slides[nextIndex];
+    if (activeSlide) {
+      track.style.height = `${activeSlide.offsetHeight}px`;
+    }
+  };
 
   const updateActiveDot = () => {
     const slideWidth = track.clientWidth || 1;
@@ -278,6 +291,7 @@ function bindHeroCarousel() {
     if (pageIndicator) {
       pageIndicator.textContent = `${String(nextIndex + 1).padStart(2, "0")} | ${String(dots.length).padStart(2, "0")}`;
     }
+    syncTrackHeight();
   };
 
   dots.forEach((dot) => {
@@ -314,6 +328,25 @@ function bindHeroCarousel() {
 
   track.addEventListener("scroll", updateActiveDot, { passive: true });
   updateActiveDot();
+}
+
+function syncHeroCarouselHeight() {
+  const track = document.querySelector(".hero-carousel-track");
+  if (!track) {
+    return;
+  }
+
+  const slides = [...track.querySelectorAll(":scope > .hero-slide")];
+  if (!slides.length) {
+    return;
+  }
+
+  const slideWidth = track.clientWidth || 1;
+  const nextIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / slideWidth)));
+  const activeSlide = slides[nextIndex];
+  if (activeSlide) {
+    track.style.height = `${activeSlide.offsetHeight}px`;
+  }
 }
 
 function pickRandom(items) {
@@ -542,5 +575,10 @@ loadContent().catch((error) => {
 });
 
 window.addEventListener("resize", () => {
-  applyDeviceMode();
+  const changed = applyDeviceMode();
+  if (changed && state.content) {
+    renderHero();
+    return;
+  }
+  syncHeroCarouselHeight();
 });

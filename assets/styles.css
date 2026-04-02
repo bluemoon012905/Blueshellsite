@@ -222,8 +222,8 @@ a {
 }
 
 .brand-turtle-mobile {
-  width: 42px;
-  height: 42px;
+  width: clamp(88px, 18vw, 148px);
+  height: auto;
 }
 
 .turtle-button {
@@ -283,7 +283,7 @@ a {
 }
 
 .hero-copy {
-  width: min(46ch, 100%);
+  width: min(58ch, 100%);
   max-width: 100%;
   min-width: 0;
   position: relative;
@@ -416,6 +416,7 @@ textarea {
   align-items: flex-start;
   gap: 18px;
   width: 100%;
+  transition: height 220ms ease;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
@@ -891,9 +892,12 @@ textarea {
 }
 
 body.debug-panels .debug-panel-target {
-  position: relative;
   outline: 2px dashed rgba(217, 59, 31, 0.95);
   outline-offset: -2px;
+}
+
+body.debug-panels .debug-panel-target.debug-panel-anchor {
+  position: relative;
 }
 
 .debug-panel-label {
@@ -966,7 +970,7 @@ body.debug-panels .debug-panel-label {
   }
 
   .hero-copy {
-    width: min(52ch, 100%);
+    width: min(58ch, 100%);
     min-height: 0;
   }
 
@@ -1001,6 +1005,12 @@ body.debug-panels .debug-panel-label {
     justify-content: flex-end;
   }
 
+  .hero-slide-intro {
+    display: block;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
   .hero-with-decoration .hero-copy {
     max-width: 100%;
   }
@@ -1009,6 +1019,18 @@ body.debug-panels .debug-panel-label {
   .hero-slide-intro {
     max-width: 100%;
     padding-right: 0;
+  }
+
+  .hero-copy {
+    width: 100%;
+    min-height: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-actions-intro {
+    margin-top: 18px;
+    padding-top: 0;
   }
 
   .category-hero-decoration {

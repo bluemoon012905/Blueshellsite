@@ -265,9 +265,15 @@ const BlueshellContent = {
       toggle.setAttribute("aria-pressed", enabled ? "true" : "false");
     }
 
-    const targets = document.querySelectorAll(".hero, .section, .post-view, .hero-slide, .asu-media-stage, .contact-link");
+    const targets = document.querySelectorAll(
+      ".hero, .section, .post-view, .hero-slide, .hero-nav, .hero-carousel, .hero-carousel-track, .hero-carousel-dots, .hero-carousel-page-indicator, .hero-copy, .hero-actions, .hero-turtle-wrap, .hero-slide-mobile-turtle, .asu-media-stage, .contact-link"
+    );
     targets.forEach((element, index) => {
       element.classList.add("debug-panel-target");
+      element.classList.remove("debug-panel-anchor");
+      if (window.getComputedStyle(element).position === "static") {
+        element.classList.add("debug-panel-anchor");
+      }
       element.querySelectorAll(":scope > .debug-panel-label").forEach((label) => label.remove());
 
       const label = document.createElement("span");
@@ -313,6 +319,22 @@ const BlueshellContent = {
 
     if (element.classList.contains("hero-slide-panel")) {
       return `Hero panel ${index + 1}`;
+    }
+
+    if (element.classList.contains("hero-copy")) {
+      return "Hero text";
+    }
+
+    if (element.classList.contains("hero-turtle-wrap")) {
+      return "Hero turtle desktop";
+    }
+
+    if (element.classList.contains("hero-slide-mobile-turtle")) {
+      return "Hero turtle mobile";
+    }
+
+    if (element.classList.contains("hero-actions")) {
+      return "Hero actions";
     }
 
     if (element.classList.contains("hero")) {
