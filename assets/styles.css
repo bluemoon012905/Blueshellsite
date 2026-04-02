@@ -501,7 +501,7 @@ textarea {
 }
 
 .hero-dot {
-  width: 18px;
+  width: 36px;
   height: 8px;
   padding: 0;
   border: 0;
@@ -511,7 +511,7 @@ textarea {
 }
 
 .hero-dot.is-active {
-  width: 42px;
+  width: 112px;
   background: rgba(16, 26, 40, 0.68);
 }
 
