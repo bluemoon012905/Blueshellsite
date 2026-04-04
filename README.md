@@ -3,6 +3,11 @@
 A small content-driven site for art, school, personal work, writing, and everything between them.
 
 https://yuda.work/
+
+## Credit
+
+Design direction was developed with input from Val West.
+
 ## What is in this repo
 
 - A static public site powered by `data/content.json`

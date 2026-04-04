@@ -59,16 +59,6 @@ a {
   padding: 24px 0 56px;
 }
 
-.site-credit {
-  width: min(1180px, calc(100% - 32px));
-  margin: 0 auto 28px;
-  color: rgba(16, 26, 40, 0.54);
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: right;
-}
-
 .hero,
 .section,
 .post-view {
@@ -1023,12 +1013,6 @@ body.debug-panels .debug-panel-label {
   .page-shell {
     width: min(100% - 20px, 1180px);
     padding-top: 10px;
-  }
-
-  .site-credit {
-    width: min(100% - 20px, 1180px);
-    margin-bottom: 20px;
-    text-align: left;
   }
 
   .hero,
