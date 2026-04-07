@@ -74,7 +74,7 @@
       "date": "2026-04-02",
       "summary": "A quick collection of info. for presenting purposes.",
       "coverImage": "",
-      "published": true,
+      "published": false,
       "featured": false,
       "tags": [
         "Website",
