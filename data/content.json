@@ -68,6 +68,23 @@
   ],
   "posts": [
     {
+      "id": "collab-poem1",
+      "title": "500 nuns",
+      "category": "writing",
+      "date": "2026-04-15",
+      "summary": "Poetry collab with a good friend =D",
+      "coverImage": "/assets/images/post-covers/500nuns.png",
+      "published": true,
+      "featured": false,
+      "tags": [
+        "Poetry",
+        "Collab",
+        "Silly"
+      ],
+      "bodyFormat": "html",
+      "body": "<h2>Intro:</h2><p>Licras and I have the same prompt (500 nuns) and we each wrote a poem based on the prompt.&nbsp;</p><p><a class=\"post-link-button\" href=\"youtube.com/watch?si=FmFRXBcD4KrvT_SS&amp;v=3MsW-OuXiIo&amp;feature=youtu.be\">500 nuns</a></p><h2>Blue's Poem:&nbsp;</h2><div><div>Five hundred nuns, shifting across the frozen landscape.&nbsp;</div><div>Dancing piano keys, chaotic rhythms,&nbsp;</div><div>Chanting of god, silently.&nbsp;</div><div><br></div><div>Gloria in excelsis Deo,</div><div>Te Deum Laudamus.</div><div>Agnus Dei,</div><div>Adoro te devote.&nbsp;</div><div><br></div><div>To where are they going?&nbsp;</div><div>Reachable in death — dreams of peace up in the sky.</div><div>To sing along angels,&nbsp;</div><div>Hundred forty-four thousand lambs.</div></div><div><br></div><div><h2>Licras' Poem:&nbsp;<br></h2></div><div><div>starched wimples—</div><div>a sea of white doves.</div><div><br></div><div>black wool serge robes,</div><div>army in ink—</div><div>heavy upon the shoulder,</div><div>heavier to the heart.</div><div><br></div><div>here to find heaven</div><div>in a bowl—</div><div>a bowl of clear water,</div><div>trencher bowls,</div><div>a basin to wash off sin—</div><div>to rinse onto arms and breast,</div><div>to rinse,</div><div>to rinse.</div><div><br></div><div>to bring back to body</div><div>old water,</div><div>and to rinse.</div><div><br></div><div>making habits of walking,</div><div>of clasping, of finding,</div><div>within the rosary bead,</div><div>a communion with friend, neighbor,</div><div>the chapel, the mass, the earth,</div><div>and to see our body for the body—</div><div>one vessel of divinity.</div><div><br></div><div>five-hundred pairs of knees</div><div>pressing to the dirt,</div><div>pressing on our faith,</div><div>pressing with a whole life’s weight—</div><div>a vesper for today, tomorrow,</div><div>and yesterday.</div></div>"
+    },
+    {
       "id": "osomba1",
       "title": "Osomba: Functional Scope Creep",
       "category": "writing",
