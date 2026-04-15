@@ -47,7 +47,7 @@ let slotMachine = null;
 
 const GAME_ANNOTATIONS = {
   "https://bluemoon012905.github.io/Turtle-math-benchmark/": {
-    title: "Math Game",
+    title: "Math Benchmark",
     summary: "A math-focused turtle game with a benchmark framing, built as a quick browser-playable project.",
     kind: "Browser game",
     category: "Games",
