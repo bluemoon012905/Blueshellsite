@@ -62,7 +62,8 @@ Purpose:
 Current behavior:
 
 - Renders a curated list of external game links
-- Uses the same shared site styling and top navigation as the rest of the site
+- Uses the same shared site styling and top navigation as the rest of the site, with a custom games-themed hero treatment
+- Includes an interactive slot machine in the hero area that spins turtle and ASU-logo image reels and triggers a matching-image rain effect on jackpot rolls
 - Is currently powered by a hardcoded list in `assets/games-page.js`
 
 ### Category
