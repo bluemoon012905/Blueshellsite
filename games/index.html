@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Post</title>
+    <title>Games</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,18 +12,28 @@
     />
     <link rel="stylesheet" href="../assets/styles.css" />
   </head>
-  <body data-page="home">
+  <body data-page="games">
     <nav class="top-banner" aria-label="Primary">
-      <a class="top-banner-link" href="/" aria-current="page">Home</a>
-      <a class="top-banner-link" href="/games/">Games</a>
+      <a class="top-banner-link" href="/">Home</a>
+      <a class="top-banner-link" href="/games/" aria-current="page">Games</a>
       <a class="top-banner-link" href="/about/">About</a>
       <a class="top-banner-link" href="/contact/">Contact</a>
     </nav>
     <main class="page-shell">
-      <header id="post-hero" class="hero"></header>
-      <section id="post-shell" class="section post-view"></section>
+      <header id="games-hero" class="hero"></header>
+      <section class="section" aria-labelledby="games-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Play</p>
+            <h2 id="games-heading">External game links</h2>
+            <p class="section-copy">A small landing page for projects that are meant to be opened and played.</p>
+          </div>
+          <a class="ghost-link" href="/">Back home</a>
+        </div>
+        <div id="games-grid" class="games-grid"></div>
+      </section>
     </main>
     <script src="../assets/content-helpers.js" defer></script>
-    <script src="../assets/post-page.js" defer></script>
+    <script src="../assets/games-page.js" defer></script>
   </body>
 </html>

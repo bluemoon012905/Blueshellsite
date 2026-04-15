@@ -47,6 +47,7 @@ const STATIC_TURTLE_VARIANTS = [
 const elements = {
   hero: document.getElementById("hero"),
   homepageSections: document.getElementById("homepage-sections"),
+  gamesStrip: document.getElementById("games-strip"),
   categoryGrid: document.getElementById("category-grid"),
   featuredGrid: document.getElementById("featured-grid"),
   postGrid: document.getElementById("post-grid"),
@@ -84,6 +85,7 @@ function hydrateFilters() {
 function renderPage() {
   renderHero();
   renderHomepageSections();
+  renderGamesStrip();
   renderAbout();
   window.BlueshellContent.initLocalDebugPanels();
 }
@@ -248,6 +250,32 @@ function renderTopBanner() {
   if (!isLocalEnvironment && existingLocalLink) {
     existingLocalLink.remove();
   }
+}
+
+function renderGamesStrip() {
+  if (!elements.gamesStrip) {
+    return;
+  }
+
+  elements.gamesStrip.dataset.debugName = "Games strip";
+  elements.gamesStrip.innerHTML = `
+    <div class="games-strip-copy">
+      <p class="eyebrow">Games</p>
+      <h2>Turtle arcade</h2>
+      <p>There is now a dedicated page for game projects and direct play links, separate from the regular post archive.</p>
+    </div>
+    <div class="games-strip-decoration" aria-hidden="true">
+      <img
+        class="games-strip-decoration-image"
+        src="/assets/images/turtle_roller_coaster.png"
+        alt=""
+      />
+    </div>
+    <div class="hero-actions">
+      <a class="pill-link" href="/games/">Go to games page</a>
+    </div>
+  `;
+  window.BlueshellContent.initLocalDebugPanels();
 }
 
 function bindTurtleFlip() {

@@ -48,6 +48,23 @@ Important implementation detail:
 
 - The `outline` and `featured` built-in panels appear in the hero carousel and are intentionally skipped in the lower homepage section stack.
 
+### Games
+
+Route:
+
+- `/games/`
+
+Purpose:
+
+- Landing page for playable external projects
+- Separate direct-play links from the broader post archive
+
+Current behavior:
+
+- Renders a curated list of external game links
+- Uses the same shared site styling and top navigation as the rest of the site
+- Is currently powered by a hardcoded list in `assets/games-page.js`
+
 ### Category
 
 Route:
@@ -151,6 +168,7 @@ Operational notes:
 Current public top nav:
 
 - Home: `/`
+- Games: `/games/`
 - About: `/about/`
 - Contact: `/contact/`
 
