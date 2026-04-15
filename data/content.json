@@ -75,7 +75,7 @@
       "summary": "Poetry collab with a good friend =D",
       "coverImage": "/assets/images/post-covers/500nuns.png",
       "published": true,
-      "featured": false,
+      "featured": true,
       "tags": [
         "Poetry",
         "Collab",
@@ -127,7 +127,7 @@
       "summary": "A collection of the calculation that can happen when you are processing natural language",
       "coverImage": "",
       "published": true,
-      "featured": true,
+      "featured": false,
       "tags": [
         "School",
         "math",
