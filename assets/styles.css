@@ -748,6 +748,8 @@ textarea {
 
 .post-body {
   margin-top: 28px;
+  font-size: 1.05rem;
+  line-height: 1.8;
 }
 
 .post-body h2,
@@ -766,6 +768,12 @@ textarea {
 
 .post-body ul {
   padding-left: 22px;
+}
+
+.post-body p,
+.post-body li,
+.post-body div {
+  line-height: inherit;
 }
 
 .post-body img {
@@ -1006,6 +1014,21 @@ body.debug-panels .debug-panel-label {
 
   .hero-actions-intro {
     margin-top: 18px;
+  }
+}
+
+@media (min-width: 961px) {
+  .post-body {
+    font-size: 1.16rem;
+    line-height: 1.85;
+  }
+
+  .post-body h2 {
+    font-size: 2.18rem;
+  }
+
+  .post-body h3 {
+    font-size: 1.58rem;
   }
 }
 

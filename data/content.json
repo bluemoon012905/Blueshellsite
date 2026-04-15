@@ -68,6 +68,24 @@
   ],
   "posts": [
     {
+      "id": "osomba1",
+      "title": "Osomba: Functional Scope Creep",
+      "category": "writing",
+      "date": "2026-04-12",
+      "summary": "A little ramble about a school project. This is under writing instead of projects because it is more of a journaling piece rather than technical flex.",
+      "coverImage": "/assets/images/post-covers/osomba.png",
+      "published": false,
+      "featured": true,
+      "tags": [
+        "Website",
+        "AWS hosting",
+        "Capstone",
+        "Story time"
+      ],
+      "bodyFormat": "html",
+      "body": "<h2>What is Osomba?&nbsp;</h2><p>If you were to ask the owner of Osomba, who is also the CEO of Kimuntu, he will tell you something like \"global marketplace\", or \"</p>"
+    },
+    {
       "id": "aiseriessources",
       "title": "What is AI? (sources)",
       "category": "Research",
