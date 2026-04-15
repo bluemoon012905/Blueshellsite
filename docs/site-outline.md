@@ -1,33 +1,25 @@
 # Site Outline
 
-## Current Positioning
+## Overview
 
-Blue Shell Almanac is a static personal site that functions as a project archive, blog, and collection of stuff.
+This repo is a small data-driven personal site with a local-only editor.
 
-The current content model is organized around four categories defined in `data/content.json`:
+Current positioning in the codebase:
 
-- `art`
-- `Research`
-- `projects`
-- `writing`
+- Static public pages served from HTML, CSS, and client-side JavaScript
+- Content stored in `data/content.json`
+- Local Node server used for development, editing, and image upload APIs
 
-This is the actual live taxonomy in the repo today. The older "Art / School / Personal / Writing" outline is no longer accurate.
+The repo branding is currently mixed:
 
-## Primary Navigation
+- Several HTML files and `server.js` still say `Blue Shell Almanac`
+- The live site data in `data/content.json` uses `Blue's collection of stuff`
 
-The public top nav currently includes:
+Treat `data/content.json` as the source of truth for what visitors see in the browser.
 
-- Home: `/`
-- About: `/about/`
-- Contact: `/contact/`
+## Public Routes
 
-When running locally, a `Local editor` link is injected into the nav and points to:
-
-- Editor: `/editor/`
-
-## Current Public Routes
-
-### Homepage
+### Home
 
 Route:
 
@@ -35,30 +27,28 @@ Route:
 
 Purpose:
 
-- Landing page for the site
-- Entry point into category browsing, featured posts, and archive browsing
+- Main landing page
+- Entry point for browsing categories, featured work, and the archive
 
-Current homepage structure:
+Current structure:
 
 1. Top navigation
 2. Hero carousel
-3. Homepage panels rendered from `site.homepagePanels`
+3. Homepage sections rendered from `site.homepagePanels`
 4. About strip
 
-Hero carousel slides currently include:
+Hero carousel slides:
 
-- Intro slide
-- Outline slide with category cards
-- Featured slide
-- About slide
+1. Intro
+2. Outline
+3. Featured
+4. About
 
-Default homepage panels currently include:
+Important implementation detail:
 
-- `outline`
-- `featured`
-- `archive`
+- The `outline` and `featured` built-in panels appear in the hero carousel and are intentionally skipped in the lower homepage section stack.
 
-## Category Page
+### Category
 
 Route:
 
@@ -71,10 +61,10 @@ Purpose:
 Behavior:
 
 - Loads category metadata from `data/content.json`
-- Filters posts by exact `post.category === category.id`
-- Shows only posts where `published !== false`
+- Filters posts with exact category-id matching
+- Hides posts where `published === false`
 
-## Post Page
+### Post
 
 Route:
 
@@ -82,17 +72,17 @@ Route:
 
 Purpose:
 
-- Render a single published post
+- Render one published post
 
 Behavior:
 
 - Loads one post from `data/content.json`
-- Rejects unpublished posts
-- Displays title, summary, date, tags, and body
-- Supports HTML or Markdown-backed body rendering
-- Includes browser speech synthesis "Read aloud" controls
+- Rejects unpublished or missing posts
+- Renders HTML or lightweight Markdown body content
+- Shows title, summary, date, tags, and optional cover image
+- Includes browser speech synthesis controls for read-aloud
 
-## About Page
+### About
 
 Route:
 
@@ -101,9 +91,14 @@ Route:
 Purpose:
 
 - Personal/profile page
-- Extended introduction and contact context
+- Longer intro and contact context
 
-## Contact Page
+Implementation notes:
+
+- Uses shared section builders from `about/about-sections.js`
+- Includes extra ASU-themed motion/animation logic from `about/about-page.js`
+
+### Contact
 
 Route:
 
@@ -111,10 +106,16 @@ Route:
 
 Purpose:
 
-- Direct contact options
-- Copy-email interaction
+- Direct contact page
+- Email copy interaction and feedback links
 
-## Local Editor
+Implementation notes:
+
+- Reuses the same shared section renderer as the About page
+
+## Local-Only Route
+
+### Editor
 
 Route:
 
@@ -122,7 +123,13 @@ Route:
 
 Purpose:
 
-- Local admin/editor interface for `data/content.json`
+- Admin/editor UI for the site content JSON
+
+Availability:
+
+- Intended for local development only
+- The nav link is injected only when the hostname is local
+- The page itself replaces its UI with an "Unavailable here" message outside local environments
 
 Current editor scope:
 
@@ -130,24 +137,50 @@ Current editor scope:
 - Edit homepage panels
 - Edit categories
 - Create, update, preview, and delete posts
-- Export backup JSON
-- Save directly back into the repo data file
+- Upload cover images and button logos through local APIs
+- Export a JSON backup
+- Save directly to `data/content.json`
+
+Operational notes:
+
+- Autosave runs every 60 seconds when there are pending changes
+- The editor depends on the local Node server, not a static file host
+
+## Navigation
+
+Current public top nav:
+
+- Home: `/`
+- About: `/about/`
+- Contact: `/contact/`
+
+Local-only injected nav links:
+
+- Editor: `/editor/`
+- Debug toggle button for panel overlays
 
 ## Content Model
 
-### Site Object
+The site is driven by three top-level objects in `data/content.json`:
 
-`site` currently stores:
+- `site`
+- `categories`
+- `posts`
+
+### `site`
+
+Currently stores:
 
 - Title and tagline
 - Intro and about copy
 - Brand mark text
-- About/contact labels
-- Contact and feedback links
+- Hero and page eyebrow labels
+- Contact label and email
+- Feedback form URL
 - Editor labels
 - `homepagePanels`
 
-### Categories
+### `categories`
 
 Each category currently has:
 
@@ -155,12 +188,19 @@ Each category currently has:
 - `name`
 - `description`
 
+Current live taxonomy:
+
+- `art`
+- `Research`
+- `projects`
+- `writing`
+
 Important implementation detail:
 
-- Category ids are not normalized consistently today. For example, `Research` is capitalized while the others are lowercase.
-- Any new route or page that keys off categories should match the stored ids exactly unless normalization is introduced intentionally.
+- Category IDs are not normalized consistently. `Research` is capitalized while the others are lowercase.
+- Routing and filtering currently depend on exact string matches, so ID changes have downstream effects.
 
-### Posts
+### `posts`
 
 Each post currently supports:
 
@@ -176,38 +216,52 @@ Each post currently supports:
 - `bodyFormat`
 - `body`
 
-## Structural Notes
+Important implementation detail:
 
-- The site is data-driven from `data/content.json`.
-- Public pages fetch content client-side rather than compiling separate static data files per route.
-- `about/` and `contact/` are standalone pages, not just homepage sections.
-- `category/` and `post/` are query-parameter routes rather than pretty slug folders.
-- The homepage hero and homepage sections are separate concepts.
+- Public post rendering supports both `html` and a simple Markdown renderer
+- The editor currently writes post bodies back as `html`
 
-## Planned Addition: Games Page
+## Homepage Panel System
 
-This repo does not yet have a dedicated games page, but the intended addition should become a first-class public route rather than being hidden inside posts.
+Built-in panel presets:
 
-Planned route:
+- `outline` with type `category-overview`
+- `featured` with type `featured-posts`
+- `archive` with type `archive-posts`
 
-- `/games/`
+Supported panel types:
 
-Planned purpose:
+- `category-overview`
+- `featured-posts`
+- `archive-posts`
+- `custom-content`
 
-- Central place to host and launch playable projects
-- Separate "play" discovery from long-form writeups in the posts archive
+Current default section stack behavior:
 
-Recommended information architecture for the new page:
+- `outline` and `featured` are shown in the hero
+- `archive` renders in the homepage body with search and category filters
+- Additional custom panels render below the hero using Markdown body content
 
-- Add `Games` to the primary nav
-- Keep games as their own page, not just a category filter
-- Allow each game card to link to a playable build, repo, and optional writeup/post
-- Treat posts as supporting context, while `/games/` acts as the playable index
+## Data and Rendering Notes
 
-## Publishing Flow
+- Public pages fetch content client-side from `data/content.json`
+- Local editing uses `/api/content` instead of writing through the browser directly to disk
+- Turtle image variants are discovered through `/api/image-assets` when the local API is available
+- Image uploads are stored under `assets/images/post-buttons/` or `assets/images/post-covers/`
+- Unknown routes fall back to `index.html` in the local Node server
 
-1. Run the local server/editor setup
-2. Update `data/content.json` and related page files
-3. Review the public pages locally
-4. Commit changes
-5. Push to deploy the static site
+## Local Development Flow
+
+1. Run `npm run dev`
+2. Open `http://127.0.0.1:4321/`
+3. Use `http://127.0.0.1:4321/editor/` for content edits
+4. Review public pages locally
+5. Commit and push
+
+## Current Gaps
+
+- No top-level README had been present before this update
+- Branding is inconsistent between static HTML defaults and live JSON content
+- Category IDs are case-sensitive and unevenly normalized
+- Routes still use query parameters instead of cleaner slugs
+- The previous outline included a speculative Games page that is not implemented in this repo
